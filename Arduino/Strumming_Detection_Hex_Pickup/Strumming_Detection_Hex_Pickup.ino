@@ -1,5 +1,5 @@
-const int selectPins[3] = {28, 27, 26};
-const int zInput = 22;
+#include "74HC4067.h"
+#include "74HC4051.h"
 int string_values[6] = {0};
 int strings_last_values[6] = {0};
 int min_val = 10;
@@ -8,17 +8,11 @@ int max_val = 800;
 
 void setup() 
 {
-  Serial.begin(9600); // Initialize the serial port
-  // Set up the select pins as outputs:
-  for (int i=0; i<3; i++)
-  {
-    pinMode(selectPins[i], OUTPUT);
-    digitalWrite(selectPins[i], HIGH);
-  }
+  Serial.begin(9600);
+  setup_mux67();
+  setup_mux51();
   
-  pinMode(zInput, INPUT);
-
-  selectMuxPin(2);
+  select_pin_mux51(2);
 }
 
 void calibrate(){
@@ -45,7 +39,7 @@ void loop() {
   // Loop through all eight pins.
 //    int i = 0;
 //    for (byte pin=2; pin<=7; pin++) {
-//        selectMuxPin(pin); // Select one at a time
+//        select_pin_mux51(pin); // Select one at a time
 //        if (i==0) {
 
             string1 = analogRead(zInput);
@@ -95,16 +89,4 @@ void loop() {
 //        i++;
 //  }
 //  Serial.println();
-}
-
-// The selectMuxPin function sets the S0, S1, and S2 pins
-// accordingly, given a pin from 0-7.
-void selectMuxPin(byte pin)
-{
-  for (int i=0; i<3; i++) {
-    if (pin & (1<<i))
-      digitalWrite(selectPins[i], HIGH);
-    else
-      digitalWrite(selectPins[i], LOW);
-  }
 }
