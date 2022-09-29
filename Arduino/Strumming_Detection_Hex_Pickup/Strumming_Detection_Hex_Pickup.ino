@@ -1,5 +1,3 @@
-#include "74HC4067.h"
-#include "74HC4051.h"
 int string_values[6] = {0};
 int strings_last_values[6] = {0};
 int min_val = 10;
@@ -9,10 +7,6 @@ int max_val = 800;
 void setup() 
 {
   Serial.begin(9600);
-  setup_mux67();
-  setup_mux51();
-  
-  select_pin_mux51(2);
 }
 
 int string1 = 0;
@@ -23,12 +17,6 @@ bool note_on = false;
 bool plam_mute = false;
 
 void loop() {
-  // Loop through all eight pins.
-//    int i = 0;
-//    for (byte pin=2; pin<=7; pin++) {
-//        select_pin_mux51(pin); // Select one at a time
-//        if (i==0) {
-
             string1 = analogRead(zInput);
             delay(1); 
             hysteresis = string1*0.2;
@@ -64,16 +52,4 @@ void loop() {
             }
             
             string1_last = string1;
-            //            Serial.println("last string: " + String(string1_last) + ", hysteresis: " + String(hysteresis) + ", substraction: " + String(string1_last-hysteresis) + ", string1: " + String(string1));
-//        }
-
-//        string_values[i] = analogRead(zInput);
-//        Serial.print(", string " + String(i) + ": ");
-//        Serial.print(string_values[i]);
-//        if (read_value > strings_calibrated_values[i]) {
-//          Serial.print("playing string " + String(i));
-//        }
-//        i++;
-//  }
-//  Serial.println();
 }
