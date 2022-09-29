@@ -15,19 +15,6 @@ void setup()
   select_pin_mux51(2);
 }
 
-void calibrate(){
-    for (int i=0;i<6;i++) {
-        int max_value = 0;
-        int min_value = 0;
-        for (int j=0; j<20; j++) {
-            int read_value = analogRead(zInput);
-            min_value = min(min_value, read_value);
-            max_value = max(max_value, read_value);
-        }
-//        strings_calibrated_values[i] = max_value;
-    }
-}
-
 int string1 = 0;
 int string1_last = 0;
 int string1_last_note_on = 0;
