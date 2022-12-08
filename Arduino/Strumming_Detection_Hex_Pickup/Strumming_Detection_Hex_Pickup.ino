@@ -30,25 +30,25 @@ void note_detection(int string) {
     if (string_values[string] > strings_last_note_on_values[string]) {
       strings_last_note_on_values[string] = string_values[string];
       note_ons[string] = true;
-      Serial.println("Note_ON: " + String(note_ons[string]) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
+      Serial.println("Note_ON: " + String(note_ons[string]) + "String: " + String(string) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
       Serial.println("re-Pluck");
     }
     //Note_ON detection (value is higher than last)
     else if (string_values[string] > 50 && string_values[string] > strings_last_values[string] && plam_mutes[string] == false) {
       strings_last_note_on_values[string] = string_values[string];
       note_ons[string] = true;
-      Serial.println("Note_ON: " + String(note_ons[string]) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
+      Serial.println("Note_ON: " + String(note_ons[string]) + "String: " + String(string) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
     }
     //Palm Mute detection (value is lower than last)
     else if ((strings_last_note_on_values[string] - string_values[string]) > hysteresis && note_ons[string] == true) {
       note_ons[string] = false;
       plam_mutes[string] = true;
-      Serial.println("Note_ON: " + String(note_ons[string]) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
+      Serial.println("Note_ON: " + String(note_ons[string]) + "String: " + String(string) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
       Serial.println("PALM MUTE");
     }
     if (string_values[string] < 20 && note_ons[string] == true) {
       note_ons[string] = false;
-      Serial.println("Note_ON: " + String(note_ons[string]) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
+      Serial.println("Note_ON: " + String(note_ons[string]) + "String: " + String(string) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
       Serial.println("NOTE OFF");
     }
     if (string_values[string] > strings_last_values[string] + hysteresis && plam_mutes[string] == true) {
