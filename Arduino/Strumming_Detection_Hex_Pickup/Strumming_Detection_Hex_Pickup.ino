@@ -55,7 +55,7 @@ void note_detection(int string) {
       plam_mutes[string] = false;
       Serial.println("UNMUTE");
     }
-  
+
     strings_last_values[string] = string_values[string];
 }
 
