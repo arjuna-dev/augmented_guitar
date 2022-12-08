@@ -13,7 +13,7 @@ int strings_last_values[6] = {0};
 int strings_last_note_on_values[6] = {0};
 int min_val = 10;
 int max_val = 800;
-int string_input_pins[2] = {21, 22};
+int string_input_pins[6] = {22, 21, 20, 19, 18, 17};
 bool note_ons[6] = {0};
 bool plam_mutes[6] = {0};
 int hysteresis = 0;
@@ -60,7 +60,7 @@ void note_detection(int string) {
 }
 
 void loop() {
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 6; i++) {
     string_values[i] = analogRead(string_input_pins[i]);
     delay(1);
     hysteresis = string_values[i] * 0.2;
