@@ -1,7 +1,11 @@
 /*
   Hexaphonic Pickup Color Coding
   white: 6th string
+  orange: 5th string
+  green : 3rd string
   red: 4th string
+  yellow: 2nd string
+  brown: 1st string
 */
 
 int string_values[6] = {0};
