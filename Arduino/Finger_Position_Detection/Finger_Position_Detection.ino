@@ -17,9 +17,15 @@ int value_positions[6][4] = {
 {10, 4, 17, 23},
 };
 
-int touchpoint_reference_values[24] = {0};
-int touchpoint_values[24] = {0};
-bool touchpoint_high_low[24] = {0};
+int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
+int string_values[6] = {0};
+int last_string_values[6] = {0};
+
+int touch_reference_analog_values[24] = {0};
+int touch_analog_values[24] = {0};
+bool touch_digital_values[24] = {0};
+bool last_touch_digital_values[24] = {0};
+int capacitance_threshold = 6000;
 
 void setup(){
   pinMode(s0, OUTPUT);
@@ -35,34 +41,50 @@ void setup(){
   Serial.begin(9600);
 
   // (Calibration)
-  getTouchpointValues(touchpoint_reference_values);
+  updateTouchValues(touch_reference_analog_values);
 }
 
-int getTouchpointValues(int *touchpoint_array){
+void updateTouchValues(int *touch_array){
   for(int i = 0; i < 16; i ++){
-    touchpoint_array[i] = readMux(i, SIG_pin_1);
+    touch_array[i] = readMux(i, SIG_pin_1);
     if (i<8) {
-      touchpoint_array[i+16] = readMux(i, SIG_pin_2);  
+      touch_array[i+16] = readMux(i, SIG_pin_2);  
     }
+  }
+}
+
+
+void updateStringValues(int *string_values){
+  for (int i=0; i<6; i++){
+    bool string_pressed = false;
+    for (int j=0; j<4; j++){
+      if (touch_analog_values[value_positions[i][j]] - touch_reference_analog_values[value_positions[i][j]]>capacitance_threshold){
+        string_values[i] = MIDI_open_string_notes[i]+j+1;
+        string_pressed = true;
+      } 
+      if (string_pressed == false){
+        string_values[i] = 0;
+      }
+    }
+  }
+}
+
+void playMIDI(){
+  for (int i=0; i<6; i++){
+    if (string_values[i] && last_string_values[i] != string_values[i]) {
+      usbMIDI.sendNoteOn(string_values[i], 100, 0);
+    } else if (!string_values[i] && last_string_values[i]) {
+      usbMIDI.sendNoteOff(last_string_values[i], 0, 0);
+    }
+    last_string_values[i] = string_values[i];
   }
 }
 
 void loop(){
-
-  int touchpoint_values[24] = {0};
-  getTouchpointValues(touchpoint_values);
-  delay(100);
-  for (int i=0; i<6; i++){
-    for (int j=0; j<4; j++){
-      if (touchpoint_values[value_positions[i][j]] - touchpoint_reference_values[value_positions[i][j]]>100){
-        touchpoint_high_low[value_positions[i][j]] = 1;
-      } else {
-        touchpoint_high_low[value_positions[i][j]] = 0;
-      }
-      Serial.print(String(touchpoint_high_low[value_positions[i][j]]) + " ");
-    }
-  }
-  Serial.println(" ");
+  updateTouchValues(touch_analog_values);
+  updateStringValues(string_values);
+  playMIDI();
+  delay(1);
 }
 
 
