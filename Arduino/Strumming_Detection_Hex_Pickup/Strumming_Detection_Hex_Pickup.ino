@@ -22,6 +22,9 @@ int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
 int hysteresis = 25;
 
 void setup() {
+
+  // TODO: Add "calibration" to each string to detect the minimum threshold for each string instead of having a hard-coded 120. Alternatively solve with hardware electronics components
+
   Serial.begin(9600);
   for (int i=0; i<6; i++) {
     pinMode(string_input_pins[i], INPUT);
