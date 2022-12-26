@@ -42,8 +42,6 @@ void peak_detection(int current_value, int previous_value, int string_number) {
       Serial.println(note_amplitude);
     }   
   }
-    }   
-  }
 }
 
 void loop() {
