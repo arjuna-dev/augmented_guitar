@@ -25,7 +25,7 @@ int touch_reference_analog_values[24] = {0};
 int touch_analog_values[24] = {0};
 bool touch_digital_values[24] = {0};
 bool last_touch_digital_values[24] = {0};
-int capacitance_threshold = 6000;
+int capacitance_threshold = 1000;
 
 void setup(){
   pinMode(s0, OUTPUT);
