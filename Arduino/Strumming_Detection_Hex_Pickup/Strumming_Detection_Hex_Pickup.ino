@@ -31,7 +31,7 @@ void setup() {
   }
 }
 
-void peak_detection(struct StringStruct string) {
+void peak_detection(struct StringStruct& string) {
   if(string.current_amplitude > string.min_threshold){
     if (string.current_amplitude > string.previous_amplitude + hysteresis) {
       string.increasing = true;
