@@ -8,11 +8,6 @@
   brown: 1st string
 */
 
-int string_values[6] = {0};
-int strings_last_values[6] = {0};
-int strings_last_note_on_values[6] = {0};
-int min_val = 10;
-int max_val = 800;
 int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
 int string_current_values[6] = {0};
 int string_previous_values[6] = {0};
