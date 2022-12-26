@@ -20,6 +20,7 @@ int value_positions[6][4] = {
 int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
 int string_values[6] = {0};
 int last_string_values[6] = {0};
+bool both_frets_touched[6] = {0};
 
 int touch_reference_analog_values[24] = {0};
 int touch_analog_values[24] = {0};
@@ -56,14 +57,16 @@ void updateTouchValues(int *touch_array){
 
 void updateStringValues(int *string_values){
   for (int i=0; i<6; i++){
-    bool string_pressed = false;
+    string_values[i] = 0;
+    both_frets_touched[i] = false;
+    int last_fret_touched = 0;
     for (int j=0; j<4; j++){
       if (touch_analog_values[value_positions[i][j]] - touch_reference_analog_values[value_positions[i][j]]>capacitance_threshold){
+        last_fret_touched = string_values[i];
         string_values[i] = MIDI_open_string_notes[i]+j+1;
-        string_pressed = true;
       } 
-      if (string_pressed == false){
-        string_values[i] = 0;
+      if (last_fret_touched && string_values[i]){
+        both_frets_touched[i] = true; 
       }
     }
   }
@@ -71,13 +74,18 @@ void updateStringValues(int *string_values){
 
 void playMIDI(){
   for (int i=0; i<6; i++){
-    if (string_values[i] && last_string_values[i] != string_values[i]) {
+    Serial.print(String(string_values[i]) + " ");
+    if (both_frets_touched[i] && last_string_values[i] != string_values[i]) {
       usbMIDI.sendNoteOn(string_values[i], 100, 0);
     } else if (!string_values[i] && last_string_values[i]) {
       usbMIDI.sendNoteOff(last_string_values[i], 0, 0);
     }
     last_string_values[i] = string_values[i];
+    if (!both_frets_touched[i]){
+      last_string_values[i] = 0;
+    }
   }
+  Serial.println("");
 }
 
 void loop(){
