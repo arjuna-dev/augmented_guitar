@@ -1,2 +1,3 @@
 # Strumming Detection
-###### The algorithm on this branch is meant to work with capacitors that smooth the amplified signal of the guitar strings to generate a constant amplitude at any point. The algorithm can then detect amplitude at any point regardless of the original oscillating signal.
+
+###### The algorithm on this branch is meant to detect peaks in the rectified signal coming from each string. Please refer to the schematic on this folder.

@@ -8,64 +8,51 @@
   brown: 1st string
 */
 
-int string_values[6] = {0};
-int strings_last_values[6] = {0};
-int strings_last_note_on_values[6] = {0};
-int min_val = 10;
-int max_val = 800;
+struct StringStruct{
+  int input_pin;
+  int current_amplitude;
+  int previous_amplitude;
+  int peak_value;
+  int min_threshold;
+  bool increasing;
+};
+
+struct StringStruct string_structs[6];
 int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
-bool note_ons[6] = {0};
-bool plam_mutes[6] = {0};
-int hysteresis = 0;
+int hysteresis = 25;
 
 void setup() {
+
+  // TODO: Add "calibration" to each string to detect the minimum threshold for each string instead of having a hard-coded 120. Alternatively solve with hardware electronics components
+
   Serial.begin(9600);
-  for (int i = 0; i > 6; i++) {
+  for (int i=0; i<6; i++) {
     pinMode(string_input_pins[i], INPUT);
   }
+  for (int i=0; i<6; i++) {
+    string_structs[i] = {string_input_pins[i], 0, 0, 0, 120, false};
+  }
 }
 
-void note_detection_immediate(int string) {
-  //re-Pluck detection
-  if (string_values[string] > strings_last_note_on_values[string]) {
-    strings_last_note_on_values[string] = string_values[string];
-    note_ons[string] = true;
-    Serial.println("Note_ON: " + String(note_ons[string]) + "String: " + String(string) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
-    Serial.println("re-Pluck");
+void peak_detection(struct StringStruct& string) {
+  if(string.current_amplitude > string.min_threshold){
+    if (string.current_amplitude > string.previous_amplitude + hysteresis) {
+      string.increasing = true;
+    }
+    if (string.current_amplitude < string.previous_amplitude - hysteresis && string.increasing && string.current_amplitude > string.peak_value) {
+      string.increasing = false;
+      int note_amplitude = string.previous_amplitude;
+      string.peak_value = note_amplitude;
+      Serial.println(note_amplitude);
+    }   
   }
-  //Note_ON detection (value is higher than last)
-  else if (string_values[string] > 50 && string_values[string] > strings_last_values[string] && plam_mutes[string] == false) {
-    strings_last_note_on_values[string] = string_values[string];
-    note_ons[string] = true;
-    Serial.println("Note_ON: " + String(note_ons[string]) + "String: " + String(string) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
-  }
-  //Palm Mute detection (value is lower than last)
-  else if ((strings_last_note_on_values[string] - string_values[string]) > hysteresis && note_ons[string] == true) {
-    note_ons[string] = false;
-    plam_mutes[string] = true;
-    Serial.println("Note_ON: " + String(note_ons[string]) + "String: " + String(string) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
-    Serial.println("PALM MUTE");
-  }
-  if (string_values[string] < 20 && note_ons[string] == true) {
-    note_ons[string] = false;
-    Serial.println("Note_ON: " + String(note_ons[string]) + "String: " + String(string) + " v:"  + String(string_values[string]) + ", MIDI: " + map(string_values[string], 0, 700, 0, 127));
-    Serial.println("NOTE OFF");
-  }
-  if (string_values[string] > strings_last_values[string] + hysteresis && plam_mutes[string] == true) {
-    plam_mutes[string] = false;
-    Serial.println("UNMUTE");
-  }
-
-  strings_last_values[string] = string_values[string];
 }
-
 
 void loop() {
-  for (int i = 0; i < 6; i++) {
-    Serial.println(analogRead(string_input_pins[0]));
-//    string_values[i] = analogRead(string_input_pins[i]);
-//    delay(1);
-//    hysteresis = string_values[i] * 0.2;
-//    note_detection_immediate(i);
+  for (int i=0; i<6; i++) {
+    
+    string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
+    peak_detection(string_structs[i]);
+    string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
   }
 }
