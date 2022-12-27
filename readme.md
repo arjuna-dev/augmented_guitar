@@ -1,0 +1,2 @@
+# Augmented Guitar
+###### A device that augments an existing guitar to enable it to be used as a MIDI controller and with an ultra-stretch display screen to aid with guitar learning, gamification of guitar playing and more.
