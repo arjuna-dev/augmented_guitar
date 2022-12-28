@@ -16,15 +16,17 @@ int value_positions[6][4] = {
   {10, 4, 17, 23},
 };
 
+struct StringStruct{
+  int MIDI_value;
+  bool both_frets_touched;
+};
+
+struct StringStruct string_structs[6];
+
 int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
-int string_values[6] = {0};
-int last_string_values[6] = {0};
-bool both_frets_touched[6] = {0};
 
 int touch_reference_analog_values[24] = {0};
 int touch_analog_values[24] = {0};
-bool touch_digital_values[24] = {0};
-bool last_touch_digital_values[24] = {0};
 int capacitance_threshold = 3000;
 
 void setup(){
@@ -33,6 +35,9 @@ void setup(){
   for (int i=0; i<4; i++) {
     pinMode(controlPin[i], OUTPUT);
     digitalWrite(controlPin[i], LOW);  
+  }
+  for (int i=0; i<6; i++) {
+    string_structs[i] = {MIDI_open_string_notes[i], false};
   }
   // (Calibration)
   updateTouchValues(touch_reference_analog_values);
@@ -47,45 +52,36 @@ void updateTouchValues(int *touch_array){
   }
 }
 
-
-void updateStringValues(int *string_values){
-  for (int i=0; i<6; i++){
-    string_values[i] = 0;
-    both_frets_touched[i] = false;
-    int last_fret_touched = 0;
+void updateStringMIDIValue(struct StringStruct& string, int string_number){
+    string.MIDI_value = MIDI_open_string_notes[string_number];
+    string.both_frets_touched = false;
+    bool last_fret_touched = true;
+    bool fret_touched = false;
     for (int j=0; j<4; j++){
-      if (touch_analog_values[value_positions[i][j]] - touch_reference_analog_values[value_positions[i][j]]>capacitance_threshold){
-        last_fret_touched = string_values[i];
-        string_values[i] = MIDI_open_string_notes[i]+j+1;
+      if (touch_analog_values[value_positions[string_number][j]] - touch_reference_analog_values[value_positions[string_number][j]]>capacitance_threshold){
+        fret_touched = true;
+        string.MIDI_value = MIDI_open_string_notes[string_number]+j+1;
       } 
-      if (last_fret_touched && string_values[i]){
-        both_frets_touched[i] = true; 
+      if (last_fret_touched && fret_touched){
+        string.both_frets_touched = true; 
       }
+      last_fret_touched = fret_touched;
     }
-  }
 }
 
-void playMIDI(){
+void printMIDIValues(){
   for (int i=0; i<6; i++){
-    Serial.print(String(string_values[i]) + " ");
-    if (both_frets_touched[i] && last_string_values[i] != string_values[i]) {
-      usbMIDI.sendNoteOn(string_values[i], 100, 0);
-    } else if (!string_values[i] && last_string_values[i]) {
-      usbMIDI.sendNoteOff(last_string_values[i], 0, 0);
-    }
-    last_string_values[i] = string_values[i];
-    if (!both_frets_touched[i]){
-      last_string_values[i] = 0;
-    }
+    Serial.print(String(string_structs[i].MIDI_value) + " ");
   }
   Serial.println("");
 }
 
 void loop(){
   updateTouchValues(touch_analog_values);
-  updateStringValues(string_values);
-  playMIDI();
-  delay(1);
+  for (int i=0; i<6; i++){
+    updateStringMIDIValue(string_structs[i], i);  
+  }
+  printMIDIValues();
 }
 
 
