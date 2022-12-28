@@ -11,12 +11,12 @@ int SIG_pin_2 = 23;
 // This array has matches the position of the array/fret with the order in which the frets are scanned. 
 // E.g. The first fret of the first string will be read on the 16th iteration (denoted by number 15)
 int value_positions[6][4] = {
-{15, 9, 3, 18},
-{14, 8, 2, 19},
-{13, 7, 1, 20},
-{12, 6, 0, 21},
-{11, 5, 16, 22},
-{10, 4, 17, 23},
+  {15, 9, 3, 18},
+  {14, 8, 2, 19},
+  {13, 7, 1, 20},
+  {12, 6, 0, 21},
+  {11, 5, 16, 22},
+  {10, 4, 17, 23},
 };
 
 int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
