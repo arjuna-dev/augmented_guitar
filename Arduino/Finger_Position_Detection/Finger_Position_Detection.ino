@@ -8,6 +8,8 @@ int s3 = 9;
 int SIG_pin_1 = 30;
 int SIG_pin_2 = 23;
 
+// This array has matches the position of the array/fret with the order in which the frets are scanned. 
+// E.g. The first fret of the first string will be read on the 16th iteration (denoted by number 15)
 int value_positions[6][4] = {
 {15, 9, 3, 18},
 {14, 8, 2, 19},
