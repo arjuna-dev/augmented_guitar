@@ -36,6 +36,7 @@ void setup() {
 
 void peak_detection(struct StringStruct& string) {
   if(string.current_amplitude > string.min_threshold){
+//    Serial.println("anything");
     if (string.current_amplitude > string.previous_amplitude + hysteresis) {
       string.increasing = true;
     }
@@ -50,7 +51,6 @@ void peak_detection(struct StringStruct& string) {
 
 void loop() {
   for (int i=0; i<6; i++) {
-    
     string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
     peak_detection(string_structs[i]);
     string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
