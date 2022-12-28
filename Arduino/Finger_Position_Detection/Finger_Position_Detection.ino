@@ -1,8 +1,5 @@
 //Mux control pins
-int s0 = 12;
-int s1 = 11;
-int s2 = 10;
-int s3 = 9;
+int controlPin[] = {12, 11, 10, 9};
 
 //Mux in "SIG" pin
 int SIG_pin_1 = 30;
@@ -31,18 +28,12 @@ bool last_touch_digital_values[24] = {0};
 int capacitance_threshold = 3000;
 
 void setup(){
-  pinMode(s0, OUTPUT);
-  pinMode(s1, OUTPUT); 
-  pinMode(s2, OUTPUT); 
-  pinMode(s3, OUTPUT); 
-
-  digitalWrite(s0, LOW);
-  digitalWrite(s1, LOW);
-  digitalWrite(s2, LOW);
-  digitalWrite(s3, LOW);
-
   Serial.begin(9600);
-
+  
+  for (int i=0; i<4; i++) {
+    pinMode(controlPin[i], OUTPUT);
+    digitalWrite(controlPin[i], LOW);  
+  }
   // (Calibration)
   updateTouchValues(touch_reference_analog_values);
 }
@@ -99,7 +90,6 @@ void loop(){
 
 
 int readMux(int channel, int signal_pin){
-  int controlPin[] = {s0, s1, s2, s3};
   int muxChannel[16][4]={
     {0,0,0,0}, //channel 0
     {1,0,0,0}, //channel 1
