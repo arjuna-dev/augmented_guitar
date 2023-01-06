@@ -44,7 +44,7 @@ int value_positions[6][4] = {
 int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
 int touch_reference_analog_values[24] = {0};
 int touch_analog_values[24] = {0};
-int capacitance_threshold = 3000;
+int capacitance_threshold = 20000;
 
 
 
