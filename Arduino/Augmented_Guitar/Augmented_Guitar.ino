@@ -129,14 +129,15 @@ void loop(){
   // Update the MIDI values according to pressed frets
   updateTouchValues(touch_analog_values);
   for (int i=0; i<6; i++){
-    updateStringMIDIValue(string_structs[i], i);  
+    updateStringMIDIValue(string_structs[i], i);
   }
-//  printMIDIValues();
 
   // Detect peak and play MIDI for each string
   for (int i=0; i<6; i++) {
     string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
+
     peak_detection(string_structs[i]);
+
     if (string_structs[i].peak_value){
       //Play MIDI
     }
