@@ -18,13 +18,15 @@
   #define debugln(x)
 #endif
 
+#define hysteresis 25
 void setupStrumming();
 int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
 int hysteresis = 25;
 
 
-/* Finger position detection variables */
-// Function prototypes
+#define SIG_pin_1 30
+#define SIG_pin_2 23
+
 void setupFingerPosition();
 void updateTouchValues(int *touch_array);
 void updateStringMIDIValue(struct StringStruct& string, int string_number);
@@ -52,7 +54,7 @@ const int muxChannel[16][4]={
 
 // This array has matches the position of the array/fret with the order in which the frets are scanned. 
 // E.g. The first fret of the first string will be read on the 16th iteration (denoted by number 15)
-int value_positions[6][4] = {
+const int value_positions[6][4] = {
   {15, 9, 3, 18},
   {14, 8, 2, 19},
   {13, 7, 1, 20},
@@ -61,7 +63,8 @@ int value_positions[6][4] = {
   {10, 4, 17, 23},
 };
 
-int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
+const int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
+const int capacitance_threshold = 20000;
 int touch_reference_analog_values[24] = {0};
 int touch_analog_values[24] = {0};
 int capacitance_threshold = 20000;
