@@ -80,6 +80,14 @@ int touch_analog_values[24] = {0};
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_Debug variables_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 
+#if DEBUG == 1
+  void printSineWaveValues(int string_number, int iteration, int number_of_iterations);
+  void printMIDIValues();
+  
+  bool sine_wave_started = false;
+  int record_sine_wave_counter = 0;
+  int sine_wave_array[1000];
+#endif
 
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 /*_-_-Shared struct for finger position and strumming detection variables_-_-*/
