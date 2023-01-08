@@ -22,6 +22,7 @@
 /*_-_-_-Strumming detection variables and function prototypes_-_-_-*/
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 #define hysteresis 25
+#define sine_wave_falling_edge 35
 
 void peak_detection(struct StringStruct& string);
 void setupStrumming();
@@ -100,7 +101,6 @@ struct StringStruct{
   int previous_amplitude;
   int peak_value;
   int min_threshold;
-  bool increasing;
     
   // Finger position detection
   int MIDI_value;
