@@ -19,6 +19,7 @@
 #endif
 
 #define hysteresis 25
+void peak_detection(struct StringStruct& string);
 void setupStrumming();
 int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
 int hysteresis = 25;
