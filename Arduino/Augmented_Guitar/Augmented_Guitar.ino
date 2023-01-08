@@ -18,13 +18,20 @@
   #define debugln(x)
 #endif
 
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
+/*_-_-_-Strumming detection variables and function prototypes_-_-_-*/
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 #define hysteresis 25
+
 void peak_detection(struct StringStruct& string);
 void setupStrumming();
+
 int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
-int hysteresis = 25;
 
 
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
+/*_-_-Finger position detection variables and function prototypes_-_-*/
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 #define SIG_pin_1 30
 #define SIG_pin_2 23
 
@@ -53,7 +60,7 @@ const int muxChannel[16][4]={
   {1,1,1,1}  //channel 15
 };
 
-// This array has matches the position of the array/fret with the order in which the frets are scanned. 
+// This array has maps the position of the array/fret with the order in which the frets are scanned. 
 // E.g. The first fret of the first string will be read on the 16th iteration (denoted by number 15)
 const int value_positions[6][4] = {
   {15, 9, 3, 18},
@@ -68,11 +75,16 @@ const int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
 const int capacitance_threshold = 20000;
 int touch_reference_analog_values[24] = {0};
 int touch_analog_values[24] = {0};
-int capacitance_threshold = 20000;
+
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_Debug variables_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 
 
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
+/*_-_-Shared struct for finger position and strumming detection variables_-_-*/
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 
-/* Shared struct for finger position and strumming detection variables */
 struct StringStruct{
   // Strumming detection
   int input_pin;
