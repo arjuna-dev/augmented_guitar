@@ -8,9 +8,15 @@
   brown: 1st string
 */
 
-/* Strumming detection variables */
-// Function prototypes
-int peak_detection(struct StringStruct& string);
+#define DEBUG 1
+
+#if DEBUG == 1
+  #define debug(x) Serial.print(x)
+  #define debugln(x) Serial.println(x)
+#else
+  #define debug(x)
+  #define debugln(x)
+#endif
 
 void setupStrumming();
 int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
@@ -83,7 +89,11 @@ void setup(){
   /* TODO: Add "calibration" to each string to detect the minimum 
   threshold for each string instead of having a hard-coded 120. 
   Alternatively solve with hardware electronics components */
-  Serial.begin(9600);
+  #if DEBUG == 1
+    Serial.begin(9600);
+    pinMode(LED_BUILTIN, OUTPUT);
+  #endif
+
   setupFingerPosition();
   setupStrumming();
   for (int i=0; i<6; i++) {
