@@ -11,8 +11,7 @@ int readMux(int channel, int signal_pin){
   for(int i = 0; i < 4; i ++){
     digitalWrite(controlPin[i], muxChannel[channel][i]);
   }
-  int val = touchRead(signal_pin);
-  return val;
+  return touchRead(signal_pin);
 }
 
 void updateTouchValues(int *touch_array){

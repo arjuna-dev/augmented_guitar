@@ -4,20 +4,18 @@ void setupStrumming(){
   }
 }
 
-int peak_detection(struct StringStruct& string) {
+void peak_detection(struct StringStruct& string) {
   if(string.current_amplitude > string.min_threshold){
-//    Serial.println("anything");
     if (string.current_amplitude > string.previous_amplitude + hysteresis) {
       string.increasing = true;
     }
     if (string.current_amplitude < string.previous_amplitude - hysteresis && string.increasing && string.current_amplitude > string.peak_value) {
       string.increasing = false;
-      int note_amplitude = string.previous_amplitude;
-      string.peak_value = note_amplitude;
-      return note_amplitude;
+      string.peak_value = string.previous_amplitude;
     } else{
       string.peak_value = 0;
-      return 0;
     }
+  } else {
+    string.peak_value = 0;
   }
 }
