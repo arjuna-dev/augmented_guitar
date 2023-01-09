@@ -121,7 +121,7 @@ void setup(){
   setupFingerPosition();
   setupStrumming();
   for (int i=0; i<6; i++) {
-    string_structs[i] = {string_input_pins[i], 0, 0, 0, 120, false, MIDI_open_string_notes[i], false};
+    string_structs[i] = {string_input_pins[i], 0, 0, 0, 120, MIDI_open_string_notes[i], false};
   }
 }
 
