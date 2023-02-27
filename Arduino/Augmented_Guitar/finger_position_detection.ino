@@ -31,6 +31,7 @@ void updateStringMIDIValue(struct StringStruct& string, int string_number){
     for (int j=0; j<4; j++){
       if (touch_analog_values[value_positions[string_number][j]] - touch_reference_analog_values[value_positions[string_number][j]]>capacitance_threshold){
         fret_touched = true;
+        string.fret_nunmber_touched = j+1;
         string.MIDI_value = MIDI_open_string_notes[string_number]+j+1;
       } 
       if (last_fret_touched && fret_touched){
