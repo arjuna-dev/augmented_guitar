@@ -3,7 +3,7 @@
     <div class="the-grid" :style="fretboardGridStyle" @click="debug">
       <div
         v-bind:style="{ display: 'grid', placeItems: 'center' }"
-        v-for="(fretSlot, index) in fretboardSlots(notePattern)"
+        v-for="(fretSlot, index) in draw_fretboard_slots(notePattern)"
         :key="index"
       >
         <div :style="fretStyle(fretSlot)">
@@ -21,53 +21,49 @@ export default {
   name: "Fretboard",
   data() {
     return {
-      numberOfStrings: 6,
-      numberOfFrets: 20,
-      stringLength: 647.7,
-      notes: [
-        "C",
-        "C♯/D♭",
-        "D",
-        "D♯/E♭",
-        "E",
-        "F",
-        "F♯/G♭",
-        "G",
-        "G♯/A♭",
-        "A",
-        "A♯/B♭",
-        "B"
-      ],
-      colors: [
-        "#7FDBFF",
-        "#39CCCC",
-        "#3D9970",
-        "#2ECC40",
-        "#01FF70",
-        "#FFDC00",
-        "#FF851B",
-        "#FF4136",
-        "#85144b",
-        "#F012BE",
-        "#B10DC9",
-        "#0074D9"
-      ],
+      midi_message: "",
+      number_of_strings: 6,
+      number_of_frets: 20,
+      string_length: 647.7,
+      all_notes: ["C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B"],
       tuning: ["E", "A", "D", "G", "B", "E"],
-      areCircles: true,
-      notePattern: []
+      open_string_MIDI_notes: [40, 45, 50, 55, 59, 64],
+      pressed_notes: [],
+      playing_notes: [],
+      temp_midi_cc_fret_number_msg: "",
+      are_circles: false,
+      notePattern: [],
+      colors: {
+        normal: [
+          "#7FDBFF",
+          "#39CCCC",
+          "#3D9970",
+          "#2ECC40",
+          "#01FF70",
+          "#FFDC00",
+          "#FF851B",
+          "#FF4136",
+          "#85144b",
+          "#F012BE",
+          "#B10DC9",
+          "#0074D9"
+        ],
+        pressed: "black",
+        playing: "black"
+      }
     };
   },
   computed: {
     fretboardSlotsAmount: function() {
-      return this.numberOfStrings * this.numberOfFrets;
+      return this.number_of_strings * this.number_of_frets;
     },
     fretDistances() {
       let fretDist = [];
       // Adjustment for screen resolution distance discrepancies
-      let newLength = this.stringLength * 0.867469097;
-      // let newLength = this.stringLength * 0.85981;
-      // let newLength = this.stringLength * 0.85981551561;
-      for (let i = 0; i < this.numberOfFrets; i++) {
+      let newLength = this.string_length * 0.867469097;
+      // let newLength = this.string_length * 0.85981;
+      // let newLength = this.string_length * 0.85981551561;
+      for (let i = 0; i < this.number_of_frets; i++) {
         let d = newLength / 17.817;
         fretDist.push(d);
         newLength = newLength - d;
@@ -83,7 +79,7 @@ export default {
       let fretDist = this.fretDistances.join("mm ");
       return {
         gridTemplateColumns: fretDist + "mm",
-        gridTemplateRows: "repeat(" + this.numberOfStrings + ", 1fr )",
+        gridTemplateRows: "repeat(" + this.number_of_strings + ", 1fr )",
         width: this.fretboardLength + "mm"
       };
     }
@@ -92,44 +88,103 @@ export default {
     debug() {
       console.log(this.fretboardSlots);
     },
-    fretboardSlots(selectedNotes) {
+    draw_fretboard_slots(scale_notes_steps) {
+      if (scale_notes_steps.length == 0) {
+        scale_notes_steps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      }
       let fretboardSlots = [];
-      for (let i = this.tuning.length - 1; i >= 0; i--) {
+      for (let i = this.number_of_strings - 1; i >= 0; i--) {
         let firstNoteOfString = this.tuning[i];
-        for (let j = 0; j < this.numberOfFrets; j++) {
-          let noteIndex = (j + this.notes.indexOf(firstNoteOfString) + 1) % 12;
-          let note = this.notes[noteIndex];
+        for (let j = 0; j < this.number_of_frets; j++) {
+          let noteIndex = (this.all_notes.indexOf(firstNoteOfString) + j + 1) % 12;
+          let MIDI_note = this.open_string_MIDI_notes[i] + j + 1;
+          let text = MIDI_note;
+          // let text = this.all_notes[noteIndex];
           let color = "";
-          if (selectedNotes.includes(noteIndex)) {
-            color = this.colors[noteIndex];
-            fretboardSlots.push(
-              new fretSlot(note, i, j, color, note, this.areCircles)
-            );
-          } else if (selectedNotes.length > 0) {
-            color = "black";
-            fretboardSlots.push(
-              new fretSlot(
-                note,
-                i,
-                j,
-                color,
-                "",
-                this.areCircles,
-                "1px solid white"
-              )
-            );
-          } else {
-            color = this.colors[noteIndex];
-            fretboardSlots.push(
-              new fretSlot(note, i, j, color, note, this.areCircles)
-            );
+          let border = "";
+          let text_color = "";
+          let z_index = "";
+
+          let note_object = {};
+          note_object.note = MIDI_note;
+          note_object.fret = j + 1;
+
+          const is_pressed = this.pressed_notes.some(obj => obj.note === note_object.note && obj.fret === note_object.fret);
+          const is_playing = this.playing_notes.some(obj => obj.note === note_object.note && obj.fret === note_object.fret);
+          const is_in_scale = scale_notes_steps.includes(noteIndex);
+
+          if (is_in_scale && !is_pressed && !is_playing) {
+            color = this.colors.normal[noteIndex];
+            z_index = "0";
+          } else if (!is_in_scale) {
+            color = "grey";
+            border = "1px solid white";
+            text = "";
           }
+          if (this.pressed_notes.length > 0 && is_pressed && is_in_scale) {
+            color = "black";
+            border = "";
+            text_color = "white";
+            z_index = "100";
+          } else if (this.pressed_notes.length > 0 && is_pressed && !is_in_scale) {
+            color = "black";
+            border = "10px solid red";
+            text_color = "white";
+            z_index = "100";
+          }
+          if (this.playing_notes.length > 0 && is_playing && is_in_scale) {
+            color = "black";
+            border = "10px solid white";
+            z_index = "100";
+          } else if (this.playing_notes.length > 0 && is_playing && !is_in_scale) {
+            color = "red";
+            border = "10px solid black";
+            z_index = "100";
+          }
+          fretboardSlots.push(new fretSlot(MIDI_note, i, j, color, text, this.are_circles, border, text_color, z_index));
         }
       }
       return fretboardSlots;
     },
+    update_pressed_and_playing_notes(midi_message, pressed_fret) {
+      // Add note to pressed notes if not there yet
+      if (
+        midi_message.message_type == "note_on" &&
+        midi_message.velocity == 0 &&
+        !this.pressed_notes.some(obj => obj.note === midi_message.note && obj.fret === pressed_fret)
+      ) {
+        let note_object = {};
+        note_object.note = midi_message.note;
+        note_object.fret = pressed_fret;
+        this.pressed_notes.push(note_object);
+      }
+      // Add note to playing notes if not there yet
+      if (
+        midi_message.message_type == "note_on" &&
+        midi_message.velocity !== 0 &&
+        !this.playing_notes.some(obj => obj.note === midi_message.note && obj.fret === pressed_fret)
+      ) {
+        let note_object = {};
+        note_object.note = midi_message.note;
+        note_object.fret = pressed_fret;
+        this.playing_notes.push(note_object);
+      }
+      // Remove note from pressed notes and playing notes if already there
+      if (
+        midi_message.message_type == "note_off" &&
+        midi_message.velocity == 0 &&
+        (this.pressed_notes.some(obj => obj.note === midi_message.note && obj.fret === pressed_fret) ||
+          this.playing_notes.some(obj => obj.note === midi_message.note && obj.fret === pressed_fret))
+      ) {
+        let note_object = {};
+        note_object.note = midi_message.note;
+        note_object.fret = pressed_fret;
+        this.pressed_notes = this.pressed_notes.filter(item => item.note !== midi_message.note || item.fret !== pressed_fret);
+        this.playing_notes = this.playing_notes.filter(item => item.note !== midi_message.note || item.fret !== pressed_fret);
+      }
+    },
     fretStyle(fretSlot) {
-      if (fretSlot.isCircle == true) {
+      if (fretSlot.is_circle) {
         return {
           display: "grid",
           placeItems: "center",
@@ -137,7 +192,10 @@ export default {
           width: "20px",
           height: "20px",
           borderRadius: "50%",
-          border: fretSlot.border
+          border: fretSlot.border,
+          color: fretSlot.text_color,
+          outline: fretSlot.border,
+          zIndex: fretSlot.z_index
         };
       } else {
         return {
@@ -145,7 +203,10 @@ export default {
           placeItems: "center",
           backgroundColor: fretSlot.color,
           width: "100%",
-          height: "100%"
+          height: "100%",
+          color: fretSlot.text_color,
+          outline: fretSlot.border,
+          zIndex: fretSlot.z_index
         };
       }
     }
@@ -155,8 +216,15 @@ export default {
       this.notePattern = data;
     });
     this.$parent.$on("are-circles", data => {
-      console.log(data);
-      this.areCircles = data;
+      this.are_circles = data;
+    });
+
+    this.$parent.$on("MIDI-message", data => {
+      if (data.message_type == "cc") {
+        this.temp_midi_cc_fret_number_msg = data.velocity;
+      } else if (data.message_type == "note_on" || data.message_type == "note_off") {
+        this.update_pressed_and_playing_notes(data, this.temp_midi_cc_fret_number_msg);
+      }
     });
   }
 };

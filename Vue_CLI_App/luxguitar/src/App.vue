@@ -1,52 +1,24 @@
 <template>
   <div id="app">
-    <Screen />
+    <Fretboard />
+    <Menu />
+    <MIDI />
   </div>
 </template>
 
 <script>
-import Screen from "./components/Screen.vue";
-
-let midi = null; // global MIDIAccess object
-function onMIDISuccess(midiAccess) {
-  console.log("MIDI ready!");
-  midi = midiAccess; // store in the global (in real usage, would probably keep in an object instance)
-  listInputsAndOutputs(midi);
-}
-
-function onMIDIFailure(msg) {
-  console.error(`Failed to get MIDI access - ${msg}`);
-}
-
-navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
-
-function listInputsAndOutputs(midiAccess) {
-  for (const entry of midiAccess.inputs) {
-    const input = entry[1];
-    console.log(
-      `Input port [type:'${input.type}']` +
-        ` id:'${input.id}'` +
-        ` manufacturer:'${input.manufacturer}'` +
-        ` name:'${input.name}'` +
-        ` version:'${input.version}'`
-    );
-  }
-
-  for (const entry of midiAccess.outputs) {
-    const output = entry[1];
-    console.log(
-      `Output port [type:'${output.type}'] id:'${output.id}' manufacturer:'${output.manufacturer}' name:'${output.name}' version:'${output.version}'`
-    );
-  }
-}
-
-
+import Fretboard from "./components/Fretboard.vue";
+import Menu from "./components/Menu.vue";
+import MIDI from "./components/MIDI.vue";
 
 export default {
   name: "app",
   components: {
-    Screen
-  }
+    Fretboard,
+    Menu,
+    MIDI
+  },
+  mounted() {}
 };
 </script>
 
@@ -57,5 +29,22 @@ export default {
 body {
   margin: 0;
   padding: 0;
+  font-family: Tahoma, sans-serif;
+}
+
+@media (min-aspect-ratio: 4/1) {
+  #app {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+  }
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
 }
 </style>
