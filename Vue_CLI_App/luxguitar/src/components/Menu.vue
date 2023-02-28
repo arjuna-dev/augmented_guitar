@@ -1,9 +1,29 @@
 <template>
-  <div class="afterFretboardDisplay">
-    <div @click="setFretSlotShape(true)">Circles</div>
-    <div @click="setFretSlotShape(false)">Squares</div>
-    <div v-for="(scale, index) in scales" :key="index">
-      <h5 @click="setFretboard(scale.pattern)">{{ scale.name }}</h5>
+  <div class="menu column">
+    <div>
+      <div>Root Note</div>
+      <select v-model="selected_root_note" v-on:change="emit_steps(selected_scale, selected_root_note)">
+        <option v-for="(note, index) in notes" :value="note" :key="index">
+          {{ note }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <div>Scale</div>
+      <select v-model="selected_scale" v-on:change="emit_steps(selected_scale, selected_root_note)">
+        <option v-for="(scale, index) in scales" :value="scale.name" :key="index">
+          {{ scale.name }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <div>Style</div>
+      <select v-model="selected_style" v-on:change="setFretSlotStyle(selected_style)">
+        <option value="false" selected>Full Color</option>
+        <option value="true">Circles</option>
+      </select>
     </div>
   </div>
 </template>
@@ -12,8 +32,11 @@
 export default {
   data() {
     return {
-      name: "AfterFretboardDisplay",
-      noteMapping: {
+      selected_style: "false",
+      selected_scale: "Chromatic",
+      selected_root_note: "C",
+      name: "Menu",
+      note_mapping: {
         "1": 0,
         "♯1": 1,
         "♭2": 1,
@@ -32,23 +55,11 @@ export default {
         "♭7": 10,
         "7": 11
       },
+      notes: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"],
       scales: [
         {
           name: "All Notes",
-          pattern: [
-            "1",
-            "♯1",
-            "2",
-            "♯2",
-            "3",
-            "4",
-            "♯4",
-            "5",
-            "♯5",
-            "6",
-            "♯6",
-            "7"
-          ]
+          pattern: ["1", "♯1", "2", "♯2", "3", "4", "♯4", "5", "♯5", "6", "♯6", "7"]
         },
         {
           name: "Acoustic",
@@ -80,20 +91,7 @@ export default {
         },
         {
           name: "Chromatic",
-          pattern: [
-            "1",
-            "♯1",
-            "2",
-            "♯2",
-            "3",
-            "4",
-            "♯4",
-            "5",
-            "♯5",
-            "6",
-            "♯6",
-            "7"
-          ]
+          pattern: ["1", "♯1", "2", "♯2", "3", "4", "♯4", "5", "♯5", "6", "♯6", "7"]
         },
         {
           name: "Dorian Mode",
@@ -139,8 +137,14 @@ export default {
           name: "Hungarian Major",
           pattern: ["1", "♯2", "3", "♯4", "5", "6", "♭7"]
         },
-        { name: "In", pattern: ["1", "♭2", "4", "5", "♭6"] },
-        { name: "Insen", pattern: ["1", "♭2", "4", "5", "♭7"] },
+        {
+          name: "In",
+          pattern: ["1", "♭2", "4", "5", "♭6"]
+        },
+        {
+          name: "Insen",
+          pattern: ["1", "♭2", "4", "5", "♭7"]
+        },
         {
           name: "Major",
           pattern: ["1", "2", "3", "4", "5", "6", "7"]
@@ -239,36 +243,73 @@ export default {
           pattern: ["1", "2", "3", "♯4", "♯5", "♯6"]
         },
         { name: "Yo", pattern: ["1", "♭3", "4", "5", "♭7"] }
-      ],
-      notePattern: []
+      ]
     };
   },
   methods: {
-    setFretboard(notePattern) {
-      let semitones = this.patternToSemitones(notePattern);
-      this.$parent.$emit("note-pattern", semitones);
-    },
-    setFretSlotShape(areCircles) {
-      this.$parent.$emit("are-circles", areCircles);
-    },
-    patternToSemitones(degreesArray) {
-      let semitones = [];
-      for (let i = 0; i < degreesArray.length; i++) {
-        semitones[i] = this.noteMapping[degreesArray[i]];
+    emit_steps(scale_name, root_note) {
+      let index_of_scale = null;
+      let index_of_root_note = null;
+
+      // Get index of root note
+      for (let i = 0; i < this.notes.length; i++) {
+        if (this.notes[i] == root_note) {
+          index_of_root_note = i;
+        }
       }
-      return semitones;
+
+      // Get index of scale
+      for (let i = 0; i < this.scales.length; i++) {
+        if (this.scales[i].name == scale_name) {
+          index_of_scale = i;
+        }
+      }
+      let note_pattern = this.scales[index_of_scale].pattern;
+
+      // Convert note pattern to steps
+      let note_steps = [];
+      for (let i = 0; i < note_pattern.length; i++) {
+        note_steps[i] = this.note_mapping[note_pattern[i]];
+      }
+
+      // Add steps to root note
+      for (let i = 0; i < note_steps.length; i++) {
+        note_steps[i] += index_of_root_note;
+        note_steps[i] = note_steps[i] % 12;
+      }
+      this.$parent.$emit("note-pattern", note_steps);
+    },
+    setFretSlotStyle(are_circles) {
+      if (are_circles == "true") {
+        are_circles = true;
+      } else if (are_circles == "false") {
+        are_circles = false;
+      }
+      this.$parent.$emit("are-circles", are_circles);
     }
   }
 };
 </script>
 
 <style scoped>
-.afterFretboardDisplay {
+.menu {
   width: 100%;
   height: 100%;
   color: azure;
   background-color: rgb(41, 41, 41);
   padding: 30px;
   overflow-y: scroll;
+  display: flex;
+  row-gap: 15px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
 }
 </style>

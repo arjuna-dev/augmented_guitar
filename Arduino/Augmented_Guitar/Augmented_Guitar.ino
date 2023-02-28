@@ -104,6 +104,7 @@ struct StringStruct{
     
   // Finger position detection
   int MIDI_value;
+  int fret_nunmber_touched;
   bool both_frets_touched;
 };
 
@@ -123,6 +124,21 @@ void setup(){
   for (int i=0; i<6; i++) {
     string_structs[i] = {string_input_pins[i], 0, 0, 0, 120, MIDI_open_string_notes[i], false};
   }
+}
+
+void MIDI_press_fret(note, fret){
+  usbMIDI.sendControlChange(20, fret, 1);
+  usbMIDI.sendNoteOn(note, 0, 1);
+}
+
+void MIDI_note_on(note, velocity, fret){
+  usbMIDI.sendControlChange(20, fret, 1);
+  usbMIDI.sendNoteOn(note, velocity, 1);
+}
+
+void MIDI_note_off(note, velocity, fret){
+  usbMIDI.sendControlChange(20, fret, 1);
+  usbMIDI.sendNoteOff(note, velocity, 1);
 }
 
 void loop(){
