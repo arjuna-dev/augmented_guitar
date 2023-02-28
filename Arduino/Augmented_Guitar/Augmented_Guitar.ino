@@ -126,6 +126,21 @@ void setup(){
   }
 }
 
+void MIDI_press_fret(note, fret){
+  usbMIDI.sendControlChange(20, fret, 1);
+  usbMIDI.sendNoteOn(note, 0, 1);
+}
+
+void MIDI_note_on(note, velocity, fret){
+  usbMIDI.sendControlChange(20, fret, 1);
+  usbMIDI.sendNoteOn(note, velocity, 1);
+}
+
+void MIDI_note_off(note, velocity, fret){
+  usbMIDI.sendControlChange(20, fret, 1);
+  usbMIDI.sendNoteOff(note, velocity, 1);
+}
+
 void loop(){
   // Update the MIDI values according to pressed frets
   updateTouchValues(touch_analog_values);
