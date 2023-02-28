@@ -144,14 +144,4 @@ void loop(){
     }
     string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
   }
-//  usbMIDI.sendControlChange(20, string.fret_nunmber_touched, 1);
-  usbMIDI.sendControlChange(20, 2, 1);
-  usbMIDI.sendNoteOn(52, 0, 1);
-  delay(2000);
-  usbMIDI.sendControlChange(20, 2, 1);
-  usbMIDI.sendNoteOn(52, 100, 1);
-  delay(2000);
-  usbMIDI.sendControlChange(20, 2, 1);
-  usbMIDI.sendNoteOff(52, 0, 1);
-  delay(2000);
 }
