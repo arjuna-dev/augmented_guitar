@@ -8,15 +8,9 @@
   brown: 1st string
 */
 
-#define DEBUG 1
+#include "read_touch.h"
 
-#if DEBUG == 1
-  #define debug(x) Serial.print(x)
-  #define debugln(x) Serial.println(x)
-#else
-  #define debug(x)
-  #define debugln(x)
-#endif
+#define DEBUG 1
 
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 /*_-_-_-Strumming detection variables and function prototypes_-_-_-*/
