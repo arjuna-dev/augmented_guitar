@@ -33,8 +33,11 @@ int  touchSenseInit(uint8_t pin){
 }
 
 bool  touchSenseDone(){
-  if (TSI0_GENCS & TSI_GENCS_SCNIP) return 0;
-  else  return 1;
+  if (TSI0_GENCS & TSI_GENCS_SCNIP) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 int  touchSenseRead(){
