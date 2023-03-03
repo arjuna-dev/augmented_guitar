@@ -118,8 +118,7 @@ int numberOfTouchPins = sizeof(touchPadPins)/sizeof(touchPadPins[0]);
 
 
 void setup(){
-  selectMuxChannel(0,SIG_pin_1);
-  selectMuxChannel(0,SIG_pin_2);
+  selectMuxChannel(0);
   touchSenseInit(firstPin);
   /* TODO: Add "calibration" to each string to detect the minimum 
   threshold for each string instead of having a hard-coded 120. 
