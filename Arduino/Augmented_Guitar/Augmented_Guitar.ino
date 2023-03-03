@@ -73,7 +73,7 @@ const int value_positions[6][4] = {
 };
 
 const int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
-const int capacitance_threshold = 20000;
+const int capacitance_threshold = 5000;
 int touch_reference_analog_values[24] = {0};
 int touch_analog_values[24] = {0};
 
@@ -104,7 +104,7 @@ struct StringStruct{
     
   // Finger position detection
   int MIDI_value;
-  int fret_nunmber_touched;
+  int fret_number_touched;
   bool both_frets_touched;
 };
 
@@ -126,17 +126,17 @@ void setup(){
   }
 }
 
-void MIDI_press_fret(note, fret){
+void MIDI_press_fret(int note, int fret){
   usbMIDI.sendControlChange(20, fret, 1);
   usbMIDI.sendNoteOn(note, 0, 1);
 }
 
-void MIDI_note_on(note, velocity, fret){
+void MIDI_note_on(int note, int velocity, int fret){
   usbMIDI.sendControlChange(20, fret, 1);
   usbMIDI.sendNoteOn(note, velocity, 1);
 }
 
-void MIDI_note_off(note, velocity, fret){
+void MIDI_note_off(int note, int velocity, int fret){
   usbMIDI.sendControlChange(20, fret, 1);
   usbMIDI.sendNoteOff(note, velocity, 1);
 }
@@ -148,15 +148,17 @@ void loop(){
     updateStringMIDIValue(string_structs[i], i);
   }
 
+  printMIDIValues();
+
   // Detect peak and play MIDI for each string
-  for (int i=0; i<6; i++) {
-    string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
-
-    peak_detection(string_structs[i]);
-
-    if (string_structs[i].peak_value){
-      //Play MIDI
-    }
-    string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
-  }
+//  for (int i=0; i<6; i++) {
+//    string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
+//
+//    peak_detection(string_structs[i]);
+//
+//    if (string_structs[i].peak_value){
+//      //Play MIDI
+//    }
+//    string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
+//  }
 }
