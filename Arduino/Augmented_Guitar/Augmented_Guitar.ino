@@ -67,7 +67,7 @@ const int value_positions[6][4] = {
 };
 
 const int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
-const int capacitance_threshold = 20000;
+const int capacitance_threshold = 5000;
 int touch_reference_analog_values[24] = {0};
 int touch_analog_values[24] = {0};
 
@@ -104,7 +104,23 @@ struct StringStruct{
 
 struct StringStruct string_structs[6];
 
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
+/*_-_-_-_-_-_-_-Non-blocking capcitive touch sensing variables_-_-_-_-_-_-_-_*/
+/*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
+// Array of touch inputs (pin numbers) to be read... (up to 12 pins):
+int  touchPadPins[] = { SIG_pin_1, SIG_pin_2 };
+int touchReadings[2];
+int touch_pin_index = 0;
+int channel_index = 0;
+int touch_array_index = 0;
+int firstPin = touchPadPins[0];
+int numberOfTouchPins = sizeof(touchPadPins)/sizeof(touchPadPins[0]);
+
+
 void setup(){
+  selectMuxChannel(0,SIG_pin_1);
+  selectMuxChannel(0,SIG_pin_2);
+  touchSenseInit(firstPin);
   /* TODO: Add "calibration" to each string to detect the minimum 
   threshold for each string instead of having a hard-coded 120. 
   Alternatively solve with hardware electronics components */
@@ -136,21 +152,63 @@ void MIDI_note_off(int note, int velocity, int fret){
 }
 
 void loop(){
+  
+  
+  if (touchSenseDone()) {
+////    print("tsDone ");
+//    println(touch_array_index);
+    touch_analog_values[touch_array_index] = touchSenseRead();
+    touch_array_index++;
+//    println("touch:");
+    for (int i=0; i<24; i++){
+      print(touch_analog_values[i]);
+    }
+    println("");
+//    println("reference:");
+//    for (int i=0; i<24; i++){
+//      print(touch_reference_analog_values[i]);
+//    }
+//    println("");
+    
+//    println("");
+    if (touch_array_index >= 2) {
+//      println("touch_array_index >= 2");
+      touch_array_index = 0;
+    }
+    touch_pin_index++;
+    if (touch_pin_index >= 2) {
+//      println("touch_pin_index >= 2");
+      touch_pin_index = 0;
+//      selectMuxChannel(channel_index, SIG_pin_1);
+//      if (channel_index<8) {
+//        selectMuxChannel(channel_index, SIG_pin_2);
+//      }
+//      channel_index++;
+//      if (channel_index >= 16) {
+//        println("channel_index >= 16");
+//        channel_index = 0;
+//      }
+    }
+    touchSenseInit(touchPadPins[touch_pin_index]);
+  }
+
   // Update the MIDI values according to pressed frets
-  updateTouchValues(touch_analog_values);
+//  updateTouchValues(touch_analog_values);
   for (int i=0; i<6; i++){
     updateStringMIDIValue(string_structs[i], i);
   }
 
+//  printTouchedMIDIValues();
+
   // Detect peak and play MIDI for each string
-  for (int i=0; i<6; i++) {
-    string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
-
-    peak_detection(string_structs[i]);
-
-    if (string_structs[i].peak_value){
-      //Play MIDI
-    }
-    string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
-  }
+//  for (int i=0; i<6; i++) {
+//    string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
+//
+//    peak_detection(string_structs[i]);
+//
+//    if (string_structs[i].peak_value){
+//      //Play MIDI
+//    }
+//    string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
+//  }
 }
