@@ -1,4 +1,4 @@
-void printMIDIValues(){
+void printTouchedMIDIValues(){
   for (int i=0; i<6; i++){
     Serial.print(String(string_structs[i].MIDI_value) + " ");
   }
@@ -21,4 +21,23 @@ void printSineWaveValues(int string_number, int iteration, int number_of_iterati
       }
     }    
   }
+}
+
+void println(String str1){
+  Serial.println(str1);
+}
+
+void println(int var){
+  Serial.println(var);
+}
+void print(String str1){
+  Serial.print(str1 + " ");
+}
+
+void print(int var1){
+  Serial.print(String(var1) + " ");
+}
+
+void print(String str1, int var1){
+  Serial.print(str1 + String(var1) + " ");
 }
