@@ -114,7 +114,9 @@ struct StringStruct string_structs[6];
 int* ptr_mux_pins = mux_pins;
 int touch_analog_values[2] = {0};
 int* ptr_touch_analog_values = touch_analog_values;
-int* ptr_mux_ch;
+int mux_ch[16] = {0};
+int* ptr_mux_ch = mux_ch;
+int* ptr_ptr_mux_ch = ptr_mux_ch;
 int touch_reference_analog_values[32] = {0};
 int* ptr_touch_reference_analog_values = touch_reference_analog_values;
 
@@ -152,8 +154,7 @@ void setup() {
 
 
 void loop() {
-  //  Serial.println("smthn");
-  teensyTouchRead(touch_analog_values, 2, ptr_touch_analog_values, mux_pins, 2, ptr_mux_pins);
+  teensyTouchRead(touch_analog_values, 2, ptr_touch_analog_values, mux_pins, 2, ptr_mux_pins, ptr_mux_ch, ptr_ptr_mux_ch);
 
 
   //   if (teensyTouchDone()) {
