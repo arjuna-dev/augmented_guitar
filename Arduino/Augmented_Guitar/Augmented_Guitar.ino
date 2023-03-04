@@ -27,8 +27,9 @@ int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 /*_-_-Finger position detection variables and function prototypes_-_-*/
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
-#define SIG_pin_1 30
-#define SIG_pin_2 23
+#define mux_1_pin 30
+#define mux_2_pin 23
+int mux_pins[2] = {mux_1_pin, mux_2_pin};
 
 void setupFingerPosition();
 void updateTouchValues(int *touch_array);
