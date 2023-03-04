@@ -37,23 +37,23 @@ void updateStringMIDIValue(struct StringStruct& string, int string_number);
 
 //Mux control pins
 const int controlPin[] = {12, 11, 10, 9};
-const int muxChannel[16][4]={
-  {0,0,0,0}, //channel 0
-  {1,0,0,0}, //channel 1
-  {0,1,0,0}, //channel 2
-  {1,1,0,0}, //channel 3
-  {0,0,1,0}, //channel 4
-  {1,0,1,0}, //channel 5
-  {0,1,1,0}, //channel 6
-  {1,1,1,0}, //channel 7
-  {0,0,0,1}, //channel 8
-  {1,0,0,1}, //channel 9
-  {0,1,0,1}, //channel 10
-  {1,1,0,1}, //channel 11
-  {0,0,1,1}, //channel 12
-  {1,0,1,1}, //channel 13
-  {0,1,1,1}, //channel 14
-  {1,1,1,1}  //channel 15
+const int muxChannel[16][4] = {
+  {0, 0, 0, 0}, //channel 0
+  {1, 0, 0, 0}, //channel 1
+  {0, 1, 0, 0}, //channel 2
+  {1, 1, 0, 0}, //channel 3
+  {0, 0, 1, 0}, //channel 4
+  {1, 0, 1, 0}, //channel 5
+  {0, 1, 1, 0}, //channel 6
+  {1, 1, 1, 0}, //channel 7
+  {0, 0, 0, 1}, //channel 8
+  {1, 0, 0, 1}, //channel 9
+  {0, 1, 0, 1}, //channel 10
+  {1, 1, 0, 1}, //channel 11
+  {0, 0, 1, 1}, //channel 12
+  {1, 0, 1, 1}, //channel 13
+  {0, 1, 1, 1}, //channel 14
+  {1, 1, 1, 1} //channel 15
 };
 
 // This array has maps the position of the array/fret with the order in which the frets are scanned.
@@ -77,26 +77,26 @@ const int capacitance_threshold = 5000;
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 
 #if DEBUG == 1
-  void printSineWaveValues(int string_number, int iteration, int number_of_iterations);
-  void printMIDIValues();
+void printSineWaveValues(int string_number, int iteration, int number_of_iterations);
+void printMIDIValues();
 
-  bool sine_wave_started = false;
-  int record_sine_wave_counter = 0;
-  int sine_wave_array[1000];
+bool sine_wave_started = false;
+int record_sine_wave_counter = 0;
+int sine_wave_array[1000];
 #endif
 
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 /*_-_-Shared struct for finger position and strumming detection variables_-_-*/
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 
-struct StringStruct{
+struct StringStruct {
   // Strumming detection
   int input_pin;
   int current_amplitude;
   int previous_amplitude;
   int peak_value;
   int min_threshold;
-    
+
   // Finger position detection
   int MIDI_value;
   int fret_nunmber_touched;
@@ -127,24 +127,24 @@ int* ptr_touch_reference_analog_values = touch_reference_analog_values;
 //int firstPin = mux_pins[0];
 
 void setup() {
-  #if DEBUG == 1
-    Serial.begin(9600);
-    pinMode(LED_BUILTIN, OUTPUT);
-  #endif
+#if DEBUG == 1
+  Serial.begin(9600);
+  pinMode(LED_BUILTIN, OUTPUT);
+#endif
 
-/*_-_-Left hand setup_-_-*/
+  /*_-_-Left hand setup_-_-*/
   selectMuxChannel(0);
   teensyTouchInit(mux_pins[0]);
-  for (int i=0; i<4; i++) {
+  for (int i = 0; i < 4; i++) {
     pinMode(controlPin[i], OUTPUT);
-    digitalWrite(controlPin[i], LOW);  
+    digitalWrite(controlPin[i], LOW);
   }
   setupFingerPosition();
 
-/*_-_-Right hand setup_-_-*/
+  /*_-_-Right hand setup_-_-*/
   setupStrumming();
-  
-/*_-_-Struct setup_-_-*/
+
+  /*_-_-Struct setup_-_-*/
   for (int i = 0; i < 6; i++) {
     string_structs[i] = {string_input_pins[i], 0, 0, 0, 120, MIDI_open_string_notes[i], false};
   }
@@ -152,7 +152,7 @@ void setup() {
 
 
 void loop() {
-//  Serial.println("smthn");
+  //  Serial.println("smthn");
   teensyTouchRead(touch_analog_values, 2, ptr_touch_analog_values, mux_pins, 2, ptr_mux_pins);
 
 
