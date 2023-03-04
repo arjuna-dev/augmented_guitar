@@ -4,7 +4,7 @@ void setupFingerPosition(){
     digitalWrite(controlPin[i], LOW);  
   }
   // Calibration
-  updateTouchValues(touch_reference_analog_values);
+//  updateTouchValues(touch_reference_analog_values);
 }
 
 void selectMuxChannel(int channel){
@@ -16,9 +16,9 @@ void selectMuxChannel(int channel){
 void updateTouchValues(int *touch_array){
   for(int i = 0; i < 16; i ++){
     selectMuxChannel(i);
-    touch_array[i] = touchRead(SIG_pin_1);
+    touch_array[i] = touchRead(mux_1_pin);
     if (i<8) {
-      touch_array[i+16] = touchRead(SIG_pin_2);
+      touch_array[i+16] = touchRead(mux_2_pin);
     }
   }
 }
