@@ -56,15 +56,15 @@ const int muxChannel[16][4]={
   {1,1,1,1}  //channel 15
 };
 
-// This array has maps the position of the array/fret with the order in which the frets are scanned. 
-// E.g. The first fret of the first string will be read on the 16th iteration (denoted by number 15)
+// This array has maps the position of the array/fret with the order in which the frets are scanned.
+// E.g. The first fret of the first string will be read on the 31st iteration (denoted by number 30)
 const int value_positions[6][4] = {
-  {15, 9, 3, 18},
-  {14, 8, 2, 19},
-  {13, 7, 1, 20},
-  {12, 6, 0, 21},
-  {11, 5, 16, 22},
-  {10, 4, 17, 23},
+  {30, 18, 6, 5},
+  {28, 16, 4, 7},
+  {26, 14, 2, 9},
+  {24, 12, 0, 11},
+  {22, 10, 1, 13},
+  {20, 8, 3, 15},
 };
 
 const int MIDI_open_string_notes[6] = {40, 45, 50, 55, 59, 64};
