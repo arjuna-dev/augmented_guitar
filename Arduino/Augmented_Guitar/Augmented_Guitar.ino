@@ -92,21 +92,13 @@ struct StringStruct string_structs[6];
 
 
 int* ptr_mux_pins = mux_pins;
-int touch_analog_values[2] = {0};
+int touch_analog_values[32] = {0};
 int* ptr_touch_analog_values = touch_analog_values;
-int mux_ch[16] = {0};
-int* ptr_mux_ch = mux_ch;
-int* ptr_ptr_mux_ch = ptr_mux_ch;
+int mux_ch = 0;
+int* ptr_mux_ch = &mux_ch;
 int touch_reference_analog_values[32] = {0};
 int* ptr_touch_reference_analog_values = touch_reference_analog_values;
 
-// Array of touch inputs (pin numbers) to be read... (up to 12 pins):
-//int mux_pins[2] = { mux_1_pin, mux_2_pin };
-//int touchReadings[2];
-//int touch_pin_index = 0;
-//int channel_index = 0;
-//int touch_array_index = 0;
-//int firstPin = mux_pins[0];
 
 void setup() {
 #if DEBUG == 1
@@ -135,49 +127,25 @@ void setup() {
 
 
 void loop() {
-  teensyTouchRead(touch_analog_values, 2, ptr_touch_analog_values, mux_pins, 2, ptr_mux_pins, ptr_mux_ch, ptr_ptr_mux_ch);
 
-
-  //   if (teensyTouchDone()) {
-  //     touch_analog_values[touch_array_index] = teensyTouchReturn();
-  //     touch_array_index++;
-  //     for (int i=0; i<32; i++){
-  //       print(touch_analog_values[i]);
-  //     }
-  //     println("");
-  //
-  //     if (touch_array_index >= 32) {
-  //       touch_array_index = 0;
-  //     }
-  //     touch_pin_index++;
-  //     if (touch_pin_index >= 2) {
-  //       touch_pin_index = 0;
-  //       channel_index++;
-  //       if (channel_index >= 16) {
-  //         channel_index = 0;
-  //       }
-  //       selectMuxChannel(channel_index);
-  //     }
-  //     teensyTouchInit(touch_pins[touch_pin_index]);
-  //   }
+  teensyTouchRead(touch_analog_values, 32, ptr_touch_analog_values, mux_pins, 2, ptr_mux_pins, ptr_mux_ch);
 
   // Update the MIDI values according to pressed frets
-  // updateTouchValues(touch_analog_values);
-  //  for (int i=0; i<6; i++){
-  //    updateStringMIDIValue(string_structs[i], i);
-  //  }
+  for (int i = 0; i < 6; i++) {
+    updateStringMIDIValue(string_structs[i], i);
+  }
 
-  //  printTouchedMIDIValues();
+  printTouchedMIDIValues();
 
   // Detect peak and play MIDI for each string
-  //  for (int i=0; i<6; i++) {
-  //    string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
-  //
-  //    peak_detection(string_structs[i]);
-  //
-  //    if (string_structs[i].peak_value){
-  //      //Play MIDI
-  //    }
-  //    string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
-  //  }
+   for (int i=0; i<6; i++) {
+     string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
+  
+     peak_detection(string_structs[i]);
+  
+     if (string_structs[i].peak_value){
+       //Play MIDI
+     }
+     string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
+   }
 }
