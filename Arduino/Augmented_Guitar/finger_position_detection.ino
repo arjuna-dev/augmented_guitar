@@ -4,22 +4,8 @@ void setupLeftHand() {
     digitalWrite(controlPin[i], LOW);
   }
   // Calibration
-  //  updateTouchValues(touch_reference_analog_values);
-}
-
-void selectMuxChannel(int channel) {
-  for (int i = 0; i < 4; i ++) {
-    digitalWrite(controlPin[i], muxChannel[channel][i]);
-  }
-}
-
-void updateTouchValues(int *touch_array) {
-  for (int i = 0; i < 16; i ++) {
-    selectMuxChannel(i);
-    touch_array[i] = touchRead(mux_1_pin);
-    if (i < 8) {
-      touch_array[i + 16] = touchRead(mux_2_pin);
-    }
+  while (touch_reference_analog_values[31] == 0) {
+    teensyTouchRead(touch_reference_analog_values, 32, ptr_touch_reference_analog_values, mux_pins, 2, ptr_mux_pins, ptr_mux_ch);
   }
 }
 
