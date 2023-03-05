@@ -112,6 +112,7 @@ void setup() {
 #if DEBUG == 1
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
+  while (!Serial);
 #endif
 
   /*_-_-Left hand setup_-_-*/
