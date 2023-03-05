@@ -1,4 +1,4 @@
-void setupFingerPosition() {
+void setupLeftHand() {
   for (int i = 0; i < 4; i++) {
     pinMode(controlPin[i], OUTPUT);
     digitalWrite(controlPin[i], LOW);

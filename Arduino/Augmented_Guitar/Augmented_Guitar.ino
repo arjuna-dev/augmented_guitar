@@ -121,7 +121,7 @@ void setup() {
     pinMode(controlPin[i], OUTPUT);
     digitalWrite(controlPin[i], LOW);
   }
-  setupFingerPosition();
+  setupLeftHand();
 
   /*_-_-Right hand setup_-_-*/
   setupStrumming();
