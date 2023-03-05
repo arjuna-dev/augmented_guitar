@@ -9,6 +9,7 @@
 */
 
 #include "read_touch.h"
+#include "mux.h"
 
 #define DEBUG 1
 
@@ -34,27 +35,6 @@ int mux_pins[2] = {mux_1_pin, mux_2_pin};
 void setupFingerPosition();
 void updateTouchValues(int *touch_array);
 void updateStringMIDIValue(struct StringStruct& string, int string_number);
-
-//Mux control pins
-const int controlPin[] = {12, 11, 10, 9};
-const int muxChannel[16][4] = {
-  {0, 0, 0, 0}, //channel 0
-  {1, 0, 0, 0}, //channel 1
-  {0, 1, 0, 0}, //channel 2
-  {1, 1, 0, 0}, //channel 3
-  {0, 0, 1, 0}, //channel 4
-  {1, 0, 1, 0}, //channel 5
-  {0, 1, 1, 0}, //channel 6
-  {1, 1, 1, 0}, //channel 7
-  {0, 0, 0, 1}, //channel 8
-  {1, 0, 0, 1}, //channel 9
-  {0, 1, 0, 1}, //channel 10
-  {1, 1, 0, 1}, //channel 11
-  {0, 0, 1, 1}, //channel 12
-  {1, 0, 1, 1}, //channel 13
-  {0, 1, 1, 1}, //channel 14
-  {1, 1, 1, 1} //channel 15
-};
 
 // This array has maps the position of the array/fret with the order in which the frets are scanned.
 // E.g. The first fret of the first string will be read on the 31st iteration (denoted by number 30)
