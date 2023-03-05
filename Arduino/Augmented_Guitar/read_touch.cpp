@@ -41,39 +41,26 @@ int teensyTouchDone() {
 
 
 void teensyTouchRead(int touch_array[], int touch_array_size, int*& ptr_touch_array, int pin_array[],
-                     int pin_array_size, int*& ptr_pin_array, int*& ptr_mux_ch_index, int* ptr_mux_ch_original) {
-//void teensyTouchRead(int touch_array[], int touch_array_size, int*& ptr_touch_array, int pin_array[],
-//                     int pin_array_size, int*& ptr_pin_array) {
-  int* touch_array_end = touch_array + touch_array_size;
-  int* pin_array_end = pin_array + pin_array_size;
-  //
+                     int pin_array_size, int*& ptr_pin_array, int*& ptr_mux_ch_index) {
+
   if (teensyTouchDone()) {
+    
+    int* touch_array_end = touch_array + touch_array_size;
+    int* pin_array_end = pin_array + pin_array_size;
+
     *ptr_touch_array = teensyTouchReturn();
-    //   Serial.println((unsigned long)ptr_touch_array);
     ptr_touch_array++;
-//       Serial.println((unsigned long)touch_array_end);
-       for (int i=0; i<touch_array_size; i++){
-         Serial.print(touch_array[i]);
-         Serial.print(" ");
-       }
-       Serial.println("");
 
     if (ptr_touch_array == touch_array_end) {
-      //    Serial.println("ptr_touch_array == touch_array_end");
       ptr_touch_array = touch_array;
     }
 
     ptr_pin_array++;
-    //   print(*ptr_pin_array);
     if (ptr_pin_array == pin_array_end) {
-      Serial.println("ptr_pins_array == pins_array_end");
       ptr_pin_array = pin_array;
-      Serial.println((unsigned long)ptr_mux_ch_index);
-      ptr_mux_ch_index++;
-      Serial.println((unsigned long)ptr_mux_ch_index);
-      if (ptr_mux_ch_index == ptr_mux_ch_original + 16) {
-       Serial.println("ptr_mux_ch_index == ptr_mux_ch_original + 16");
-       ptr_mux_ch_index = ptr_mux_ch_original;
+      (*ptr_mux_ch_index)++;
+      if (*ptr_mux_ch_index == 16) {
+        *ptr_mux_ch_index = 0;
       }
       selectMuxChannel(*ptr_mux_ch_index);
     }
