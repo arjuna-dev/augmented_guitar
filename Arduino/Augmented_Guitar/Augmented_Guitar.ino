@@ -2,8 +2,8 @@
   Hexaphonic Pickup Color Coding
   white  :High E string
   orange :B string
-  green  :G string
-  red    :D string
+  red    :G string
+  green  :D string
   yellow :A string
   brown  :Low E string
 */
