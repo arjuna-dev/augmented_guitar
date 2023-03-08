@@ -1,11 +1,11 @@
 /*
   Hexaphonic Pickup Color Coding
-  white: 6th string
-  orange: 5th string
-  green : 3rd string
-  red: 4th string
-  yellow: 2nd string
-  brown: 1st string
+  white  :High E string
+  orange :B string
+  green  :G string
+  red    :D string
+  yellow :A string
+  brown  :Low E string
 */
 
 #include "read_touch.h"
