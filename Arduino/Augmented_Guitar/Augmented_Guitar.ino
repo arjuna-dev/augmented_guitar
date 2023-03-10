@@ -163,8 +163,6 @@ void loop() {
     updateStringMIDIValue(string_structs[i], i);
   }
 
-  printTouchedMIDIValues();
-
   // Detect peak and play MIDI for each string
   for (int i = 0; i < 6; i++) {
 
