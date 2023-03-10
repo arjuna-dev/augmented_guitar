@@ -136,9 +136,6 @@ void detect_note_on(int i) {
   if (string_structs[i].peak_value > string_structs[i].last_peak_value + peak_diff_threshold && !string_structs[i].note_on) {
     string_structs[i].note_on = true;
     string_structs[i].note_on_timestamp = millis();
-    print(i);
-    print("string_structs[i].peak_value", string_structs[i].peak_value);
-    println("string_structs[i].last_peak_value", string_structs[i].last_peak_value);
     MIDI_note_on(string_structs[i].MIDI_value, string_structs[i].peak_value, string_structs[i].fret);
   }
 }
