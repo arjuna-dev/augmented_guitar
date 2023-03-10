@@ -31,6 +31,10 @@ void println(int var) {
   Serial.println(var);
 }
 
+void println(String str1, int var1) {
+  Serial.println(str1 + " " + String(var1) + " ");
+}
+
 void print(String str1) {
   Serial.print(str1 + " ");
 }
