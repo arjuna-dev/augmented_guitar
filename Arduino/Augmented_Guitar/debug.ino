@@ -40,5 +40,5 @@ void print(int var1) {
 }
 
 void print(String str1, int var1) {
-  Serial.print(str1 + String(var1) + " ");
+  Serial.print(str1 + " " + String(var1) + " ");
 }
