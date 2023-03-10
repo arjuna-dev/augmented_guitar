@@ -151,9 +151,8 @@ void detect_note_off(int i) {
     }
 
     if (string_structs[i].note_on_timestamp + string_structs[i].max_wave_period < millis()) {
-      string_structs[i].note_on = false;
       MIDI_note_off(string_structs[i].MIDI_value, string_structs[i].fret);
-      print("NOTE_OFF");
+      string_structs[i].note_on = false;
     }
   }
 }
