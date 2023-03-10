@@ -174,14 +174,16 @@ void loop() {
   printTouchedMIDIValues();
 
   // Detect peak and play MIDI for each string
-   for (int i=0; i<6; i++) {
-     string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
-  
-     peak_detection(string_structs[i]);
-  
-     if (string_structs[i].peak_value){
-       //Play MIDI
-     }
-     string_structs[i].previous_amplitude = string_structs[i].current_amplitude;
-   }
+  for (int i = 0; i < 6; i++) {
+
+    string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
+
+    detect_note_off(i);
+    peak_detection(string_structs[i]);
+    detect_note_on(i);
+
+    if (string_structs[i].peak_value) {
+      string_structs[i].last_peak_value = string_structs[i].peak_value;
+    }
+  }
 }
