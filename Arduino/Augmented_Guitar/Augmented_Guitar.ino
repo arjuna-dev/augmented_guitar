@@ -134,7 +134,33 @@ void setup() {
                          min_thresholds[i], max_amplitudes[i], MIDI_open_string_notes[i], 0
                         };
   }
+}
 
+void detect_note_on(int i) {
+  if (string_structs[i].peak_value > string_structs[i].last_peak_value + peak_diff_threshold && !string_structs[i].note_on) {
+    string_structs[i].note_on = true;
+    string_structs[i].note_on_timestamp = millis();
+    print(i);
+    print("string_structs[i].peak_value", string_structs[i].peak_value);
+    println("string_structs[i].last_peak_value", string_structs[i].last_peak_value);
+    MIDI_note_on(string_structs[i].MIDI_value, string_structs[i].peak_value, string_structs[i].fret);
+  }
+}
+
+void detect_note_off(int i) {
+  if (string_structs[i].note_on) {
+    // Threshold crossed, reset note_on_timestamp
+    if (string_structs[i].current_amplitude > string_structs[i].min_threshold) {
+      string_structs[i].note_on_timestamp = millis();
+    }
+
+    if (string_structs[i].note_on_timestamp + string_structs[i].max_wave_period < millis()) {
+      string_structs[i].note_on = false;
+      MIDI_note_off(string_structs[i].MIDI_value, string_structs[i].fret);
+      print("NOTE_OFF");
+    }
+  }
+}
 
 void loop() {
 
