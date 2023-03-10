@@ -89,6 +89,7 @@ struct StringStruct {
   // Finger position detection
   int MIDI_value;
   int fret;
+  int fret_last;
 };
 
 struct StringStruct string_structs[6];
@@ -127,7 +128,7 @@ void setup() {
   /*_-_-Struct setup_-_-*/
   for (int i = 0; i < 6; i++) {
     string_structs[i] = {max_wave_periods[i], false, 0, open_string_notes[i], string_input_pins[i], 0, 0, 0, 0,
-                         min_thresholds[i], max_amplitudes[i], MIDI_open_string_notes[i], 0
+                         min_thresholds[i], max_amplitudes[i], MIDI_open_string_notes[i], 0, 0
                         };
   }
 }
