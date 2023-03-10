@@ -8,7 +8,7 @@ void MIDI_note_on(int note, int velocity, int fret) {
   usbMIDI.sendNoteOn(note, velocity, 1);
 }
 
-void MIDI_note_off(int note, int velocity, int fret) {
+void MIDI_note_off(int note, int fret) {
   usbMIDI.sendControlChange(20, fret, 1);
-  usbMIDI.sendNoteOff(note, velocity, 1);
+  usbMIDI.sendNoteOff(note, 0, 1);
 }
