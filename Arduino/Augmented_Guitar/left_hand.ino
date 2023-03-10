@@ -11,17 +11,18 @@ void setupLeftHand() {
 
 void updateStringMIDIValue(struct StringStruct& string, int string_number) {
   string.MIDI_value = MIDI_open_string_notes[string_number];
-  string.both_frets_touched = false;
+  string.fret = 0;
   bool last_fret_touched = true;
   bool fret_touched = false;
   for (int j = 0; j < 4; j++) {
     if (touch_analog_values[value_positions[string_number][j]] - touch_reference_analog_values[value_positions[string_number][j]] > capacitance_threshold) {
       fret_touched = true;
-      string.fret_number_touched = j + 1;
-      string.MIDI_value = MIDI_open_string_notes[string_number] + j + 1;
+    } else {
+      fret_touched = false;
     }
     if (last_fret_touched && fret_touched) {
-      string.both_frets_touched = true;
+      string.fret = j + 1;
+      string.MIDI_value = MIDI_open_string_notes[string_number] + j + 1;
     }
     last_fret_touched = fret_touched;
   }
