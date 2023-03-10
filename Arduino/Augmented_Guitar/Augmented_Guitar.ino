@@ -97,7 +97,6 @@ struct StringStruct string_structs[6];
 /*_-_-_-_-_-_-_-Non-blocking capcitive touch sensing variables_-_-_-_-_-_-_-_*/
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
 
-
 int* ptr_mux_pins = mux_pins;
 int touch_analog_values[32] = {0};
 int* ptr_touch_analog_values = touch_analog_values;
@@ -105,7 +104,6 @@ int mux_ch = 0;
 int* ptr_mux_ch = &mux_ch;
 int touch_reference_analog_values[32] = {0};
 int* ptr_touch_reference_analog_values = touch_reference_analog_values;
-
 
 void setup() {
 #if DEBUG == 1
