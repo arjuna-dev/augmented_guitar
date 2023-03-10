@@ -23,6 +23,11 @@ void peak_detection(struct StringStruct& string);
 void setupStrumming();
 
 int string_input_pins[6] = {34, 35, 36, 37, 38, 39};
+char open_string_notes[6] = {'E', 'A', 'D', 'G', 'B', 'e'};
+int max_amplitudes[6] = {540, 510, 560, 580, 620, 600};
+int min_thresholds[6] = {35, 40, 35, 40, 35, 30};
+int max_wave_periods[6] = {15, 10, 8, 6, 4, 3};
+int peak_diff_threshold = 30;
 
 
 /*_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_*/
@@ -71,18 +76,22 @@ int sine_wave_array[1000];
 
 struct StringStruct {
   // Strumming detection
+  int max_wave_period;
+  bool note_on;
+  unsigned long note_on_timestamp;
+  int open_string_note;
   int input_pin;
   int current_amplitude;
   int previous_amplitude;
   int peak_value;
+  int last_peak_value;
   int min_threshold;
+  int max_amplitude;
 
   // Finger position detection
   int MIDI_value;
-  int fret_number_touched;
-  bool both_frets_touched;
+  int fret;
 };
-
 
 struct StringStruct string_structs[6];
 
@@ -121,9 +130,10 @@ void setup() {
 
   /*_-_-Struct setup_-_-*/
   for (int i = 0; i < 6; i++) {
-    string_structs[i] = {string_input_pins[i], 0, 0, 0, 120, MIDI_open_string_notes[i], false};
+    string_structs[i] = {max_wave_periods[i], false, 0, open_string_notes[i], string_input_pins[i], 0, 0, 0, 0,
+                         min_thresholds[i], max_amplitudes[i], MIDI_open_string_notes[i], 0
+                        };
   }
-}
 
 
 void loop() {
