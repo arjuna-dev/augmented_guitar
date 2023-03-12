@@ -4,7 +4,7 @@ void setupStrumming() {
   }
 }
 
-void peak_detection(struct StringStruct& string) {
+void update_peak_value(struct StringStruct& string) {
   if (string.current_amplitude > string.min_threshold) {
     if (string.current_amplitude < string.previous_amplitude - sine_wave_falling_edge) {
       string.peak_value = string.previous_amplitude;

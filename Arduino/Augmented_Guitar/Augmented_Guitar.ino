@@ -88,8 +88,8 @@ struct StringStruct {
 
   // Finger position detection
   int MIDI_value;
-  int fret;
-  int fret_last;
+  int pressed_fret;
+  int last_sent_pressed_fret;
 };
 
 struct StringStruct string_structs[6];
@@ -137,7 +137,7 @@ void detect_note_on(int i) {
   if (string_structs[i].peak_value > string_structs[i].last_peak_value + peak_diff_threshold && !string_structs[i].note_on) {
     string_structs[i].note_on = true;
     string_structs[i].note_on_timestamp = millis();
-    MIDI_note_on(string_structs[i].MIDI_value, string_structs[i].peak_value, string_structs[i].fret);
+    MIDI_note_on(string_structs[i].MIDI_value, string_structs[i].peak_value, string_structs[i].pressed_fret);
   }
 }
 
@@ -149,7 +149,7 @@ void detect_note_off(int i) {
     }
 
     if (string_structs[i].note_on_timestamp + string_structs[i].max_wave_period < millis()) {
-      MIDI_note_off(string_structs[i].MIDI_value, string_structs[i].fret);
+      MIDI_note_off(string_structs[i].MIDI_value, string_structs[i].pressed_fret);
       string_structs[i].note_on = false;
     }
   }
@@ -170,7 +170,7 @@ void loop() {
     string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
 
     detect_note_off(i);
-    peak_detection(string_structs[i]);
+    update_peak_value(string_structs[i]);
     detect_note_on(i);
 
     if (string_structs[i].peak_value) {
