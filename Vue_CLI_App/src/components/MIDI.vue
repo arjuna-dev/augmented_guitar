@@ -5,6 +5,7 @@
 <script>
 import { hexToDecimal, hex2bin } from "../utils/utils.js";
 import MIDIMessage from "../utils/MIDIMessage.js";
+import MIDIccMessage from "../utils/MIDIccMessage.js";
 
 export default {
   name: "Fretboard",
@@ -17,13 +18,13 @@ export default {
         "1011": "cc",
         "1110": "pitch_bend",
         "1010": "polyaftertouch",
-        "1101": "channel_pressure"
+        "1101": "channel_pressure",
       },
       midi: null,
       channel: "",
       type: "",
       midi_message_note: "",
-      midi_message_velocity: ""
+      midi_message_velocity: "",
     };
   },
   methods: {
@@ -46,7 +47,11 @@ export default {
       this.midi_message_velocity = hexToDecimal(midi_message_velocity);
 
       //Emit MIDI on updating variable
-      this.midi_message = new MIDIMessage(this.channel, this.type, this.midi_message_note, this.midi_message_velocity);
+      if (this.type == "cc") {
+        this.midi_message = new MIDIccMessage(this.channel, this.type, this.midi_message_note, this.midi_message_velocity);
+      } else if (this.type == "note_on" || this.type == "note_off") {
+        this.midi_message = new MIDIMessage(this.channel, this.type, this.midi_message_note, this.midi_message_velocity);
+      }
     },
     onMIDISuccess(midiAccess) {
       console.log("MIDI ready!");
@@ -77,19 +82,19 @@ export default {
       }
     },
     startLoggingMIDIInput(midiAccess) {
-      midiAccess.inputs.forEach(entry => {
+      midiAccess.inputs.forEach((entry) => {
         entry.onmidimessage = this.onMIDIMessage;
       });
-    }
+    },
   },
   watch: {
     midi_message(newValue) {
       this.$parent.$emit("MIDI-message", newValue);
-    }
+    },
   },
   mounted() {
     navigator.requestMIDIAccess().then(this.onMIDISuccess, this.onMIDIFailure);
-  }
+  },
 };
 </script>
 
