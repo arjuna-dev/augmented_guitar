@@ -30,7 +30,7 @@ export default {
       open_string_MIDI_notes: [40, 45, 50, 55, 59, 64],
       pressed_notes: [],
       playing_notes: [],
-      temp_midi_cc_fret_number_msg: "",
+      midi_cc_msg: "",
       are_circles: false,
       notePattern: [],
       colors: {
@@ -46,11 +46,11 @@ export default {
           "#85144b",
           "#F012BE",
           "#B10DC9",
-          "#0074D9"
+          "#0074D9",
         ],
         pressed: "black",
-        playing: "black"
-      }
+        playing: "black",
+      },
     };
   },
   computed: {
@@ -80,9 +80,9 @@ export default {
       return {
         gridTemplateColumns: fretDist + "mm",
         gridTemplateRows: "repeat(" + this.number_of_strings + ", 1fr )",
-        width: this.fretboardLength + "mm"
+        width: this.fretboardLength + "mm",
       };
-    }
+    },
   },
   methods: {
     debug() {
@@ -109,8 +109,8 @@ export default {
           note_object.note = MIDI_note;
           note_object.fret = j + 1;
 
-          const is_pressed = this.pressed_notes.some(obj => obj.note === note_object.note && obj.fret === note_object.fret);
-          const is_playing = this.playing_notes.some(obj => obj.note === note_object.note && obj.fret === note_object.fret);
+          const is_pressed = this.pressed_notes.some((obj) => obj.note === note_object.note && obj.fret === note_object.fret);
+          const is_playing = this.playing_notes.some((obj) => obj.note === note_object.note && obj.fret === note_object.fret);
           const is_in_scale = scale_notes_steps.includes(noteIndex);
 
           if (is_in_scale && !is_pressed && !is_playing) {
@@ -146,41 +146,64 @@ export default {
       }
       return fretboardSlots;
     },
-    update_pressed_and_playing_notes(midi_message, pressed_fret) {
-      // Add note to pressed notes if not there yet
+    add_to_pressed_notes(midi_message, pressed_fret) {
       if (
         midi_message.message_type == "note_on" &&
         midi_message.velocity == 0 &&
-        !this.pressed_notes.some(obj => obj.note === midi_message.note && obj.fret === pressed_fret)
+        !this.pressed_notes.some((obj) => obj.note === midi_message.note && obj.fret === pressed_fret) &&
+        pressed_fret != 0
       ) {
         let note_object = {};
         note_object.note = midi_message.note;
         note_object.fret = pressed_fret;
         this.pressed_notes.push(note_object);
       }
-      // Add note to playing notes if not there yet
+    },
+    remove_from_pressed_notes(midi_message, lifted_fret) {
+      if (
+        midi_message.message_type == "note_on" &&
+        midi_message.velocity == 0 &&
+        this.pressed_notes.some((obj) => obj.note === midi_message.note && obj.fret === lifted_fret)
+      ) {
+        let note_object = {};
+        note_object.note = midi_message.note;
+        note_object.fret = lifted_fret;
+        this.pressed_notes = this.pressed_notes.filter((obj) => obj.note !== note_object.note || obj.fret !== note_object.fret);
+      }
+    },
+    add_to_playing_notes(midi_message, pressed_fret) {
       if (
         midi_message.message_type == "note_on" &&
         midi_message.velocity !== 0 &&
-        !this.playing_notes.some(obj => obj.note === midi_message.note && obj.fret === pressed_fret)
+        !this.playing_notes.some((obj) => obj.note === midi_message.note && obj.fret === pressed_fret)
       ) {
+        console.log("add_to_playing_notes: ");
         let note_object = {};
         note_object.note = midi_message.note;
         note_object.fret = pressed_fret;
         this.playing_notes.push(note_object);
+        console.log("this.playing_notes: ", JSON.stringify(this.playing_notes));
       }
-      // Remove note from pressed notes and playing notes if already there
+    },
+    remove_from_playing_notes(midi_message, pressed_fret) {
+      console.log(
+        "someobj.note === midi_message.note && obj.fret === pressed_fret): ",
+        this.playing_notes.some((obj) => obj.note === midi_message.note && obj.fret === pressed_fret)
+      );
+      console.log("midi_message.note: ", midi_message.note);
+      console.log("pressed_fret: ", pressed_fret);
+      console.log("playing_notes: ", JSON.stringify(this.playing_notes));
       if (
         midi_message.message_type == "note_off" &&
         midi_message.velocity == 0 &&
-        (this.pressed_notes.some(obj => obj.note === midi_message.note && obj.fret === pressed_fret) ||
-          this.playing_notes.some(obj => obj.note === midi_message.note && obj.fret === pressed_fret))
+        this.playing_notes.some((obj) => obj.note === midi_message.note && obj.fret === pressed_fret)
       ) {
+        console.log("remove_from_playing_notes: ");
         let note_object = {};
         note_object.note = midi_message.note;
         note_object.fret = pressed_fret;
-        this.pressed_notes = this.pressed_notes.filter(item => item.note !== midi_message.note || item.fret !== pressed_fret);
-        this.playing_notes = this.playing_notes.filter(item => item.note !== midi_message.note || item.fret !== pressed_fret);
+        this.pressed_notes = this.pressed_notes.filter((item) => item.note !== midi_message.note || item.fret !== pressed_fret);
+        this.playing_notes = this.playing_notes.filter((item) => item.note !== midi_message.note || item.fret !== pressed_fret);
       }
     },
     fretStyle(fretSlot) {
@@ -195,7 +218,7 @@ export default {
           border: fretSlot.border,
           color: fretSlot.text_color,
           outline: fretSlot.border,
-          zIndex: fretSlot.z_index
+          zIndex: fretSlot.z_index,
         };
       } else {
         return {
@@ -206,27 +229,48 @@ export default {
           height: "100%",
           color: fretSlot.text_color,
           outline: fretSlot.border,
-          zIndex: fretSlot.z_index
+          zIndex: fretSlot.z_index,
         };
       }
-    }
+    },
   },
   mounted() {
-    this.$parent.$on("note-pattern", data => {
+    this.$parent.$on("note-pattern", (data) => {
       this.notePattern = data;
     });
-    this.$parent.$on("are-circles", data => {
+    this.$parent.$on("are-circles", (data) => {
       this.are_circles = data;
     });
 
-    this.$parent.$on("MIDI-message", data => {
+    this.$parent.$on("MIDI-message", (data) => {
+      // console.log(JSON.stringify(data));
       if (data.message_type == "cc") {
-        this.temp_midi_cc_fret_number_msg = data.velocity;
+        this.midi_cc_msg = data;
       } else if (data.message_type == "note_on" || data.message_type == "note_off") {
-        this.update_pressed_and_playing_notes(data, this.temp_midi_cc_fret_number_msg);
+        switch (this.midi_cc_msg.cc) {
+          case 20:
+            console.log("case 20");
+            this.add_to_playing_notes(data, this.midi_cc_msg.value);
+            break;
+          case 21:
+            console.log("case 21");
+            this.remove_from_playing_notes(data, this.midi_cc_msg.value);
+            break;
+          case 22:
+            console.log("case 22");
+            this.add_to_pressed_notes(data, this.midi_cc_msg.value);
+            break;
+          case 23:
+            console.log("case 23");
+            this.remove_from_pressed_notes(data, this.midi_cc_msg.value);
+            break;
+
+          default:
+            break;
+        }
       }
     });
-  }
+  },
 };
 </script>
 
