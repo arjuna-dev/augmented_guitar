@@ -31,8 +31,9 @@ void updateStringMIDIValue(struct StringStruct& string, int string_number) {
     string.pressed_fret = 0;
   }
   if (string.pressed_fret != string.last_sent_pressed_fret) {
-    MIDI_lift_fret(string.MIDI_value, string.last_sent_pressed_fret);
+    MIDI_lift_fret(string.last_sent_MIDI_value, string.last_sent_pressed_fret);
     MIDI_press_fret(string.MIDI_value, string.pressed_fret);
     string.last_sent_pressed_fret = string.pressed_fret;
+    string.last_sent_MIDI_value = string.MIDI_value;
   }
 }
