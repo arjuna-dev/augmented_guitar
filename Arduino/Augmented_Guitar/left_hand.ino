@@ -22,19 +22,16 @@ void updateStringMIDIValue(struct StringStruct& string, int string_number) {
     }
     if (is_last_fret_touched && is_fret_touched && !string.note_on) {
       string.pressed_fret = j + 1;
-      string.MIDI_value = MIDI_open_string_notes[string_number] + string.pressed_fret;
     }
     is_last_fret_touched = is_fret_touched;
   }
 
   if (!any_fret_touched) {
     string.pressed_fret = 0;
-    string.MIDI_value = string.pressed_fret;
   }
   if (string.pressed_fret != string.last_sent_pressed_fret) {
-    MIDI_lift_fret(string.last_sent_MIDI_value, string.last_sent_pressed_fret);
-    MIDI_press_fret(string.MIDI_value, string.pressed_fret);
+    MIDI_lift_fret(string_number, string.last_sent_pressed_fret);
+    MIDI_press_fret(string_number, string.pressed_fret);
     string.last_sent_pressed_fret = string.pressed_fret;
-    string.last_sent_MIDI_value = string.MIDI_value;
   }
 }

@@ -1,6 +1,7 @@
 void printTouchedMIDIValues() {
   for (int i = 0; i < 6; i++) {
-    Serial.print(String(string_structs[i].MIDI_value) + " ");
+    Serial.print(MIDI_open_string_notes[string_structs[i].pressed_fret]);
+    Serial.print("");
   }
   Serial.println("");
 }
