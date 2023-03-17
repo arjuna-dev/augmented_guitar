@@ -192,7 +192,6 @@ export default {
         let note_object = {};
         note_object.note = midi_message.note;
         note_object.fret = pressed_fret;
-        this.pressed_notes = this.pressed_notes.filter((item) => item.note !== midi_message.note || item.fret !== pressed_fret);
         this.playing_notes = this.playing_notes.filter((item) => item.note !== midi_message.note || item.fret !== pressed_fret);
       }
     },

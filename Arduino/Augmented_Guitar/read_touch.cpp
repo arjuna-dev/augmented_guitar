@@ -39,7 +39,6 @@ int teensyTouchDone() {
   else return true;
 }
 
-
 void teensyTouchRead(int touch_array[], int touch_array_size, int*& ptr_touch_array, int pin_array[],
                      int pin_array_size, int*& ptr_pin_array, int*& ptr_mux_ch_index) {
 
