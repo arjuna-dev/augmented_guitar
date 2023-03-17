@@ -98,8 +98,8 @@ export default {
         for (let j = 0; j < this.number_of_frets; j++) {
           let noteIndex = (this.all_notes.indexOf(firstNoteOfString) + j + 1) % 12;
           let MIDI_note = this.open_string_MIDI_notes[i] + j + 1;
-          let text = MIDI_note;
-          // let text = this.all_notes[noteIndex];
+          // let text = MIDI_note;
+          let text = this.all_notes[noteIndex];
           let color = "";
           let border = "";
           let text_color = "";
@@ -177,28 +177,18 @@ export default {
         midi_message.velocity !== 0 &&
         !this.playing_notes.some((obj) => obj.note === midi_message.note && obj.fret === pressed_fret)
       ) {
-        console.log("add_to_playing_notes: ");
         let note_object = {};
         note_object.note = midi_message.note;
         note_object.fret = pressed_fret;
         this.playing_notes.push(note_object);
-        console.log("this.playing_notes: ", JSON.stringify(this.playing_notes));
       }
     },
     remove_from_playing_notes(midi_message, pressed_fret) {
-      console.log(
-        "someobj.note === midi_message.note && obj.fret === pressed_fret): ",
-        this.playing_notes.some((obj) => obj.note === midi_message.note && obj.fret === pressed_fret)
-      );
-      console.log("midi_message.note: ", midi_message.note);
-      console.log("pressed_fret: ", pressed_fret);
-      console.log("playing_notes: ", JSON.stringify(this.playing_notes));
       if (
         midi_message.message_type == "note_off" &&
         midi_message.velocity == 0 &&
         this.playing_notes.some((obj) => obj.note === midi_message.note && obj.fret === pressed_fret)
       ) {
-        console.log("remove_from_playing_notes: ");
         let note_object = {};
         note_object.note = midi_message.note;
         note_object.fret = pressed_fret;
@@ -243,25 +233,20 @@ export default {
     });
 
     this.$parent.$on("MIDI-message", (data) => {
-      // console.log(JSON.stringify(data));
       if (data.message_type == "cc") {
         this.midi_cc_msg = data;
       } else if (data.message_type == "note_on" || data.message_type == "note_off") {
         switch (this.midi_cc_msg.cc) {
           case 20:
-            console.log("case 20");
             this.add_to_playing_notes(data, this.midi_cc_msg.value);
             break;
           case 21:
-            console.log("case 21");
             this.remove_from_playing_notes(data, this.midi_cc_msg.value);
             break;
           case 22:
-            console.log("case 22");
             this.add_to_pressed_notes(data, this.midi_cc_msg.value);
             break;
           case 23:
-            console.log("case 23");
             this.remove_from_pressed_notes(data, this.midi_cc_msg.value);
             break;
 
