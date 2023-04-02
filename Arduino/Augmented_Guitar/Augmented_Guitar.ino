@@ -8,7 +8,7 @@
   white  :E string
 */
 
-#include "read_touch.h"
+#include "src/read_touch/read_touch.h"
 #include "src/mux/mux.h"
 
 #define DEBUG 1
