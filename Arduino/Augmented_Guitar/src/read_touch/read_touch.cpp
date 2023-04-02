@@ -1,6 +1,6 @@
 #include "core_pins.h"
 #include "Arduino.h"
-#include "mux.h"
+#include "src/mux/mux.h"
 
 #define NSCAN     9
 #define PRESCALE  2

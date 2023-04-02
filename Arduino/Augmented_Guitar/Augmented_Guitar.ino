@@ -9,7 +9,7 @@
 */
 
 #include "read_touch.h"
-#include "mux.h"
+#include "src/mux/mux.h"
 
 #define DEBUG 1
 
