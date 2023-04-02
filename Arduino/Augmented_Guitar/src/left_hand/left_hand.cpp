@@ -1,3 +1,28 @@
+#include "Arduino.h"
+#include "left_hand.h"
+#include "../mux/mux.h"
+#include "../MIDI/midi.h"
+#include "../StringStruct/string_struct.h"
+#include "../teensy_touch/teensy_touch.h"
+
+const int value_positions[NUMBER_OF_STRINGS][NUM_OF_FRETS] = {
+  {30, 18, 6, 5},
+  {28, 16, 4, 7},
+  {26, 14, 2, 9},
+  {24, 12, 0, 11},
+  {22, 10, 1, 13},
+  {20, 8, 3, 15},
+};
+const int capacitance_threshold = 5000;
+int mux_pins[NUM_OF_MUX_PINS] = {mux_1_pin, mux_2_pin};
+int* ptr_mux_pins = mux_pins;
+int touch_analog_values[NUM_OF_NOTES] = {0};
+int* ptr_touch_analog_values = touch_analog_values;
+int mux_ch = 0;
+int* ptr_mux_ch = &mux_ch;
+int touch_reference_analog_values[NUM_OF_NOTES] = {0};
+int* ptr_touch_reference_analog_values = touch_reference_analog_values;
+
 void setupLeftHand() {
   for (int i = 0; i < 4; i++) {
     pinMode(controlPin[i], OUTPUT);

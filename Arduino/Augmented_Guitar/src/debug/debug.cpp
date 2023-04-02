@@ -1,3 +1,13 @@
+#include "Arduino.h"
+#include "debug.h"
+#include "../right_hand/right_hand.h"
+#include "../StringStruct/string_struct.h"
+#include "../MIDI/midi.h"
+
+bool sine_wave_started = false;
+int record_sine_wave_counter = 0;
+int sine_wave_array[NUM_OF_ARR_VALUES];
+
 void printTouchedMIDIValues() {
   for (int i = 0; i < 6; i++) {
     Serial.print(MIDI_open_string_notes[string_structs[i].pressed_fret]);
