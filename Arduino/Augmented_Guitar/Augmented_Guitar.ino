@@ -14,6 +14,18 @@
 #include "src/mux/mux.h"
 #include "src/MIDI/midi.h"
 #include "src/StringStruct/string_struct.h"
+#include "src/device_specs/device_specs.h"
+#include "src/GuitarStringClass/guitar_string.h"
+
+
+const int string_input_pins[NUM_OF_STRINGS] = {34, 35, 36, 37, 38, 39};
+const char open_string_notes[NUM_OF_STRINGS] = {'E', 'A', 'D', 'G', 'B', 'e'};
+const int max_amplitudes[NUM_OF_STRINGS] = {540, 510, 560, 580, 620, 600};
+const int min_thresholds[NUM_OF_STRINGS] = {35, 40, 35, 40, 35, 30};
+const int max_wave_periods[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
+
+GuitarString guitar_strings[6];
+
 
 void setup() {
 #if DEBUG == 1
@@ -21,6 +33,11 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   while (!Serial);
 #endif
+
+  /*_-_-Class setup_-_-*/
+  for (int i = 0; i < 6; i++) {
+    guitar_strings[i] = {string_input_pins[i], open_string_notes[i], max_amplitudes[i], min_thresholds[i], string_input_pins[i]};
+  }
 
   /*_-_-Left hand setup_-_-*/
   selectMuxChannel(0);
