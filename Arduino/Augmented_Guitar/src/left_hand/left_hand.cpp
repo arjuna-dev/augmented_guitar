@@ -4,8 +4,9 @@
 #include "../MIDI/midi.h"
 #include "../StringStruct/string_struct.h"
 #include "../teensy_touch/teensy_touch.h"
+#include "../device_specs/device_specs.h"
 
-const int value_positions[NUMBER_OF_STRINGS][NUM_OF_FRETS] = {
+const int value_positions[NUM_OF_STRINGS][NUM_OF_FRETS] = {
   {30, 18, 6, 5},
   {28, 16, 4, 7},
   {26, 14, 2, 9},

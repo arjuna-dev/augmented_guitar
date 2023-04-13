@@ -1,8 +1,9 @@
 #include "Arduino.h"
 #include "midi.h"
 #include "../left_hand/left_hand.h"
+#include "../device_specs/device_specs.h"
 
-const int MIDI_open_string_notes[NUMB_OF_STRINGS] = {40, 45, 50, 55, 59, 64};
+const int MIDI_open_string_notes[NUM_OF_STRINGS] = {40, 45, 50, 55, 59, 64};
 
 void MIDI_press_fret(int string, int fret) {
   int note = MIDI_open_string_notes[string] + fret;

@@ -1,6 +1,8 @@
 #ifndef STRING_STRUCT_H
 #define STRING_STRUCT_H
 
+#include "../device_specs/device_specs.h"
+
 struct StringStruct {
   // Strumming detection
   int max_wave_period;
@@ -21,9 +23,6 @@ struct StringStruct {
   int last_sent_note_on_fret;
 };
 
-
-constexpr int STRINGS_NUM = 6;
-
-extern struct StringStruct string_structs[STRINGS_NUM];
+extern struct StringStruct string_structs[NUM_OF_STRINGS];
 
 #endif
