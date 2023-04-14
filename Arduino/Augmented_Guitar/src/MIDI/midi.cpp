@@ -1,4 +1,4 @@
-#include "Arduino.h"
+// #include "Arduino.h"
 #include "midi.h"
 #include "../left_hand/left_hand.h"
 #include "../device_specs/device_specs.h"

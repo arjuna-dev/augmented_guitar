@@ -2,6 +2,7 @@
 #define MIDI_H
 
 #include "../device_specs/device_specs.h"
+#include "Arduino.h"
 
 extern const int MIDI_open_string_notes[NUM_OF_STRINGS];
 void MIDI_press_fret(int string, int fret);

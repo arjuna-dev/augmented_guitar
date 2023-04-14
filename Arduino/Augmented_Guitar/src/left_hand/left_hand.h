@@ -3,11 +3,11 @@
 
 #include "../device_specs/device_specs.h"
 
-#define mux_1_pin 30
-#define mux_2_pin 23
+// #define mux_1_pin 30
+// #define mux_2_pin 23
 
-constexpr int NUM_OF_NOTES = 32;
-constexpr int NUM_OF_MUX_PINS = 2;
+// constexpr int NUM_OF_NOTES = 32;
+// constexpr int NUM_OF_MUX_PINS = 2;
 
 extern const int capacitance_threshold;
 extern int mux_pins[NUM_OF_MUX_PINS];

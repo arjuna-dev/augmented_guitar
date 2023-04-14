@@ -43,6 +43,7 @@ void teensyTouchRead(int touch_array[], int touch_array_size, int*& ptr_touch_ar
                      int pin_array_size, int*& ptr_pin_array, int*& ptr_mux_ch_index) {
 
   if (teensyTouchDone()) {
+
     
     int* touch_array_end = touch_array + touch_array_size;
     int* pin_array_end = pin_array + pin_array_size;
