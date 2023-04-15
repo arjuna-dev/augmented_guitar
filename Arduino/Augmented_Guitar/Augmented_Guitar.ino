@@ -9,7 +9,6 @@
 */
 
 #include "src/debug/debug.h"
-#include "src/right_hand/right_hand.h"
 #include "src/teensy_touch/teensy_touch.h"
 #include "src/mux/mux.h"
 #include "src/MIDI/midi.h"
@@ -63,38 +62,20 @@ void setup() {
     teensyTouchRead(touch_reference_analog_values, 32, ptr_touch_reference_analog_values, mux_pins, 2, ptr_mux_pins, ptr_mux_ch);
   }
 
-  setup_right_hand();
+  /*_-_-Right hand setup_-_-*/
+  for (int i = 0; i < 6; i++) {
+    pinMode(string_input_pins[i], INPUT);
+  }
 
   /*_-_-Struct setup_-_-*/
-  for (int i = 0; i < 6; i++) {
-    string_structs[i] = {max_wave_periods[i], false, 0, open_string_notes[i], string_input_pins[i],
-                         0, 0, 0, 0, min_thresholds[i], max_amplitudes[i], 0, 0, 0
-                        };
-  }
+  // for (int i = 0; i < 6; i++) {
+  //   string_structs[i] = {max_wave_periods[i], false, 0, open_string_notes[i], string_input_pins[i],
+  //                        0, 0, 0, 0, min_thresholds[i], max_amplitudes[i], 0, 0, 0
+  //                       };
+  // }
 }
 
-void detect_note_on(int i) {
-  if (string_structs[i].peak_value > string_structs[i].last_peak_value + peak_diff_threshold && !string_structs[i].note_on) {
-    string_structs[i].note_on = true;
-    string_structs[i].note_on_timestamp = millis();
-    MIDI_note_on(i, string_structs[i].peak_value, string_structs[i].pressed_fret);
-    string_structs[i].last_sent_note_on_fret = string_structs[i].pressed_fret;
-  }
-}
 
-void detect_note_off(int i) {
-  if (string_structs[i].note_on) {
-    // Threshold crossed, reset note_on_timestamp
-    if (string_structs[i].current_amplitude > string_structs[i].min_threshold) {
-      string_structs[i].note_on_timestamp = millis();
-    }
-
-    if (string_structs[i].note_on_timestamp + string_structs[i].max_wave_period < millis()) {
-      MIDI_note_off(i, string_structs[i].last_sent_note_on_fret);
-      string_structs[i].note_on = false;
-    }
-  }
-}
 
 void loop() {
 
@@ -113,14 +94,13 @@ void loop() {
   // Detect peak and play MIDI for each string
   for (int i = 0; i < 6; i++) {
 
-    string_structs[i].current_amplitude = analogRead(string_structs[i].input_pin);
+    guitar_strings[i].get_current_amplitude();
 
-    detect_note_off(i);
-    update_peak_value(string_structs[i]);
-    detect_note_on(i);
+    guitar_strings[i].detect_note_off();
+    guitar_strings[i].update_peak_value();
+    guitar_strings[i].detect_note_on();
+    guitar_strings[i].update_last_peak_value();
 
-    if (string_structs[i].peak_value) {
-      string_structs[i].last_peak_value = string_structs[i].peak_value;
-    }
+    
   }
 }

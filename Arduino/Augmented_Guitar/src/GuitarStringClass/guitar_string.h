@@ -9,6 +9,11 @@ class GuitarString {
 public:
   GuitarString(const int string_number = 0, const int input_pin = 0, const char open_string_note = 0, const int max_amplitude = 0, const int min_threshold = 0, const int max_wave_period = 0, int* touch_analog_values = 0, int* touch_reference_analog_values = 0);
   void updateStringMIDIValue();
+  void update_peak_value();
+  void detect_note_on();
+  void detect_note_off();
+  void get_current_amplitude();
+  void update_last_peak_value();
   int pressed_fret = 0;
 
 private:

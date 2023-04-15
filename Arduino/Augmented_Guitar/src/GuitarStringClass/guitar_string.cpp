@@ -1,5 +1,9 @@
+#include "Arduino.h"
 #include "guitar_string.h"
 #include "../MIDI/midi.h"
+
+#define sine_wave_falling_edge 35
+#define peak_diff_threshold 30
 
 GuitarString::GuitarString(const int string_number, const int input_pin, const char open_string_note, const int max_amplitude, const int min_threshold, const int max_wave_period, int* touch_analog_values, int* touch_reference_analog_values) {
   _string_number  = string_number;
@@ -42,4 +46,55 @@ void GuitarString::updateStringMIDIValue() {
     _last_sent_pressed_fret = pressed_fret;
   }
 
+}
+
+
+void GuitarString::update_peak_value() {
+  if (_current_amplitude > _min_threshold) {
+    if (_current_amplitude < _previous_amplitude - sine_wave_falling_edge) {
+      _peak_value = _previous_amplitude;
+      _peak_value = map(_peak_value, 0, _max_amplitude, 0, 127);
+      if (_peak_value > 127) {
+        _peak_value = 127;
+      }
+    } else {
+      _peak_value = 0;
+    }
+  } else {
+    _peak_value = 0;
+  }
+  _previous_amplitude = _current_amplitude;
+}
+
+void GuitarString::get_current_amplitude() {
+  _current_amplitude = analogRead(_input_pin);
+}
+
+void GuitarString::detect_note_on() {
+  if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
+    _note_on = true;
+    _note_on_timestamp = millis();
+    MIDI_note_on(_string_number, _peak_value, pressed_fret);
+    _last_sent_note_on_fret = pressed_fret;
+  }
+}
+
+void GuitarString::detect_note_off() {
+  if (_note_on) {
+    // Threshold crossed, reset note_on_timestamp
+    if (_current_amplitude > _min_threshold) {
+      _note_on_timestamp = millis();
+    }
+
+    if (_note_on_timestamp + _max_wave_period < millis()) {
+      MIDI_note_off(_string_number, _last_sent_note_on_fret);
+      _note_on = false;
+    }
+  }
+}
+
+void GuitarString::update_last_peak_value() {
+  if (_peak_value) {
+      _last_peak_value = _peak_value;
+  }
 }

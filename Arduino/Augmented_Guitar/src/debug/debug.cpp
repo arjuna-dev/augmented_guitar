@@ -1,8 +1,9 @@
 #include "Arduino.h"
 #include "debug.h"
-#include "../right_hand/right_hand.h"
 #include "../StringStruct/string_struct.h"
 #include "../MIDI/midi.h"
+
+#define hysteresis 25
 
 bool sine_wave_started = false;
 int record_sine_wave_counter = 0;
