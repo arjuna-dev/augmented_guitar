@@ -10,7 +10,6 @@
 
 #include "src/debug/debug.h"
 #include "src/right_hand/right_hand.h"
-// #include "src/left_hand/left_hand.h"
 #include "src/teensy_touch/teensy_touch.h"
 #include "src/mux/mux.h"
 #include "src/MIDI/midi.h"
