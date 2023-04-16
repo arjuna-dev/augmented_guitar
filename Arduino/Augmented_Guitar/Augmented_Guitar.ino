@@ -37,6 +37,7 @@ GuitarString guitar_strings[6];
 
 void setup() {
 #if DEBUG == 1
+  #include "src/debug/debug.h"
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
   while (!Serial);
