@@ -56,6 +56,10 @@ void setup() {
     digitalWrite(controlPin[i], LOW);
   }
 
+  /*_-_-Right hand setup_-_-*/
+  for (int i = 0; i < 6; i++) {
+    pinMode(string_input_pins[i], INPUT);
+  }
 
   // Capacitance calibration
   while (touch_reference_analog_values[31] == 0) {
