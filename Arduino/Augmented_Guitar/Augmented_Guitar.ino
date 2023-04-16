@@ -98,11 +98,4 @@ void loop() {
 
     guitar_strings[i].get_current_amplitude();
 
-    guitar_strings[i].detect_note_off();
-    guitar_strings[i].update_peak_value();
-    guitar_strings[i].detect_note_on();
-    guitar_strings[i].update_last_peak_value();
-
-    
-  }
 }
