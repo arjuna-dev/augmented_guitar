@@ -8,6 +8,7 @@
   white  :E string
 */
 
+#include "src/unit_tests/unit_tests.h"
 
 #include "src/teensy_touch/teensy_touch.h"
 #include "src/mux/mux.h"
@@ -82,9 +83,5 @@ void loop() {
     guitar_strings[i].detect_note_on_off();
   }
 
-  // Detect peak and play MIDI for each string
-  for (int i = 0; i < 6; i++) {
-
-    guitar_strings[i].get_current_amplitude();
-
+  aunit::TestRunner::run();
 }
