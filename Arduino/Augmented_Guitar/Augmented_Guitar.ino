@@ -62,20 +62,7 @@ void setup() {
     teensyTouchRead(touch_reference_analog_values, 32, ptr_touch_reference_analog_values, mux_pins, 2, ptr_mux_pins, ptr_mux_ch);
   }
 
-  /*_-_-Right hand setup_-_-*/
-  for (int i = 0; i < 6; i++) {
-    pinMode(string_input_pins[i], INPUT);
-  }
-
-  /*_-_-Struct setup_-_-*/
-  // for (int i = 0; i < 6; i++) {
-  //   string_structs[i] = {max_wave_periods[i], false, 0, open_string_notes[i], string_input_pins[i],
-  //                        0, 0, 0, 0, min_thresholds[i], max_amplitudes[i], 0, 0, 0
-  //                       };
-  // }
 }
-
-
 
 void loop() {
 
