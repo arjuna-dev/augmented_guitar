@@ -8,7 +8,7 @@
   white  :E string
 */
 
-#include "src/debug/debug.h"
+
 #include "src/teensy_touch/teensy_touch.h"
 #include "src/mux/mux.h"
 #include "src/MIDI/midi.h"
