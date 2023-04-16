@@ -89,8 +89,6 @@ void loop() {
   // Detect peak and play MIDI for each string
   for (int i = 0; i < 6; i++) {
     guitar_strings[i].detect_note_on_off();
-    // guitar_strings[0].printSineWaveValues(i, 1000);
-    guitar_strings[i].update_previous_amplitude();
   }
 
   // Detect peak and play MIDI for each string
