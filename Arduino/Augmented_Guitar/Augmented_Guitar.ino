@@ -12,7 +12,6 @@
 #include "src/teensy_touch/teensy_touch.h"
 #include "src/mux/mux.h"
 #include "src/MIDI/midi.h"
-#include "src/StringStruct/string_struct.h"
 #include "src/device_specs/device_specs.h"
 #include "src/GuitarStringClass/guitar_string.h"
 
