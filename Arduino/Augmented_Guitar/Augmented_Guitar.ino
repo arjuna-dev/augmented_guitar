@@ -31,6 +31,9 @@ int* ptr_mux_ch = &mux_ch;
 int touch_reference_analog_values[NUM_OF_NOTES] = {0};
 int* ptr_touch_reference_analog_values = touch_reference_analog_values;
 
+TeensyTouch tt_reference_values(mux_pins, 2, touch_reference_analog_values, NUM_OF_NOTES);
+TeensyTouch tt_analog_values(mux_pins, 2, touch_analog_values, NUM_OF_NOTES);
+
 GuitarString guitar_strings[6];
 
 #define DEBUG 1
@@ -61,14 +64,14 @@ void setup() {
 
   // Capacitance calibration
   while (touch_reference_analog_values[31] == 0) {
-    teensyTouchRead(touch_reference_analog_values, 32, ptr_touch_reference_analog_values, mux_pins, 2, ptr_mux_pins, ptr_mux_ch);
+    tt_reference_values.readNonBlocking(ptr_touch_reference_analog_values, ptr_mux_pins, ptr_mux_ch);
   }
 
 }
 
 void loop() {
 
-  teensyTouchRead(touch_analog_values, 32, ptr_touch_analog_values, mux_pins, 2, ptr_mux_pins, ptr_mux_ch);
+  tt_analog_values.readNonBlocking(ptr_touch_analog_values, ptr_mux_pins, ptr_mux_ch);
 
   // Update the MIDI values according to pressed frets
   for (int i = 0; i < 6; i++) {

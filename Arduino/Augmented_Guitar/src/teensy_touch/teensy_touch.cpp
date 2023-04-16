@@ -1,6 +1,7 @@
-#include "core_pins.h"
 #include "Arduino.h"
+#include "core_pins.h"
 #include "../mux/mux.h"
+#include "teensy_touch.h"
 
 #define NSCAN     9
 #define PRESCALE  2
@@ -12,12 +13,22 @@ static const uint8_t pin2tsi[] = {
   12, 255, 255, 255, 255, 255, 255, 255, 255, 255
 };
 
-int teensyTouchReturn() {
+TeensyTouch::TeensyTouch(int pins_array[], int pins_array_size, int touch_values_array[], int touch_values_array_size){
+    _pins_array_size = pins_array_size;
+    _touch_values_array_size = touch_values_array_size;
+
+    _pins_array_first_value = pins_array;
+    _touch_values_array_first_value = touch_values_array;
+
+    teensyTouchInit(*pins_array);
+}
+
+int TeensyTouch::teensyTouchReturn() {
   delayMicroseconds(1);
   return TSI0_DATA & 0xFFFF;
 }
 
-int teensyTouchInit(uint8_t pin) {
+int TeensyTouch::teensyTouchInit(uint8_t pin) {
   uint32_t ch;
 
   if (pin >= NUM_DIGITAL_PINS) return -1;
@@ -34,30 +45,29 @@ int teensyTouchInit(uint8_t pin) {
   return 0;
 }
 
-int teensyTouchDone() {
+int TeensyTouch::teensyTouchDone() {
   if (TSI0_GENCS & TSI_GENCS_SCNIP) return false;
   else return true;
 }
 
-void teensyTouchRead(int touch_array[], int touch_array_size, int*& ptr_touch_array, int pin_array[],
-                     int pin_array_size, int*& ptr_pin_array, int*& ptr_mux_ch_index) {
+void TeensyTouch::readNonBlocking(int*& ptr_touch_array, int*& ptr_pin_array, int*& ptr_mux_ch_index) {
 
   if (teensyTouchDone()) {
 
-    
-    int* touch_array_end = touch_array + touch_array_size;
-    int* pin_array_end = pin_array + pin_array_size;
+    int* touch_array_end = _touch_values_array_first_value + _touch_values_array_size;
+    int* pin_array_end = _pins_array_first_value + _pins_array_size;
 
     *ptr_touch_array = teensyTouchReturn();
     ptr_touch_array++;
 
     if (ptr_touch_array == touch_array_end) {
-      ptr_touch_array = touch_array;
+      ptr_touch_array = _touch_values_array_first_value;
     }
-
     ptr_pin_array++;
+
+
     if (ptr_pin_array == pin_array_end) {
-      ptr_pin_array = pin_array;
+      ptr_pin_array = _pins_array_first_value;
       (*ptr_mux_ch_index)++;
       if (*ptr_mux_ch_index == 16) {
         *ptr_mux_ch_index = 0;
