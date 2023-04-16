@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include "ArduinoMock.h"
 #include "guitar_string.h"
 #include "../MIDI/midi.h"
 #include "../debug/debug.h"
