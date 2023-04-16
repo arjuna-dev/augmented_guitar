@@ -49,7 +49,6 @@ void setup() {
 
   /*_-_-Left hand setup_-_-*/
   selectMuxChannel(0);
-  teensyTouchInit(mux_pins[0]);
   for (int i = 0; i < 4; i++) {
     pinMode(controlPin[i], OUTPUT);
     digitalWrite(controlPin[i], LOW);
