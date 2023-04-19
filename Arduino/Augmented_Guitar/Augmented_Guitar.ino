@@ -13,11 +13,14 @@
 
 #include "src/debug/debug.h"
 #include "src/teensy_touch/teensy_touch.h"
+#include "src/teensy_touch/teensy_touch_fake.h"
 #include "src/mux/mux.h"
 #include "src/MIDI/midi.h"
 #include "src/device_specs/device_specs.h"
 #include "src/GuitarStringClass/guitar_string.h"
 
+#define DEBUG 1
+#define TESTING 1
 
 const int string_input_pins[NUM_OF_STRINGS] = {34, 35, 36, 37, 38, 39};
 const char open_string_notes[NUM_OF_STRINGS] = {'E', 'A', 'D', 'G', 'B', 'e'};
@@ -34,12 +37,16 @@ int* ptr_mux_ch = &mux_ch;
 int touch_reference_analog_values[NUM_OF_NOTES] = {0};
 int* ptr_touch_reference_analog_values = touch_reference_analog_values;
 
-TeensyTouch tt_reference_values(mux_pins, 2, touch_reference_analog_values, NUM_OF_NOTES);
-TeensyTouch tt_analog_values(mux_pins, 2, touch_analog_values, NUM_OF_NOTES);
+
+#if TESTING == 1
+  TeensyTouchFake tt_reference_values(mux_pins, 2, touch_reference_analog_values, NUM_OF_NOTES);
+  TeensyTouchFake tt_analog_values(mux_pins, 2, touch_analog_values, NUM_OF_NOTES);
+#else
+  TeensyTouch tt_reference_values(mux_pins, 2, touch_reference_analog_values, NUM_OF_NOTES);
+  TeensyTouch tt_analog_values(mux_pins, 2, touch_analog_values, NUM_OF_NOTES);
+#endif
 
 GuitarString guitar_strings[6];
-
-#define DEBUG 1
 
 void setup() {
 #if DEBUG == 1
