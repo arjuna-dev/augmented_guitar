@@ -4,19 +4,18 @@
 #include "teensy_touch.h"
 
 
-TeensyTouch::TeensyTouch(int pins_array[], int pins_array_size, int touch_values_array[], int touch_values_array_size) : TeensyTouchBase(pins_array, pins_array_size, touch_values_array, touch_values_array_size) {
-  teensyTouchInit(*pins_array);
+TeensyTouch::TeensyTouch(TeensyTSIInterface* tsi_interface, int pins_array[], int pins_array_size, int touch_values_array[], int touch_values_array_size) : _tsi_interface(tsi_interface), _pins_array_first_value(pins_array), _pins_array_size(pins_array_size), _touch_values_array_first_value(touch_values_array), _touch_values_array_size(touch_values_array_size) {
+  _tsi_interface->teensyTouchInit (*_pins_array_first_value);
 }
-
 
 void TeensyTouch::readNonBlocking(int*& ptr_touch_array, int*& ptr_pin_array, int*& ptr_mux_ch_index) {
 
-  if (teensyTouchDone()) {
+  if (_tsi_interface->teensyTouchDone()) {
 
     int* touch_array_end = _touch_values_array_first_value + _touch_values_array_size;
     int* pin_array_end = _pins_array_first_value + _pins_array_size;
 
-    *ptr_touch_array = teensyTouchReturn();
+    *ptr_touch_array = _tsi_interface->teensyTouchReturn();
     ptr_touch_array++;
 
     if (ptr_touch_array == touch_array_end) {
@@ -34,6 +33,6 @@ void TeensyTouch::readNonBlocking(int*& ptr_touch_array, int*& ptr_pin_array, in
       selectMuxChannel(*ptr_mux_ch_index);
     }
     int current_pin = *ptr_pin_array;
-    teensyTouchInit(current_pin);
+    _tsi_interface->teensyTouchInit(current_pin);
   }
 }

@@ -11,8 +11,9 @@
 #include "src/unit_tests/unit_tests.h"
 
 #include "src/debug/debug.h"
+#include "src/teensy_touch/teensy_tsi_interface.h"
+#include "src/teensy_touch/teensy_tsi.h"
 #include "src/teensy_touch/teensy_touch.h"
-#include "src/teensy_touch/teensy_touch_fake.h"
 #include "src/mux/mux.h"
 #include "src/MIDI/midi.h"
 #include "src/device_specs/device_specs.h"
@@ -36,13 +37,10 @@ int touch_reference_analog_values[NUM_OF_NOTES] = {0};
 int* ptr_touch_reference_analog_values = touch_reference_analog_values;
 
 
-#if TESTING == 1
-  TeensyTouchFake tt_reference_values(mux_pins, 2, touch_reference_analog_values, NUM_OF_NOTES);
-  TeensyTouchFake tt_analog_values(mux_pins, 2, touch_analog_values, NUM_OF_NOTES);
-#else
-  TeensyTouch tt_reference_values(mux_pins, 2, touch_reference_analog_values, NUM_OF_NOTES);
-  TeensyTouch tt_analog_values(mux_pins, 2, touch_analog_values, NUM_OF_NOTES);
-#endif
+TeensyTSIInterface* tsi = new TeensyTSI();
+
+TeensyTouch tt_reference_values(tsi, mux_pins, 2, touch_reference_analog_values, NUM_OF_NOTES);
+TeensyTouch tt_analog_values(tsi, mux_pins, 2, touch_analog_values, NUM_OF_NOTES);
 
 GuitarString guitar_strings[6];
 
