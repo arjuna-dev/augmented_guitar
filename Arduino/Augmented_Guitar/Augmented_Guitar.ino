@@ -9,7 +9,6 @@
 */
 
 #include "src/unit_tests/unit_tests.h"
-#include "src/unit_tests/ArduinoMock.h"
 
 #include "src/debug/debug.h"
 #include "src/teensy_touch/teensy_touch.h"
