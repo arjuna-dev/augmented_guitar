@@ -19,7 +19,6 @@
 #include "src/GuitarStringClass/guitar_string.h"
 
 #define DEBUG 1
-#define TESTING 1
 
 const int string_input_pins[NUM_OF_STRINGS] = {34, 35, 36, 37, 38, 39};
 const char open_string_notes[NUM_OF_STRINGS] = {'E', 'A', 'D', 'G', 'B', 'e'};
