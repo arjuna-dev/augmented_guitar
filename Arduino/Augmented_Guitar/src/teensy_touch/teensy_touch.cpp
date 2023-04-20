@@ -1,4 +1,3 @@
-#include "Arduino.h"
 #include "core_pins.h"
 #include "../mux/mux.h"
 #include "teensy_touch.h"
@@ -8,7 +7,7 @@ TeensyTouch::TeensyTouch(TeensyTSIInterface* tsi_interface, int pins_array[], in
   _tsi_interface->teensyTouchInit (*_pins_array_first_value);
 }
 
-void TeensyTouch::readNonBlocking(int*& ptr_touch_array, int*& ptr_pin_array, int*& ptr_mux_ch_index) {
+void TeensyTouch::readNonBlocking(int*& ptr_touch_array, int*& ptr_pin_array, int*& ptr_mux_ch_index, void (*mux_function)(int)) {
 
   if (_tsi_interface->teensyTouchDone()) {
 
@@ -30,7 +29,7 @@ void TeensyTouch::readNonBlocking(int*& ptr_touch_array, int*& ptr_pin_array, in
       if (*ptr_mux_ch_index == 16) {
         *ptr_mux_ch_index = 0;
       }
-      selectMuxChannel(*ptr_mux_ch_index);
+      mux_function(*ptr_mux_ch_index);
     }
     int current_pin = *ptr_pin_array;
     _tsi_interface->teensyTouchInit(current_pin);

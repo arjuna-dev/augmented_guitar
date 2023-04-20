@@ -1,7 +1,7 @@
 #ifndef TEENSY_TSI_MOCK_H
 #define TEENSY_TSI_MOCK_H
 
-#include "teensy_tsi_interface.h"
+#include "../teensy_touch/teensy_tsi_interface.h"
 #include "../device_specs/device_specs.h"
 
 

@@ -70,14 +70,14 @@ void setup() {
 
   // Capacitance calibration
   while (touch_reference_analog_values[31] == 0) {
-    tt_reference_values.readNonBlocking(ptr_touch_reference_analog_values, ptr_mux_pins, ptr_mux_ch);
+    tt_reference_values.readNonBlocking(ptr_touch_reference_analog_values, ptr_mux_pins, ptr_mux_ch, selectMuxChannel);
   }
 
 }
 
 void loop() {
 
-  tt_analog_values.readNonBlocking(ptr_touch_analog_values, ptr_mux_pins, ptr_mux_ch);
+  tt_analog_values.readNonBlocking(ptr_touch_analog_values, ptr_mux_pins, ptr_mux_ch, selectMuxChannel);
 
   // Update the MIDI values according to pressed frets
   for (int i = 0; i < 6; i++) {

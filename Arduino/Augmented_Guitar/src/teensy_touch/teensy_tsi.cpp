@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "core_pins.h"
-#include "../mux/mux.h"
 #include "teensy_tsi.h"
 
 #define NSCAN     9
