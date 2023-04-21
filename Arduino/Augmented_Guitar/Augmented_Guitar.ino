@@ -89,5 +89,5 @@ void loop() {
     guitar_strings[i].detect_note_on_off();
   }
 
-  aunit::TestRunner::run();
+  // aunit::TestRunner::run();
 }
