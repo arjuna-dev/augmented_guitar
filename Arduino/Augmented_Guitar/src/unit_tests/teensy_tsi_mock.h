@@ -3,9 +3,8 @@
 
 #include "../teensy_touch/teensy_tsi_interface.h"
 #include "../device_specs/device_specs.h"
+#include "mock_values.h"
 
-
-extern int tsi_mock_values[NUM_OF_NOTES];
 extern int* ptr_tsi_mock_values;
 
 class TeensyTSIMock : public TeensyTSIInterface
@@ -16,8 +15,6 @@ class TeensyTSIMock : public TeensyTSIInterface
     int teensyTouchInit(int pin) override;
     int teensyTouchDone() override;
     int teensyTouchReturn() override;
-  private:
-    void load_to_array(int array[], int array_size);
 };
 
 

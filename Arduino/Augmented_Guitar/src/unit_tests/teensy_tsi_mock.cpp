@@ -1,29 +1,16 @@
 #include "Arduino.h"
 #include "teensy_tsi_mock.h"
+#include "mock_values.h"
 
 int TSI0_DATA_MOCK = 0;
 
-int tsi_mock_values[NUM_OF_NOTES]  = {0};
-int* ptr_tsi_mock_values = tsi_mock_values;
 
-
-TeensyTSIMock::TeensyTSIMock(){
-  load_to_array(tsi_mock_values, NUM_OF_NOTES);
-}
-
-void TeensyTSIMock::load_to_array(int array[], int array_size) {
-  for (int i = 0; i < array_size; i++) {
-    array[i] =  rand();
-  }
-}
-
-
-
+TeensyTSIMock::TeensyTSIMock(){}
 
 int TeensyTSIMock::teensyTouchReturn() {
   delayMicroseconds(1);
-  TSI0_DATA_MOCK = *ptr_tsi_mock_values;
-  ptr_tsi_mock_values++;
+  TSI0_DATA_MOCK = *mocks.ptr_mock_values;
+  mocks.ptr_mock_values++;
   return TSI0_DATA_MOCK;
 }
 
