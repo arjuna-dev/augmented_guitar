@@ -1,12 +1,11 @@
 #include "Arduino.h"
 #include "debug.h"
-#include "../GuitarStringClass/guitar_string.h"
 #include "../MIDI/midi.h"
 
 void printCurrentMIDIValues(GuitarString guitar_strings[6]) {
   for (int i = 0; i < 6; i++) {
     Serial.print(guitar_strings[i].get_MIDI_value());
-    Serial.print("");
+    Serial.print(" ");
   }
   Serial.println("");
 }

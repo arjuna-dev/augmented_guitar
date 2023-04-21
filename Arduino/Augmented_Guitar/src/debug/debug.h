@@ -1,8 +1,9 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include "../GuitarStringClass/guitar_string.h"
 
-void printCurrentMIDIValues();
+void printCurrentMIDIValues(GuitarString guitar_strings[6]);
 void printSineWaveValues(int string_number, int iteration, int number_of_iterations);
 
 void println(String str1);
