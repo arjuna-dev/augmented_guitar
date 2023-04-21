@@ -11,7 +11,6 @@ public:
   void detect_note_on_off();
   void updateStringMIDIValue();
 
-  int get_current_amplitude();
   int get_MIDI_value();
   
   void printSineWaveValues(int iteration, int number_of_iterations);

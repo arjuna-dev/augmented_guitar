@@ -116,10 +116,6 @@ void GuitarString::detect_note_on_off() {
   update_previous_amplitude();
 }
 
-int GuitarString::get_current_amplitude(){
-  return _current_amplitude;
-}
-
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // _-_-_-_-_-_-_-_-_-_-_- Debug _-_-_-_-_-_-_-_-_-_-_-_-_-
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
