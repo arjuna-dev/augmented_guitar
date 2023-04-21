@@ -49,10 +49,6 @@ void GuitarString::updateStringMIDIValue() {
 
 }
 
-void GuitarString::update_current_amplitude() {
-  _current_amplitude = analogRead(_input_pin);
-}
-
 void GuitarString::detect_note_off() {
   if (_note_on) {
     // Threshold crossed, reset note_on_timestamp
@@ -90,6 +86,7 @@ void GuitarString::detect_note_on() {
     MIDI_note_on(_string_number, _peak_value, _pressed_fret);
     _last_sent_note_on_fret = _pressed_fret;
   }
+  update_last_peak_value();
 }
 
 void GuitarString::update_last_peak_value() {
@@ -98,17 +95,13 @@ void GuitarString::update_last_peak_value() {
   }
 }
 
-void GuitarString::update_previous_amplitude() {
-  _previous_amplitude = _current_amplitude;
-}
-
-
 int GuitarString::get_MIDI_value() {
-  return MIDI_open_string_notes[_pressed_fret];
+  return MIDI_open_string_notes[_string_number]+_pressed_fret;
 }
 
 void GuitarString::detect_note_on_off(bool debug_sine_wave, int iteration, int number_of_values) {
-  update_current_amplitude();
+
+  _current_amplitude = analogRead(_input_pin);
 
   if (debug_sine_wave == true) {
     printSineWaveValues(iteration, number_of_values);
@@ -117,8 +110,8 @@ void GuitarString::detect_note_on_off(bool debug_sine_wave, int iteration, int n
   detect_note_off();
   update_peak_value();
   detect_note_on();
-  update_last_peak_value();
-  update_previous_amplitude();
+  
+  _previous_amplitude = _current_amplitude;
 }
 
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_

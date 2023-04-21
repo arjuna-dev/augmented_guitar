@@ -16,12 +16,10 @@ public:
   void printSineWaveValues(int iteration, int number_of_iterations);
 
 private:
-  void update_current_amplitude();
   void detect_note_off();
   void update_peak_value();
   void detect_note_on();
   void update_last_peak_value();
-  void update_previous_amplitude();
 
   int _pressed_fret = 0;
   int _string_number;
