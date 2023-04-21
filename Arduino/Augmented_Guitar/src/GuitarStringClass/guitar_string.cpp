@@ -107,8 +107,13 @@ int GuitarString::get_MIDI_value() {
   return MIDI_open_string_notes[_pressed_fret];
 }
 
-void GuitarString::detect_note_on_off() {
+void GuitarString::detect_note_on_off(bool debug_sine_wave, int iteration, int number_of_values) {
   update_current_amplitude();
+
+  if (debug_sine_wave == true) {
+    printSineWaveValues(iteration, number_of_values);
+  }
+  
   detect_note_off();
   update_peak_value();
   detect_note_on();
@@ -126,7 +131,7 @@ bool sine_wave_started = false;
 int record_sine_wave_counter = 0;
 int sine_wave_array[NUM_OF_ARR_VALUES];
 
-void GuitarString::printSineWaveValues(int iteration, int number_of_iterations) {
+void GuitarString::printSineWaveValues(int iteration, int number_of_values) {
   if (_string_number == iteration) {
 
     if (sine_wave_started == false && _current_amplitude > _min_threshold && _current_amplitude > _previous_amplitude + hysteresis) {
@@ -134,12 +139,12 @@ void GuitarString::printSineWaveValues(int iteration, int number_of_iterations) 
       sine_wave_started = true;
       digitalWrite(LED_BUILTIN, HIGH);
     }
-    if (sine_wave_started && record_sine_wave_counter < number_of_iterations) {
+    if (sine_wave_started && record_sine_wave_counter < number_of_values) {
       sine_wave_array[record_sine_wave_counter] = _current_amplitude;
       record_sine_wave_counter++;
     }
-    if (record_sine_wave_counter == number_of_iterations - 1) {
-      for (int j = 0; j < number_of_iterations - 1; j++) {
+    if (record_sine_wave_counter == number_of_values - 1) {
+      for (int j = 0; j < number_of_values - 1; j++) {
         Serial.println(sine_wave_array[j]);
       }
     }

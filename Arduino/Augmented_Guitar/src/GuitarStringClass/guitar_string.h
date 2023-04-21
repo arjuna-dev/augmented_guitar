@@ -8,13 +8,12 @@ class GuitarString {
 
 public:
   GuitarString(const int string_number = 0, const int input_pin = 0, const char open_string_note = 0, const int max_amplitude = 0, const int min_threshold = 0, const int max_wave_period = 0, int* touch_analog_values = 0, int* touch_reference_analog_values = 0);
-  void detect_note_on_off();
+  void detect_note_on_off(bool debug_sine_wave=false, int iteration=0 , int number_of_values=1000);
   void updateStringMIDIValue();
 
   int get_MIDI_value();
   
   void printSineWaveValues(int iteration, int number_of_iterations);
-  void update_previous_amplitude();
 
 private:
   void update_current_amplitude();
@@ -22,6 +21,7 @@ private:
   void update_peak_value();
   void detect_note_on();
   void update_last_peak_value();
+  void update_previous_amplitude();
 
   int _pressed_fret = 0;
   int _string_number;
