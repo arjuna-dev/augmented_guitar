@@ -99,9 +99,10 @@ int GuitarString::get_MIDI_value() {
   return MIDI_open_string_notes[_string_number]+_pressed_fret;
 }
 
-void GuitarString::detect_note_on_off(bool debug_sine_wave, int iteration, int number_of_values) {
 
-  _current_amplitude = analogRead(_input_pin);
+void GuitarString::detect_note_on_off(int (*analog_read_func)(uint8_t), bool debug_sine_wave, int iteration, int number_of_values) {
+
+  _current_amplitude = analog_read_func(_input_pin);
 
   if (debug_sine_wave == true) {
     printSineWaveValues(iteration, number_of_values);

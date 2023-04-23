@@ -86,7 +86,7 @@ void loop() {
 
   // Detect peak and play MIDI for each string
   for (int i = 0; i < 6; i++) {
-    guitar_strings[i].detect_note_on_off();
+    guitar_strings[i].detect_note_on_off(analogRead);
   }
 
   aunit::TestRunner::run();
