@@ -9,8 +9,8 @@ TeensyTSIMock::TeensyTSIMock(){}
 
 int TeensyTSIMock::teensyTouchReturn() {
   delayMicroseconds(1);
-  TSI0_DATA_MOCK = *mocks.ptr_mock_values;
-  mocks.ptr_mock_values++;
+  TSI0_DATA_MOCK = *ptr_mock_TSI_values;
+  ptr_mock_TSI_values++;
   return TSI0_DATA_MOCK;
 }
 
