@@ -22,6 +22,6 @@ extern const int min_thresholds_mock[NUM_OF_STRINGS];
 extern const int max_wave_periods_mock[NUM_OF_STRINGS];
 int analogReadMock();
 extern int* ptr_mock_amplitude_values;
-extern int amplitude_mock_values_e[1000];
+extern const int amplitude_mock_values_e[1000];
 
 #endif
