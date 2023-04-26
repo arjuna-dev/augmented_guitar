@@ -13,7 +13,6 @@ public:
 
   int get_MIDI_value();
   
-  void printSineWaveValues(int iteration, int number_of_iterations);
   bool _note_on = false;
 
 private:
@@ -21,6 +20,7 @@ private:
   void detect_peak_value();
   void detect_note_on();
   void update_last_peak_value();
+  void printSineWaveValues(int iteration, int number_of_iterations);
 
   int _pressed_fret = 0;
   int _string_number;
