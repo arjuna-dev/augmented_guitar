@@ -56,6 +56,7 @@ void GuitarString::detect_note_off() {
       _note_on_timestamp = millis();
     }
 
+    // If an above-threshold value didn't occur in a wave period time, send note_off
     if (_note_on_timestamp + _max_wave_period < millis()) {
       MIDI_note_off(_string_number, _last_sent_note_on_fret);
       _note_on = false;
