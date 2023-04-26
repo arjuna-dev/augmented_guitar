@@ -81,6 +81,7 @@ void GuitarString::detect_peak_value() {
 }
 
 void GuitarString::detect_note_on() {
+  detect_peak_value();
   if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
     _note_on = true;
     _note_on_timestamp = millis();
@@ -110,7 +111,6 @@ void GuitarString::detect_note_on_off(int (*analog_read_func)(uint8_t), bool deb
   }
   
   detect_note_off();
-  detect_peak_value();
   detect_note_on();
   
   _previous_amplitude = _current_amplitude;
