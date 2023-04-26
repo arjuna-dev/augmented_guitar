@@ -18,7 +18,7 @@ public:
 
 private:
   void detect_note_off();
-  void update_peak_value();
+  void detect_peak_value();
   void detect_note_on();
   void update_last_peak_value();
 

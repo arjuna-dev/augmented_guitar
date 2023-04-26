@@ -64,7 +64,7 @@ void GuitarString::detect_note_off() {
   }
 }
 
-void GuitarString::update_peak_value() {
+void GuitarString::detect_peak_value() {
   if (_current_amplitude > _min_threshold) {
     if (_current_amplitude < _previous_amplitude - sine_wave_falling_edge) {
       _peak_value = _previous_amplitude;
@@ -110,7 +110,7 @@ void GuitarString::detect_note_on_off(int (*analog_read_func)(uint8_t), bool deb
   }
   
   detect_note_off();
-  update_peak_value();
+  detect_peak_value();
   detect_note_on();
   
   _previous_amplitude = _current_amplitude;
