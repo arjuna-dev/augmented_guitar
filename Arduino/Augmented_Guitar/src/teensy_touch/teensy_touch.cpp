@@ -10,7 +10,14 @@
 #include "teensy_touch.h"
 
 
-TeensyTouch::TeensyTouch(TeensyTSIInterface* tsi_interface, int pins_array[], int pins_array_size, int touch_values_array[], int touch_values_array_size) : _tsi_interface(tsi_interface), _pins_array_first_value(pins_array), _pins_array_size(pins_array_size), _touch_values_array_first_value(touch_values_array), _touch_values_array_size(touch_values_array_size) {
+TeensyTouch::TeensyTouch(TeensyTSIInterface* tsi_interface, int pins_array[], int pins_array_size, int touch_values_array[], int touch_values_array_size) :
+
+                        _tsi_interface(tsi_interface),
+                        _pins_array_first_value(pins_array),
+                        _pins_array_size(pins_array_size),
+                        _touch_values_array_first_value(touch_values_array),
+                        _touch_values_array_size(touch_values_array_size) 
+{
   _tsi_interface->teensyTouchInit (*_pins_array_first_value);
 }
 
