@@ -53,11 +53,13 @@ void GuitarString::detect_note_off() {
   if (_note_on) {
     // Threshold crossed, reset note_on_timestamp
     if (_current_amplitude > _min_threshold) {
+      Serial.println("_current_amplitude > _min_threshold");
       _note_on_timestamp = millis();
     }
 
     // If an above-threshold value didn't occur in a wave period time, send note_off
     if (_note_on_timestamp + _max_wave_period < millis()) {
+      Serial.println("_note_on_timestamp + _max_wave_period < millis()");
       MIDI_note_off(_string_number, _last_sent_note_on_fret);
       _note_on = false;
     }
@@ -78,17 +80,6 @@ void GuitarString::detect_peak_value() {
   } else {
     _peak_value = 0;
   }
-}
-
-void GuitarString::detect_note_on() {
-  detect_peak_value();
-  if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
-    _note_on = true;
-    _note_on_timestamp = millis();
-    MIDI_note_on(_string_number, _peak_value, _pressed_fret);
-    _last_sent_note_on_fret = _pressed_fret;
-  }
-  update_last_peak_value();
 }
 
 void GuitarString::update_last_peak_value() {

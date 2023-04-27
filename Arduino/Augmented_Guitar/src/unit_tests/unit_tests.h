@@ -132,4 +132,23 @@ testF(GuitarStringFixture, basic_guitar_string_test){
   }
   fail();
 }
+
+testF(GuitarStringFixture, detect_note_off){
+  ptr_mock_amplitude_values = amplitude_mock_values_e;
+  int values_size = 1000;
+  guitar_string_mocks[0]._note_on = false;
+  for (int i = 0; i < values_size; i++) {
+    for (int i = 0; i < 6; i++) {
+      guitar_string_mocks[i].detect_note_on();
+      guitar_string_mocks[i].detect_note_off();
+      guitar_string_mocks[i].update_prev_and_current_amplitudes(analogReadMock);
+    }
+    if (!guitar_string_mocks[i]._note_on) {
+      fail();
+      return;
+    }
+  }
+  pass();
+}
+
 #endif
