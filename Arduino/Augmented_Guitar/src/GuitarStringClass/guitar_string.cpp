@@ -92,19 +92,27 @@ int GuitarString::get_MIDI_value() {
   return MIDI_open_string_notes[_string_number]+_pressed_fret;
 }
 
-
-void GuitarString::detect_note_on_off(int (*analog_read_func)(uint8_t), bool debug_sine_wave, int iteration, int number_of_values) {
-
+void GuitarString::update_prev_and_current_amplitudes(int (*analog_read_func)(uint8_t)) {
+  _previous_amplitude = _current_amplitude;
   _current_amplitude = analog_read_func(_input_pin);
+}
+
+
+void GuitarString::detect_note_on(bool debug_sine_wave, int iteration, int number_of_values) {
 
   if (debug_sine_wave == true) {
     printSineWaveValues(iteration, number_of_values);
   }
   
-  detect_note_off();
-  detect_note_on();
+  detect_peak_value();
+  if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
+    _note_on = true;
+    _note_on_timestamp = millis();
+    MIDI_note_on(_string_number, _peak_value, _pressed_fret);
+    _last_sent_note_on_fret = _pressed_fret;
+  }
+  update_last_peak_value();
   
-  _previous_amplitude = _current_amplitude;
 }
 
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_

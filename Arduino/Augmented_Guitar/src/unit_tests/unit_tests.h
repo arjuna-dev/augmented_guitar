@@ -120,15 +120,17 @@ testF(TTFixture, teensy_touch_1000s){
   }
 }
 
-testF(GuitarStringFixture, basic_guitar_string_test){
+testF(GuitarStringFixture, detect_note_on){
   ptr_mock_amplitude_values = amplitude_mock_values_e;
   int values_size = 1000;
+  guitar_string_mocks[0]._note_on = false;
   for (int i = 0; i < values_size; i++) {
-    guitar_string_mocks[0].detect_note_on_off(analogReadMock);
+    guitar_string_mocks[0].detect_note_on();
+    guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
     if (guitar_string_mocks[0]._note_on) {
       pass();
       return;
-    } 
+    }
   }
   fail();
 }
