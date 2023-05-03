@@ -150,11 +150,41 @@ testF(GuitarStringFixture, detect_note_on_when_none){
   pass();
 }
 
+testF(GuitarStringFixture, detect_note_off_when_note_always_on){
+  ptr_mock_amplitude_values = amplitude_mock_values_e;
+  int values_size = 1000;
+  while (guitar_string_mocks[0]._note_on == false){
+    for (int i = 0; i < values_size; i++) {
+      guitar_string_mocks[0].detect_note_on();
+      guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
+    }
+  }
+  for (int i = 0; i < values_size; i++) {
+    guitar_string_mocks[0].detect_note_off();
+    guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
+    if (guitar_string_mocks[0]._note_on == false) {
+      Serial.println("Error: note off detected when note on");
       fail();
       return;
     }
   }
   pass();
+}
+
+testF(GuitarStringFixture, detect_note_off_when_note_off){
+  ptr_mock_amplitude_values = amplitude_mock_values_e_note_off;
+  int values_size = 1000;
+  guitar_string_mocks[0]._note_on = true;
+  for (int i = 0; i < values_size; i++) {
+    guitar_string_mocks[0].detect_note_on();
+    guitar_string_mocks[0].detect_note_off();
+    guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
+    if (guitar_string_mocks[0]._note_on == false) {
+      pass();
+      return;
+    }
+  }
+  fail();
 }
 
 #endif
