@@ -74,6 +74,8 @@ void setup() {
 
 void loop() {
 
+  aunit::TestRunner::run();
+
   tt_analog_values.readNonBlocking(ptr_touch_analog_values, ptr_mux_pins, ptr_mux_ch, selectMuxChannel);
 
   // Update the MIDI values according to pressed frets
@@ -88,5 +90,4 @@ void loop() {
     guitar_strings[i].update_prev_and_current_amplitudes(analogRead);
   }
 
-  aunit::TestRunner::run();
 }
