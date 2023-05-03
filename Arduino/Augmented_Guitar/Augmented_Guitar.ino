@@ -46,11 +46,7 @@ TeensyTouch tt_analog_values(tsi, mux_pins, 2, touch_analog_values, NUM_OF_NOTES
 GuitarString guitar_strings[6];
 
 void setup() {
-#if DEBUG == 1
-  Serial.begin(9600);
-  pinMode(LED_BUILTIN, OUTPUT);
   while (!Serial);
-#endif
 
   /*_-_-Class setup_-_-*/
   for (int i = 0; i < 6; i++) {
