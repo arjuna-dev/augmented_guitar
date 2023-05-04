@@ -195,7 +195,6 @@ testF(GuitarStringFixture, detect_finger_position_all_frets_pressed){
     guitar_string_mocks[i].updateStringMIDIValue();
   }
   for (int i = 0; i < 6; i++) {
-    Serial.println(guitar_string_mocks[i].get_MIDI_value());
     assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i] + NUM_OF_FRETS);
   }
 }
