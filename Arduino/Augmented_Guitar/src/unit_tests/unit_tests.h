@@ -10,7 +10,7 @@
 #include "teensy_tsi_mock.h"
 #include "../teensy_touch/teensy_touch.h"
 #include "mock_values.h"
-#include "../guitarStringClass/guitar_string.h"
+#include "../guitarStringClass/guitar_string_testable.h"
 
 
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
@@ -20,7 +20,7 @@
 TeensyTSIInterface* tsi_mock = new TeensyTSIMock();
 TeensyTouch tt_mock(tsi_mock, mux_pins_mock, 2, analog_values_mock, NUM_OF_NOTES);
 
-GuitarString guitar_string_mocks[6];
+GuitarStringTestable guitar_string_mocks[6];
 
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 // _-_-_-_-_-_-_-_-_-_-_-_-_-FIXTURES-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -123,11 +123,11 @@ testF(TTFixture, teensy_touch_1000s){
 testF(GuitarStringFixture, detect_note_on){
   ptr_mock_amplitude_values = amplitude_mock_values_e;
   int values_size = 1000;
-  guitar_string_mocks[0]._note_on = false;
+  guitar_string_mocks[0].set_note_on(false);
   for (int i = 0; i < values_size; i++) {
     guitar_string_mocks[0].detect_note_on();
     guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
-    if (guitar_string_mocks[0]._note_on) {
+    if (guitar_string_mocks[0].get_note_on() == true) {
       pass();
       return;
     }
@@ -135,14 +135,14 @@ testF(GuitarStringFixture, detect_note_on){
   fail();
 }
 
-testF(GuitarStringFixture, detect_note_on_when_none){
+testF(GuitarStringFixture, detect_note_on_false_positive){
   ptr_mock_amplitude_values = amplitude_mock_values_e_empty;
   int values_size = 1000;
-  guitar_string_mocks[0]._note_on = false;
+  guitar_string_mocks[0].set_note_on(false);
   for (int i = 0; i < values_size; i++) {
     guitar_string_mocks[0].detect_note_on();
     guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
-    if (guitar_string_mocks[0]._note_on) {
+    if (guitar_string_mocks[0].get_note_on() == true) {
       fail();
       return;
     }
@@ -150,19 +150,17 @@ testF(GuitarStringFixture, detect_note_on_when_none){
   pass();
 }
 
-testF(GuitarStringFixture, detect_note_off_when_note_always_on){
+testF(GuitarStringFixture, detect_note_off_false_positive){
   ptr_mock_amplitude_values = amplitude_mock_values_e;
   int values_size = 1000;
-  while (guitar_string_mocks[0]._note_on == false){
-    for (int i = 0; i < values_size; i++) {
-      guitar_string_mocks[0].detect_note_on();
-      guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
-    }
-  }
+
+  guitar_string_mocks[0].set_note_on(true);
+  guitar_string_mocks[0].set_note_on_timestamp();
+
   for (int i = 0; i < values_size; i++) {
     guitar_string_mocks[0].detect_note_off();
     guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
-    if (guitar_string_mocks[0]._note_on == false) {
+    if (guitar_string_mocks[0].get_note_on() == false) {
       Serial.println("Error: note off detected when note on");
       fail();
       return;
@@ -171,15 +169,15 @@ testF(GuitarStringFixture, detect_note_off_when_note_always_on){
   pass();
 }
 
-testF(GuitarStringFixture, detect_note_off_when_note_off){
+testF(GuitarStringFixture, detect_note_off){
   ptr_mock_amplitude_values = amplitude_mock_values_e_note_off;
   int values_size = 1000;
-  guitar_string_mocks[0]._note_on = true;
+  guitar_string_mocks[0].set_note_on(true);
   for (int i = 0; i < values_size; i++) {
     guitar_string_mocks[0].detect_note_on();
     guitar_string_mocks[0].detect_note_off();
     guitar_string_mocks[0].update_prev_and_current_amplitudes(analogReadMock);
-    if (guitar_string_mocks[0]._note_on == false) {
+    if (guitar_string_mocks[0].get_note_on() == false) {
       pass();
       return;
     }
