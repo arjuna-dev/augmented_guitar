@@ -14,14 +14,13 @@ public:
   void update_prev_and_current_amplitudes(int (*analog_read_func)(uint8_t));
 
   int get_MIDI_value();
-  
-  bool _note_on = false;
 
 private:
   void detect_peak_value();
   void update_last_peak_value();
   void printSineWaveValues(int iteration, int number_of_iterations);
 
+  bool _note_on = false;
   int _pressed_fret = 0;
   int _string_number;
   int _input_pin;
