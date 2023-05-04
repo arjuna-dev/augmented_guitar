@@ -11,6 +11,7 @@
 #include "../teensy_touch/teensy_touch.h"
 #include "mock_values.h"
 #include "../guitarStringClass/guitar_string_testable.h"
+#include "../MIDI/midi.h"
 
 
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
@@ -183,6 +184,20 @@ testF(GuitarStringFixture, detect_note_off){
     }
   }
   fail();
+}
+
+testF(GuitarStringFixture, detect_finger_position_all_frets_pressed){
+  populate_array(reference_analog_values_mock, NUM_OF_NOTES, 3000);
+  populate_array(analog_values_mock, NUM_OF_NOTES, 20000);
+
+  // Update the MIDI values according to pressed frets
+  for (int i = 0; i < 6; i++) {
+    guitar_string_mocks[i].updateStringMIDIValue();
+  }
+  for (int i = 0; i < 6; i++) {
+    Serial.println(guitar_string_mocks[i].get_MIDI_value());
+    assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i] + NUM_OF_FRETS);
+  }
 }
 
 #endif

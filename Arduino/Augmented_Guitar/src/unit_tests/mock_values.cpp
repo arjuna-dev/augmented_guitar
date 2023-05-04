@@ -1,19 +1,6 @@
 #include <cstdlib>
 #include "mock_values.h"
 
-int mock_mock_array[1] = {0};
-
-// TeensyTouch
-int mux_pins_mock[NUM_OF_MUX_PINS] = {mux_1_pin, mux_2_pin};
-int* ptr_mux_pins_mock = mux_pins_mock;
-int mux_ch_mock = 0;
-int* ptr_mux_ch_mock = &mux_ch_mock;
-int analog_values_mock[NUM_OF_NOTES] = {0};
-int reference_analog_values_mock[NUM_OF_NOTES] = {0};
-int* ptr_analog_values_mock = analog_values_mock;
-void selectMuxChannelMock(int mux_ch) {}
-int* ptr_mock_TSI_values = mock_mock_array;
-
 // GuitarStrings
 const int string_input_pins_mock[NUM_OF_STRINGS] = {34, 35, 36, 37, 38, 39};
 const char open_string_notes_mock[NUM_OF_STRINGS] = {'E', 'A', 'D', 'G', 'B', 'e'};
@@ -21,8 +8,24 @@ const int max_amplitudes_mock[NUM_OF_STRINGS] = {540, 510, 560, 580, 620, 600};
 const int min_thresholds_mock[NUM_OF_STRINGS] = {15, 18, 20, 20, 15, 23};
 const int max_wave_periods_mock[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
 
-int* ptr_mock_amplitude_values = mock_mock_array;
 
+int mock_mock_array[1] = {0};
+
+// Left hand
+  // TeensyTouch
+int mux_pins_mock[NUM_OF_MUX_PINS] = {mux_1_pin, mux_2_pin};
+int* ptr_mux_pins_mock = mux_pins_mock;
+int mux_ch_mock = 0;
+int* ptr_mux_ch_mock = &mux_ch_mock;
+int analog_values_mock[NUM_OF_NOTES] = {0};
+int* ptr_analog_values_mock = analog_values_mock;
+int reference_analog_values_mock[NUM_OF_NOTES] = {0};
+int* ptr_reference_analog_values_mock = reference_analog_values_mock;
+void selectMuxChannelMock(int mux_ch) {}
+int* ptr_mock_TSI_values = mock_mock_array;
+
+// Right hand
+int* ptr_mock_amplitude_values = mock_mock_array;
 int analogReadMock(){
   int analog_value = *ptr_mock_amplitude_values;
   ptr_mock_amplitude_values++;
