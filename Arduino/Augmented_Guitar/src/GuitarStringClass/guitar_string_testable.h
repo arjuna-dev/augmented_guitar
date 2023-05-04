@@ -28,7 +28,6 @@ public:
     touch_reference_analog_values
   ){};
 
-  bool get_note_on();
   void set_note_on(bool note_on);
   void set_note_on_timestamp();
 
