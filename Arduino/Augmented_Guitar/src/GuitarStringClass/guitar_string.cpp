@@ -96,10 +96,10 @@ void GuitarString::update_prev_and_current_amplitudes(int (*analog_read_func)(ui
 }
 
 
-void GuitarString::detect_note_on(bool debug_sine_wave, int iteration, int number_of_values) {
+void GuitarString::detect_note_on(bool debug_sine_wave, int string_number, int number_of_values) {
 
   if (debug_sine_wave == true) {
-    printSineWaveValues(iteration, number_of_values);
+    printSineWaveValues(string_number, number_of_values);
   }
   
   detect_peak_value();
@@ -127,8 +127,8 @@ bool sine_wave_started = false;
 int record_sine_wave_counter = 0;
 int sine_wave_array[NUM_OF_ARR_VALUES];
 
-void GuitarString::printSineWaveValues(int iteration, int number_of_values) {
-  if (_string_number == iteration) {
+void GuitarString::printSineWaveValues(int string_number, int number_of_values) {
+  if (_string_number == string_number) {
 
     if (sine_wave_started == false && _current_amplitude > _min_threshold && _current_amplitude > _previous_amplitude + hysteresis) {
       sine_wave_started = true;
