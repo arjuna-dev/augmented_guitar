@@ -106,15 +106,21 @@ class RightHandFixture: public aunit::TestOnce {
     }
 
 };
+
+class LeftHandFixture: public aunit::TestOnce {
   protected:
     void setup() override {
       TestOnce::setup();
       for (int i = 0; i < 6; i++) {
         guitar_string_mocks[i] = {i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], analog_values_mock, reference_analog_values_mock};
       }
+      populate_array(reference_analog_values_mock, NUM_OF_NOTES, 0);
+      populate_array(analog_values_mock, NUM_OF_NOTES, 0);
     }
 
     void teardown() override {
+      populate_array(reference_analog_values_mock, NUM_OF_NOTES, 0);
+      populate_array(analog_values_mock, NUM_OF_NOTES, 0);
       TestOnce::teardown();
     }
 
@@ -300,7 +306,11 @@ testF(RightHandFixture, detect_note_off_false_positive_through_amplitude){
   pass();
 }
 
-testF(GuitarStringFixture, detect_finger_position_all_frets_pressed){
+    // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+    // _-_-_-_-_-Left Hand-_-_-_-_-_-_
+    // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+testF(LeftHandFixture, detect_finger_position_all_frets_pressed){
   populate_array(reference_analog_values_mock, NUM_OF_NOTES, 3000);
   populate_array(analog_values_mock, NUM_OF_NOTES, 20000);
 
