@@ -30,6 +30,8 @@ public:
 
   void set_note_on(bool note_on);
   void set_note_on_timestamp();
+  void set_note_on_timestamp(unsigned long  millis);
+  void set_current_amplitude(int amplitude);
 
 };
 

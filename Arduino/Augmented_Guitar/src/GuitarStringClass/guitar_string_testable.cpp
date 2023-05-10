@@ -5,6 +5,10 @@ void GuitarStringTestable::set_note_on(bool note_on){
   _note_on = note_on;
 };
 
-void GuitarStringTestable::set_note_on_timestamp(){
-  _note_on_timestamp = millis();
+void GuitarStringTestable::set_note_on_timestamp(unsigned long millis){
+  _note_on_timestamp = millis;
+};
+
+void GuitarStringTestable::set_current_amplitude(int amplitude){
+  _current_amplitude = amplitude;
 };
