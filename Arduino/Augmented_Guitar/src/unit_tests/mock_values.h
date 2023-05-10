@@ -1,7 +1,10 @@
 #ifndef MOCK_VALUES_H
 #define MOCK_VALUES_H
 
+#include <cstdlib>
 #include "../device_specs/device_specs.h"
+
+extern int mock_mock_array[1];
 
 // TeensyTouch
 extern int mux_pins_mock[NUM_OF_MUX_PINS];
@@ -21,10 +24,20 @@ extern const char open_string_notes_mock[NUM_OF_STRINGS];
 extern const int max_amplitudes_mock[NUM_OF_STRINGS];
 extern const int min_thresholds_mock[NUM_OF_STRINGS];
 extern const int max_wave_periods_mock[NUM_OF_STRINGS];
-int analogReadMock();
+int analogReadMock(int _input_pin);
 extern int* ptr_mock_amplitude_values;
-extern const int amplitude_mock_values_e[1000];
-extern const int amplitude_mock_values_e_note_off[1000];
-extern const int amplitude_mock_values_e_empty[1000];
+extern int amplitude_mock_values_E[1000];
+extern int amplitude_mock_values_A[1000];
+extern int amplitude_mock_values_D[1000];
+extern int amplitude_mock_values_G[1000];
+extern int amplitude_mock_values_B[1000];
+extern int amplitude_mock_values_e[1000];
+extern int* ptr_amplitude_mock_values_E;
+extern int* ptr_amplitude_mock_values_A;
+extern int* ptr_amplitude_mock_values_D;
+extern int* ptr_amplitude_mock_values_G;
+extern int* ptr_amplitude_mock_values_B;
+extern int* ptr_amplitude_mock_values_e;
+
 
 #endif
