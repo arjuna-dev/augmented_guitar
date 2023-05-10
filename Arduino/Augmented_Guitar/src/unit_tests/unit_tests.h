@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 
+#include <algorithm>
 #include <numeric>
 #include "AUnit.h"
 #include "../device_specs/device_specs.h"
@@ -28,7 +29,7 @@ GuitarStringTestable guitar_string_mocks[6];
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-    // _-_-_-_-_-_-TeensyTouch-_-_-_-_-_-
+    // _-_-_-_-TeensyTouchFixture-_-_-_-_
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
 void populate_array(int arr[], int size, int value) {
@@ -50,7 +51,7 @@ void populate_array_rand(int arr[], int size, int min = 0, int max = 0) {
   }
 }
 
-class TTFixture: public aunit::TestOnce {
+class TeensyTouchF: public aunit::TestOnce {
   protected:
     void setup() override {
       TestOnce::setup();
@@ -75,7 +76,7 @@ class TTFixture: public aunit::TestOnce {
 };
 
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-    // _-_-_-_-_-_GuitarStrings_-_-_-_-_-
+    // _-_-_-_GuitarStringsFixture_-_-_-_
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
 class RightHandFixture: public aunit::TestOnce {
@@ -123,7 +124,11 @@ class RightHandFixture: public aunit::TestOnce {
 // _-_-_-_-_-_-_-_-_-_-_-_-_TESTS_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
-testF(TTFixture, teensy_touch_rand){
+    // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+    // _-_-_-_-TeensyTouch-_-_-_-_-_
+    // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+testF(TeensyTouchF, teensy_touch_rand){
   int array_rand[NUM_OF_NOTES] = {0};
   setup_arr_and_ptr_rand(array_rand, NUM_OF_NOTES);
 
@@ -135,7 +140,7 @@ testF(TTFixture, teensy_touch_rand){
   }
 }
 
-testF(TTFixture, teensy_touch_1000s){
+testF(TeensyTouchF, teensy_touch_1000s){
   int array_1000s[NUM_OF_NOTES] = {0};
   setup_arr_and_ptr(array_1000s, NUM_OF_NOTES, 1000);
 
