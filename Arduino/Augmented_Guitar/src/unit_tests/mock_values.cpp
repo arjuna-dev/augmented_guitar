@@ -2,11 +2,11 @@
 #include "mock_values.h"
 
 // GuitarStrings
-const int string_input_pins_mock[NUM_OF_STRINGS] = {34, 35, 36, 37, 38, 39};
-const char open_string_notes_mock[NUM_OF_STRINGS] = {'E', 'A', 'D', 'G', 'B', 'e'};
-const int max_amplitudes_mock[NUM_OF_STRINGS] = {540, 510, 560, 580, 620, 600};
-const int min_thresholds_mock[NUM_OF_STRINGS] = {15, 18, 20, 20, 15, 23};
-const int max_wave_periods_mock[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
+constexpr int string_input_pins_mock[NUM_OF_STRINGS] = {34, 35, 36, 37, 38, 39};
+constexpr char open_string_notes_mock[NUM_OF_STRINGS] = {'E', 'A', 'D', 'G', 'B', 'e'};
+constexpr int max_amplitudes_mock[NUM_OF_STRINGS] = {540, 510, 560, 580, 620, 600};
+constexpr int min_thresholds_mock[NUM_OF_STRINGS] = {15, 18, 20, 20, 15, 23};
+constexpr int max_wave_periods_mock[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
 
 
 int mock_mock_array[1] = {0};
