@@ -113,10 +113,6 @@ void GuitarString::detect_note_on(bool debug_sine_wave, int string_number, int n
   
 }
 
-bool GuitarString::get_note_on(){
- return _note_on;
-};
-
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // _-_-_-_-_-_-_-_-_-_-_- Debug _-_-_-_-_-_-_-_-_-_-_-_-_-
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
