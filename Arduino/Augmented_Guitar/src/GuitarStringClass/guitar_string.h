@@ -13,6 +13,7 @@ public:
   void updateStringMIDIValue();
   void update_prev_and_current_amplitudes(int (*analog_read_func)(uint8_t));
   int get_MIDI_value();  
+  int getAnalogValues();
 
 protected:
   void detect_peak_value();
