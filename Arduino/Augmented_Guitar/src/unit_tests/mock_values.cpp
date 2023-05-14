@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include <cstdlib>
 #include "mock_values.h"
 
