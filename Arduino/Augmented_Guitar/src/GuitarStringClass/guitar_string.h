@@ -29,7 +29,7 @@ protected:
   int _max_amplitude;
   int _min_threshold;
   int _max_wave_period;
-  int _capacitance_threshold = 5000;
+  int _capacitance_threshold = 20000;
   int* _touch_analog_values;
   int* _touch_reference_analog_values;
   unsigned long _note_on_timestamp = 0;
