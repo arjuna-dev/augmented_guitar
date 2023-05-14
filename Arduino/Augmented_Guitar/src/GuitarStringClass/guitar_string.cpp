@@ -64,6 +64,27 @@ void GuitarString::detect_note_off() {
   }
 }
 
+void GuitarString::detect_peak_value_soft() {
+  if (_current_amplitude <= _previous_amplitude) {
+    _accumulated_decrements += _current_amplitude;
+  } else {
+    _accumulated_decrements = 0;
+  }
+
+  if ((_current_amplitude == 0 && _previous_amplitude == 0)||(_current_amplitude == 1 && _previous_amplitude == 1)){ 
+    _trough_count++;
+  } else {
+    _trough_count = 0;
+  }
+  if (_trough_count >= 5) {
+    _peak_value = _accumulated_decrements;
+    _peak_value = map(_peak_value, 0, _max_amplitude, 0, 127);
+    if (_peak_value > 127) {
+      _peak_value = 127;
+    }
+  }
+}
+
 void GuitarString::detect_peak_value() {
   if (_current_amplitude > _min_threshold) {
     if (_current_amplitude < _previous_amplitude - sine_wave_falling_edge) {
@@ -78,6 +99,7 @@ void GuitarString::detect_peak_value() {
   } else {
     _peak_value = 0;
   }
+  detect_peak_value_soft();
 }
 
 void GuitarString::update_last_peak_value() {

@@ -18,6 +18,7 @@ protected:
   void detect_peak_value();
   void update_last_peak_value();
   void printSineWaveValues(int iteration, int number_of_iterations);
+  void detect_peak_value_soft();
 
   bool _note_on = false;
   int _pressed_fret = 0;
@@ -37,6 +38,8 @@ protected:
   int _last_peak_value = 0;
   int _last_sent_pressed_fret = 0;
   int _last_sent_note_on_fret = 0;
+  int _accumulated_decrements = 0;
+  int _trough_count = 0;
 };
 
 
