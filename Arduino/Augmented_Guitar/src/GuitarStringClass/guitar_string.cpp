@@ -110,7 +110,7 @@ void GuitarString::detect_note_on(bool debug_sine_wave, int string_number, int n
     _last_sent_note_on_fret = _pressed_fret;
   }
   update_last_peak_value();
-  
+
 }
 
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
