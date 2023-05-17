@@ -134,6 +134,20 @@ testF(TeensyTouchF, teensy_touch_rand){
   }
 }
 
+testF(TeensyTouchF, teensy_touch_rand_3000s){
+  int array_rand[NUM_OF_NOTES] = {0};
+  populate_array_rand(array_rand, NUM_OF_NOTES, 3000, 40000);
+  TeensyTSIInterface* tsi_mock = new TeensyTSIMock(array_rand);
+  TeensyTouch tt_mock(tsi_mock, mux_pins_mock, 2, analog_values_mock, NUM_OF_NOTES);
+
+  while (analog_values_mock[31] == 0) {
+    tt_mock.readNonBlocking(ptr_analog_values_mock, ptr_mux_pins_mock, ptr_mux_ch_mock, selectMuxChannelMock);
+  }
+  for (size_t i = 0; i < 32; i++) {
+    assertEqual(analog_values_mock[i], array_rand[i]);
+  }
+}
+
 testF(TeensyTouchF, teensy_touch_1000s){
   int array_1000s[NUM_OF_NOTES] = {0};
   populate_array(array_1000s, NUM_OF_NOTES, 1000);
