@@ -8,17 +8,18 @@ class GuitarString {
 
 public:
   GuitarString(const int string_number = 0, const int input_pin = 0, const char open_string_note = 0, const int max_amplitude = 0, const int min_threshold = 0, const int max_wave_period = 0, int* touch_analog_values = 0, int* touch_reference_analog_values = 0);
-  void detect_note_on(bool debug_sine_wave=false, int iteration=0 , int number_of_values=1000);
+  void detect_note_on(bool debug_sine_wave=false, int string_number=0 , int number_of_values=1000);
   void detect_note_off();
   void updateStringMIDIValue();
   void update_prev_and_current_amplitudes(int (*analog_read_func)(uint8_t));
+  int get_MIDI_value();  
+  int getAnalogValues();
 
-  int get_MIDI_value();
-
-private:
+protected:
   void detect_peak_value();
   void update_last_peak_value();
   void printSineWaveValues(int iteration, int number_of_iterations);
+  void detect_peak_value_soft();
 
   bool _note_on = false;
   int _pressed_fret = 0;
@@ -28,7 +29,7 @@ private:
   int _max_amplitude;
   int _min_threshold;
   int _max_wave_period;
-  int _capacitance_threshold = 5000;
+  int _capacitance_threshold = 20000;
   int* _touch_analog_values;
   int* _touch_reference_analog_values;
   unsigned long _note_on_timestamp = 0;
@@ -38,6 +39,8 @@ private:
   int _last_peak_value = 0;
   int _last_sent_pressed_fret = 0;
   int _last_sent_note_on_fret = 0;
+  int _accumulated_decrements = 0;
+  int _trough_count = 0;
 };
 
 
