@@ -5,12 +5,14 @@
 int TSI0_DATA_MOCK_VALUE = 0;
 
 
-TeensyTSIMock::TeensyTSIMock(){}
+TeensyTSIMock::TeensyTSIMock(int* mock_TSI_values) {
+  _ptr_mock_TSI_values = mock_TSI_values;
+}
 
 int TeensyTSIMock::teensyTouchReturn() {
   delayMicroseconds(1);
   TSI0_DATA_MOCK_VALUE = *_ptr_mock_TSI_values;
-  ptr_mock_TSI_values++;
+  _ptr_mock_TSI_values++;
   return TSI0_DATA_MOCK_VALUE;
 }
 

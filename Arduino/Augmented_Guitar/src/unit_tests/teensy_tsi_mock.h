@@ -5,12 +5,12 @@
 #include "../device_specs/device_specs.h"
 #include "mock_values.h"
 
-extern int* ptr_tsi_mock_values;
-
 class TeensyTSIMock : public TeensyTSIInterface
 {
   public:
-    TeensyTSIMock();
+    TeensyTSIMock(int* mock_TSI_values);
+  private:
+    int* _ptr_mock_TSI_values;
   protected:
     int teensyTouchInit(int pin) override;
     int teensyTouchDone() override;
