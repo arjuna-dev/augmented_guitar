@@ -1,10 +1,4 @@
 #include "Arduino.h"
-
-
-
-
-
-
 #include "core_pins.h"
 #include "../mux/mux.h"
 #include "teensy_touch.h"
