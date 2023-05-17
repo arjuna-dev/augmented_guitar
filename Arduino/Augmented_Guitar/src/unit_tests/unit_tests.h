@@ -19,9 +19,6 @@
 // _-_-_-_-_-_-_-_-_-_-_-_-_MOCKS_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
-TeensyTSIInterface* tsi_mock = new TeensyTSIMock();
-TeensyTouch tt_mock(tsi_mock, mux_pins_mock, 2, analog_values_mock, NUM_OF_NOTES);
-
 GuitarStringTestable guitar_string_mocks[6];
 
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
@@ -62,17 +59,6 @@ class TeensyTouchF: public aunit::TestOnce {
       std::fill(analog_values_mock, analog_values_mock + NUM_OF_NOTES, 0);
       TestOnce::teardown();
     }
-
-    void setup_arr_and_ptr(int arr[], int size, int value) {
-      populate_array(arr, size, value);
-      ptr_mock_TSI_values = arr;
-    }
-
-    void setup_arr_and_ptr_rand(int arr[], int size, int min = 0, int max = 0) {
-      populate_array_rand(arr, size, min, max);
-      ptr_mock_TSI_values = arr;
-    }
-
 };
 
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
@@ -136,7 +122,9 @@ class LeftHandFixture: public aunit::TestOnce {
 
 testF(TeensyTouchF, teensy_touch_rand){
   int array_rand[NUM_OF_NOTES] = {0};
-  setup_arr_and_ptr_rand(array_rand, NUM_OF_NOTES);
+  populate_array_rand(array_rand, NUM_OF_NOTES);
+  TeensyTSIInterface* tsi_mock = new TeensyTSIMock(array_rand);
+  TeensyTouch tt_mock(tsi_mock, mux_pins_mock, 2, analog_values_mock, NUM_OF_NOTES);
 
   while (analog_values_mock[31] == 0) {
     tt_mock.readNonBlocking(ptr_analog_values_mock, ptr_mux_pins_mock, ptr_mux_ch_mock, selectMuxChannelMock);
@@ -148,7 +136,9 @@ testF(TeensyTouchF, teensy_touch_rand){
 
 testF(TeensyTouchF, teensy_touch_1000s){
   int array_1000s[NUM_OF_NOTES] = {0};
-  setup_arr_and_ptr(array_1000s, NUM_OF_NOTES, 1000);
+  populate_array(array_1000s, NUM_OF_NOTES, 1000);
+  TeensyTSIInterface* tsi_mock = new TeensyTSIMock(array_1000s);
+  TeensyTouch tt_mock(tsi_mock, mux_pins_mock, 2, analog_values_mock, NUM_OF_NOTES);
 
   while (analog_values_mock[31] == 0) {
     tt_mock.readNonBlocking(ptr_analog_values_mock, ptr_mux_pins_mock, ptr_mux_ch_mock, selectMuxChannelMock);
