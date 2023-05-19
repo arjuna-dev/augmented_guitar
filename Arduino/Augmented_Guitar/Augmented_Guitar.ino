@@ -25,6 +25,8 @@ constexpr int min_thresholds[NUM_OF_STRINGS] = {30, 40, 40, 40, 25, 43};
 // constexpr int min_thresholds[NUM_OF_STRINGS] = {15, 18, 20, 20, 15, 23};
 constexpr int max_wave_periods[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
 
+int mux_signal_pins[NUM_OF_MUX_PINS] = {mux_sig_pin_1, mux_sig_pin_2};
+
 GuitarString guitar_strings[6];
 
 void setup() {
@@ -40,6 +42,11 @@ void setup() {
   for (int i = 0; i < 4; i++) {
     pinMode(controlPin[i], OUTPUT);
     digitalWrite(controlPin[i], LOW);
+  }
+
+  /*_-_-Left hand setup_-_-*/
+  for (int i = 0; i < 2; i++) {
+    pinMode(mux_signal_pins[i], INPUT_PULLDOWN);
   }
 
   /*_-_-Right hand setup_-_-*/
