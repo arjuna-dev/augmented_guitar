@@ -18,10 +18,6 @@ int mux_pins_mock[NUM_OF_MUX_PINS] = {mux_sig_pin_1, mux_sig_pin_2};
 int* ptr_mux_pins_mock = mux_pins_mock;
 int mux_ch_mock = 0;
 int* ptr_mux_ch_mock = &mux_ch_mock;
-int analog_values_mock[NUM_OF_NOTES] = {0};
-int* ptr_analog_values_mock = analog_values_mock;
-int reference_analog_values_mock[NUM_OF_NOTES] = {0};
-int* ptr_reference_analog_values_mock = reference_analog_values_mock;
 void selectMuxChannelMock(int mux_ch) {}
 int* ptr_mock_TSI_values = mock_mock_array;
 
