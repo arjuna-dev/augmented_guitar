@@ -1,8 +1,8 @@
 #ifndef DEVICE_SPECS_H
 #define DEVICE_SPECS_H
 
-constexpr int mux_1_pin = 30;
-constexpr int mux_2_pin = 23;
+constexpr int mux_sig_pin_1 = 30;
+constexpr int mux_sig_pin_2 = 23;
 
 constexpr int NUM_OF_STRINGS = 6;
 constexpr int NUM_OF_FRETS = 4;
