@@ -6,12 +6,10 @@
 #define sine_wave_falling_edge 35
 #define peak_diff_threshold 30
 
-GuitarString::GuitarString(const int string_number, const int input_pin, const char open_string_note, const int max_amplitude, const int min_threshold, const int max_wave_period, int* touch_analog_values, int* touch_reference_analog_values) {
+GuitarString::GuitarString(const int string_number, const int input_pin, const char open_string_note, const int max_amplitude, const int min_threshold, const int max_wave_period) {
   _string_number  = string_number;
   _open_string_note  = open_string_note;
   _max_amplitude  = max_amplitude;
-  _touch_analog_values  = touch_analog_values;
-  _touch_reference_analog_values  = touch_reference_analog_values;
   _max_wave_period  = max_wave_period;
   _input_pin  = input_pin;
   _min_threshold  = min_threshold;
@@ -25,7 +23,7 @@ void GuitarString::updateStringMIDIValue() {
   
   for (int j = 0; j < 4; j++) {
 
-    if (_touch_analog_values[value_positions[_string_number][j]] - _touch_reference_analog_values[value_positions[_string_number][j]] > _capacitance_threshold) {
+    if (digitalRead(_input_pin) == HIGH) {
       is_fret_touched = true;
       any_fret_touched = true;
     } else {

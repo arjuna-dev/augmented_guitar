@@ -11,9 +11,6 @@
 #include "src/unit_tests/unit_tests.h"
 
 #include "src/debug/debug.h"
-#include "src/teensy_touch/teensy_tsi_interface.h"
-#include "src/teensy_touch/teensy_tsi.h"
-#include "src/teensy_touch/teensy_touch.h"
 #include "src/mux/mux.h"
 #include "src/MIDI/midi.h"
 #include "src/device_specs/device_specs.h"
@@ -28,32 +25,17 @@ constexpr int min_thresholds[NUM_OF_STRINGS] = {30, 40, 40, 40, 25, 43};
 // constexpr int min_thresholds[NUM_OF_STRINGS] = {15, 18, 20, 20, 15, 23};
 constexpr int max_wave_periods[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
 
-int mux_pins[NUM_OF_MUX_PINS] = {mux_1_pin, mux_2_pin};
-int* ptr_mux_pins = mux_pins;
-int touch_analog_values[NUM_OF_NOTES] = {0};
-int* ptr_touch_analog_values = touch_analog_values;
-int mux_ch = 0;
-int* ptr_mux_ch = &mux_ch;
-int touch_reference_analog_values[NUM_OF_NOTES] = {0};
-int* ptr_touch_reference_analog_values = touch_reference_analog_values;
-
-
-TeensyTSIInterface* tsi = new TeensyTSI();
-
-TeensyTouch tt_reference_values(tsi, mux_pins, 2, touch_reference_analog_values, NUM_OF_NOTES);
-TeensyTouch tt_analog_values(tsi, mux_pins, 2, touch_analog_values, NUM_OF_NOTES);
-
 GuitarString guitar_strings[6];
 
 void setup() {
   while (!Serial);
 
-  /*_-_-Class setup_-_-*/
+  /*_-_-GuitarString Class setup_-_-*/
   for (int i = 0; i < 6; i++) {
-    guitar_strings[i] = {i, string_input_pins[i], open_string_notes[i], max_amplitudes[i], min_thresholds[i], max_wave_periods[i], touch_analog_values, touch_reference_analog_values};
+    guitar_strings[i] = {i, string_input_pins[i], open_string_notes[i], max_amplitudes[i], min_thresholds[i], max_wave_periods[i]};
   }
 
-  /*_-_-Left hand setup_-_-*/
+  /*_-_-Mux setup_-_-*/
   selectMuxChannel(0);
   for (int i = 0; i < 4; i++) {
     pinMode(controlPin[i], OUTPUT);
@@ -65,18 +47,11 @@ void setup() {
     pinMode(string_input_pins[i], INPUT);
   }
 
-  // Capacitance calibration
-  while (touch_reference_analog_values[31] == 0) {
-    tt_reference_values.readNonBlocking(ptr_touch_reference_analog_values, ptr_mux_pins, ptr_mux_ch, selectMuxChannel);
-  }
-
 }
 
 void loop() {
 
-  aunit::TestRunner::run();
-
-  tt_analog_values.readNonBlocking(ptr_touch_analog_values, ptr_mux_pins, ptr_mux_ch, selectMuxChannel);
+  // aunit::TestRunner::run();
 
   // Update the MIDI values according to pressed frets
   for (int i = 0; i < 6; i++) {

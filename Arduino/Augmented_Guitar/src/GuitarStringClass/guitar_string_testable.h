@@ -13,9 +13,7 @@ public:
     const char open_string_note = 0,
     const int max_amplitude = 0,
     const int min_threshold = 0,
-    const int max_wave_period = 0,
-    int* touch_analog_values = 0,
-    int* touch_reference_analog_values = 0
+    const int max_wave_period = 0
   ) : 
   GuitarString(
     string_number,
@@ -23,9 +21,7 @@ public:
     open_string_note,
     max_amplitude,
     min_threshold,
-    max_wave_period,
-    touch_analog_values,
-    touch_reference_analog_values
+    max_wave_period
   ){};
   bool get_note_on();
   void set_note_on(bool note_on);
