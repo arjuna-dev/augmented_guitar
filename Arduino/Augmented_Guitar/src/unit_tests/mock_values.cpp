@@ -14,7 +14,7 @@ int mock_mock_array[1] = {0};
 
 // Left hand
   // TeensyTouch
-int mux_pins_mock[NUM_OF_MUX_PINS] = {mux_1_pin, mux_2_pin};
+int mux_pins_mock[NUM_OF_MUX_PINS] = {mux_sig_pin_1, mux_sig_pin_2};
 int* ptr_mux_pins_mock = mux_pins_mock;
 int mux_ch_mock = 0;
 int* ptr_mux_ch_mock = &mux_ch_mock;
