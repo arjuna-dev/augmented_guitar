@@ -58,7 +58,7 @@ void setup() {
 
 void loop() {
 
-  // aunit::TestRunner::run();
+  aunit::TestRunner::run();
 
   // Update the MIDI values according to pressed frets
   for (int i = 0; i < 6; i++) {
