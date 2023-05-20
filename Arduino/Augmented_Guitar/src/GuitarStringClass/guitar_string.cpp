@@ -2,6 +2,8 @@
 #include "guitar_string.h"
 #include "../MIDI/midi.h"
 #include "../debug/debug.h"
+#include "../device_specs/device_specs.h"
+#include "../mux/mux.h"
 
 #define sine_wave_falling_edge 35
 #define peak_diff_threshold 30
@@ -15,26 +17,23 @@ GuitarString::GuitarString(const int string_number, const int input_pin, const c
   _min_threshold  = min_threshold;
 }
 
-
 void GuitarString::updateStringMIDIValue() {
-  bool is_last_fret_touched = true;
   bool is_fret_touched = false;
   bool any_fret_touched = false;
-  
-  for (int j = 0; j < 4; j++) {
 
-    if (digitalRead(_input_pin) == HIGH) {
+  for (int j = 0; j < 4; j++) {
+    selectMuxChannel(fret_position_to_mux[_string_number][j][1]);
+    int fret_value = analogRead(fret_position_to_mux[_string_number][j][0]);
+    if (fret_value > 950) {
       is_fret_touched = true;
       any_fret_touched = true;
     } else {
       is_fret_touched = false;
     }
-    if (is_last_fret_touched && is_fret_touched && !_note_on) {
+    if (is_fret_touched && !_note_on) {
       _pressed_fret = j + 1;
     }
-    is_last_fret_touched = is_fret_touched;
   }
-
   if (!any_fret_touched) {
     _pressed_fret = 0;
   }
