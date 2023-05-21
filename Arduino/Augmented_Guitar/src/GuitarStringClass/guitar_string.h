@@ -20,7 +20,8 @@ protected:
   void update_last_peak_value();
   void printSineWaveValues(int iteration, int number_of_iterations);
   void detect_peak_value_soft();
-  virtual int analog_reader(int pin);
+  virtual int analog_reader_right_hand(int pin);
+  virtual int analog_reader_left_hand(int pin);
 
   bool _note_on = false;
   int _pressed_fret = 0;

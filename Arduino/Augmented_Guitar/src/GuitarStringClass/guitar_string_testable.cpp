@@ -17,6 +17,11 @@ bool GuitarStringTestable::get_note_on(){
  return _note_on;
 };
 
-int GuitarStringTestable::analog_reader(int pin){
+int GuitarStringTestable::analog_reader_right_hand(int pin){
+  return _mock_sine_wave_vector[_mock_sine_wave_index++];
+}
+
+int GuitarStringTestable::analog_reader_left_hand(int mux_pin){
+  fret_position_to_mux_mock
   return _mock_sine_wave_vector[_mock_sine_wave_index++];
 }

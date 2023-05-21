@@ -36,7 +36,8 @@ class GuitarStringTestable : public GuitarString {
     void set_current_amplitude(int amplitude);
     vector<int> _mock_sine_wave_vector;
   private:
-    int analog_reader(int pin) override;
+    int analog_reader_right_hand(int pin) override;
+    int analog_reader_left_hand(int pin) override;
     int _mock_sine_wave_index = 0;
 };
 
