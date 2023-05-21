@@ -69,7 +69,7 @@ void loop() {
   for (int i = 0; i < 6; i++) {
     guitar_strings[i].detect_note_on();
     guitar_strings[i].detect_note_off();
-    guitar_strings[i].update_prev_and_current_amplitudes(analogRead);
+    guitar_strings[i].update_prev_and_current_amplitudes();
   }
 
 }

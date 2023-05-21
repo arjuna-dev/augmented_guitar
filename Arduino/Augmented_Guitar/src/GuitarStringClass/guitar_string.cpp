@@ -17,13 +17,17 @@ GuitarString::GuitarString(const int string_number, const int input_pin, const c
   _min_threshold  = min_threshold;
 }
 
+int GuitarString::analog_reader(int pin){
+  return analogRead(pin);
+}
+
 void GuitarString::updateStringMIDIValue() {
   bool is_fret_touched = false;
   bool any_fret_touched = false;
 
   for (int j = 0; j < 4; j++) {
     selectMuxChannel(fret_position_to_mux[_string_number][j][1]);
-    int fret_value = analogRead(fret_position_to_mux[_string_number][j][0]);
+    int fret_value = analog_reader(fret_position_to_mux[_string_number][j][0]);
     if (fret_value > 950) {
       is_fret_touched = true;
       any_fret_touched = true;
@@ -109,9 +113,9 @@ int GuitarString::get_MIDI_value() {
   return MIDI_open_string_notes[_string_number]+_pressed_fret;
 }
 
-void GuitarString::update_prev_and_current_amplitudes(int (*analog_read_func)(uint8_t)) {
+void GuitarString::update_prev_and_current_amplitudes() {
   _previous_amplitude = _current_amplitude;
-  _current_amplitude = analog_read_func(_input_pin);
+  _current_amplitude = analog_reader(_input_pin);
 }
 
 

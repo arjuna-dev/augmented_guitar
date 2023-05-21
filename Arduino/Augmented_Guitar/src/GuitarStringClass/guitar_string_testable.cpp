@@ -16,3 +16,7 @@ void GuitarStringTestable::set_current_amplitude(int amplitude){
 bool GuitarStringTestable::get_note_on(){
  return _note_on;
 };
+
+int GuitarStringTestable::analog_reader(int pin){
+  return _mock_sine_wave_vector[_mock_sine_wave_index++];
+}

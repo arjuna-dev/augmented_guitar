@@ -11,7 +11,7 @@ public:
   void detect_note_on(bool debug_sine_wave=false, int string_number=0 , int number_of_values=1000);
   void detect_note_off();
   void updateStringMIDIValue();
-  void update_prev_and_current_amplitudes(int (*analog_read_func)(uint8_t));
+  void update_prev_and_current_amplitudes();
   int get_MIDI_value();  
   int getAnalogValues();
 
@@ -20,6 +20,7 @@ protected:
   void update_last_peak_value();
   void printSineWaveValues(int iteration, int number_of_iterations);
   void detect_peak_value_soft();
+  virtual int analog_reader(int pin);
 
   bool _note_on = false;
   int _pressed_fret = 0;
