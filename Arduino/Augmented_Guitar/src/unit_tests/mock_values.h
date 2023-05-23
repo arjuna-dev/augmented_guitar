@@ -7,19 +7,7 @@
 
 using namespace std;
 
-extern int mock_mock_array[1];
-
-// TeensyTouch
-extern int mux_pins_mock[NUM_OF_MUX_PINS];
-extern int* ptr_mux_pins_mock;
-extern int mux_ch_mock;
-extern int* ptr_mux_ch_mock ;
-extern int analog_values_mock[NUM_OF_NOTES];
-extern int* ptr_analog_values_mock;
-extern int reference_analog_values_mock[NUM_OF_NOTES];
-extern int* ptr_reference_analog_values_mock;
 void selectMuxChannelMock(int mux_ch);
-extern int* ptr_mock_TSI_values;
 
 // GuitarStrings
 extern const int string_input_pins_mock[NUM_OF_STRINGS];

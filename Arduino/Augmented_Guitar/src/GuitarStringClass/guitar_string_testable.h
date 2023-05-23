@@ -17,7 +17,8 @@ class GuitarStringTestable : public GuitarString {
       const int max_amplitude = 0,
       const int min_threshold = 0,
       const int max_wave_period = 0,
-      vector<int> mock_sine_wave_vector = {}
+      vector<int> mock_sine_wave_vector = {},
+      const vector<vector<int>>& mock_pressed_frets_arr = {}
     ) : 
     GuitarString(
       string_number,
@@ -28,17 +29,21 @@ class GuitarStringTestable : public GuitarString {
       max_wave_period
     ),
     _mock_sine_wave_vector(mock_sine_wave_vector),
-    _mock_sine_wave_index(0)
+    _mock_sine_wave_index(0),
+    _mock_pressed_frets_arr(mock_pressed_frets_arr),
+    _mock_fret_index(0)
     {};
     bool get_note_on();
     void set_note_on(bool note_on);
     void set_note_on_timestamp(unsigned long  millis);
     void set_current_amplitude(int amplitude);
     vector<int> _mock_sine_wave_vector;
+    vector<vector<int>> _mock_pressed_frets_arr;
   private:
     int analog_reader_right_hand(int pin) override;
     int analog_reader_left_hand(int pin) override;
     int _mock_sine_wave_index = 0;
+    int _mock_fret_index = 0;
 };
 
 

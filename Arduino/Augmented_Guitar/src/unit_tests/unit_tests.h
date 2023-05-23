@@ -43,10 +43,18 @@ void populate_array_rand(int arr[], int size, int min = 0, int max = 0) {
 class RightHandFixture: public aunit::TestOnce {
   protected:
     GuitarStringTestable guitar_string_mocks[6];
+    vector<vector<int>> mock_pressed_frets_arr = {
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    };
     void setup() override {
       TestOnce::setup();
       for (int i = 0; i < 6; i++) {
-        guitar_string_mocks[i] = {i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i]};
+        guitar_string_mocks[i] = {i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i], mock_pressed_frets_arr};
       }
     }
 
@@ -58,12 +66,21 @@ class RightHandFixture: public aunit::TestOnce {
 };
 
 class LeftHandFixture: public aunit::TestOnce {
+  public:
+    vector<vector<int>> mock_pressed_frets_arr = {
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}
+    };
   protected:
     GuitarStringTestable guitar_string_mocks[6];
     void setup() override {
       TestOnce::setup();
       for (int i = 0; i < 6; i++) {
-        guitar_string_mocks[i] = {i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i]};
+        guitar_string_mocks[i] = {i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i], mock_pressed_frets_arr};
       }
     }
 
@@ -220,6 +237,14 @@ testF(RightHandFixture, detect_note_off_false_positive_through_amplitude){
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 testF(LeftHandFixture, detect_finger_position_all_frets_pressed){
+
+  guitar_string_mocks[0]._mock_pressed_frets_arr[0][3] = 1000;
+  guitar_string_mocks[1]._mock_pressed_frets_arr[1][3] = 1000;
+  guitar_string_mocks[2]._mock_pressed_frets_arr[2][3] = 1000;
+  guitar_string_mocks[3]._mock_pressed_frets_arr[3][3] = 1000;
+  guitar_string_mocks[4]._mock_pressed_frets_arr[4][3] = 1000;
+  guitar_string_mocks[5]._mock_pressed_frets_arr[5][3] = 1000;
+
 
   // Update the MIDI values according to pressed frets
   for (int i = 0; i < 6; i++) {

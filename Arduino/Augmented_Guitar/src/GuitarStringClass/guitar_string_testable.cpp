@@ -22,6 +22,8 @@ int GuitarStringTestable::analog_reader_right_hand(int pin){
 }
 
 int GuitarStringTestable::analog_reader_left_hand(int mux_pin){
-  fret_position_to_mux_mock
-  return _mock_sine_wave_vector[_mock_sine_wave_index++];
+  if (_mock_fret_index >= NUM_OF_FRETS){
+    _mock_fret_index = 0;
+  }
+  return _mock_pressed_frets_arr[_string_number][_mock_fret_index++];
 }

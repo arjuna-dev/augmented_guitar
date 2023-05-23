@@ -9,17 +9,11 @@ constexpr int max_amplitudes_mock[NUM_OF_STRINGS] = {540, 510, 560, 580, 620, 60
 constexpr int min_thresholds_mock[NUM_OF_STRINGS] = {15, 18, 20, 20, 15, 23};
 constexpr int max_wave_periods_mock[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
 
-
-int mock_mock_array[1] = {0};
-
 // Left hand
-  // TeensyTouch
-int mux_pins_mock[NUM_OF_MUX_PINS] = {mux_sig_pin_1, mux_sig_pin_2};
-int* ptr_mux_pins_mock = mux_pins_mock;
-int mux_ch_mock = 0;
-int* ptr_mux_ch_mock = &mux_ch_mock;
+
 void selectMuxChannelMock(int mux_ch) {}
-int* ptr_mock_TSI_values = mock_mock_array;
+
+int mock_mux_sig_pin = 0;
 
 // Right hand
 
