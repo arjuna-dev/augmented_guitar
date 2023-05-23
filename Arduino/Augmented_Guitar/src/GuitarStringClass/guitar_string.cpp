@@ -7,6 +7,7 @@
 
 #define sine_wave_falling_edge 35
 #define peak_diff_threshold 30
+#define _fret_touched_threshold 950
 
 GuitarString::GuitarString(const int string_number, const int input_pin, const char open_string_note, const int max_amplitude, const int min_threshold, const int max_wave_period) {
   _string_number  = string_number;
@@ -32,7 +33,7 @@ void GuitarString::updateStringMIDIValue() {
   for (int j = 0; j < 4; j++) {
     selectMuxChannel(fret_position_to_mux[_string_number][j][1]);
     int fret_value = analog_reader_left_hand(fret_position_to_mux[_string_number][j][0]);
-    if (fret_value > 950) {
+    if (fret_value > _fret_touched_threshold) {
       is_fret_touched = true;
       any_fret_touched = true;
     } else {
