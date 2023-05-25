@@ -2,7 +2,6 @@
 #define TESTS_H
 
 #include "Arduino.h"
-
 #include <algorithm>
 #include <numeric>
 #include <vector>
@@ -11,11 +10,6 @@
 #include "mock_values.h"
 #include "../guitarStringClass/guitar_string_testable.h"
 #include "../MIDI/midi.h"
-
-
-// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-// _-_-_-_-_-_-_-_-_-_-_-_-_-FIXTURES-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
 void populate_array(int arr[], int size, int value) {
   for (int i=0; i<size; i++) {
@@ -35,6 +29,10 @@ void populate_array_rand(int arr[], int size, int min = 0, int max = 0) {
     }
   }
 }
+
+// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+// _-_-_-_-_-_-_-_-_-_-_-_-_-FIXTURES-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
     // _-_-_-_GuitarStringsFixture_-_-_-_
