@@ -9,7 +9,8 @@
 #define peak_diff_threshold 30
 #define _fret_touched_threshold 950
 
-GuitarString::GuitarString(const int string_number, const int input_pin, const char open_string_note, const int max_amplitude, const int min_threshold, const int max_wave_period) {
+GuitarString::GuitarString(AnalogReaderInterface* analog_reader, const int string_number, const int input_pin, const char open_string_note, const int max_amplitude, const int min_threshold, const int max_wave_period) {
+  _analog_reader = analog_reader;
   _string_number  = string_number;
   _open_string_note  = open_string_note;
   _max_amplitude  = max_amplitude;
@@ -18,21 +19,13 @@ GuitarString::GuitarString(const int string_number, const int input_pin, const c
   _min_threshold  = min_threshold;
 }
 
-int GuitarString::analog_reader_right_hand(int pin){
-  return analogRead(pin);
-}
-
-int GuitarString::analog_reader_left_hand(int pin){
-  return analogRead(pin);
-}
-
 void GuitarString::updateStringMIDIValue() {
   bool is_fret_touched = false;
   bool any_fret_touched = false;
 
   for (int j = 0; j < 4; j++) {
     selectMuxChannel(fret_position_to_mux[_string_number][j][1]);
-    int fret_value = analog_reader_left_hand(fret_position_to_mux[_string_number][j][0]);
+    int fret_value = _analog_reader->analogReaderLeft(fret_position_to_mux[_string_number][j][0]);
     if (fret_value > _fret_touched_threshold) {
       is_fret_touched = true;
       any_fret_touched = true;
@@ -120,7 +113,7 @@ int GuitarString::get_MIDI_value() {
 
 void GuitarString::update_prev_and_current_amplitudes() {
   _previous_amplitude = _current_amplitude;
-  _current_amplitude = analog_reader_right_hand(_input_pin);
+  _current_amplitude = _analog_reader->analogReaderRight(_input_pin);
 }
 
 

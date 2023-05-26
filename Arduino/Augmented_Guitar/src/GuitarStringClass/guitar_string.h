@@ -2,12 +2,13 @@
 #define GUITAR_STRING_H
 
 #include "../device_specs/device_specs.h"
+#include "../AnalogReader/analog_reader_interface.h"
 
 
 class GuitarString {
 
 public:
-  GuitarString(const int string_number = 0, const int input_pin = 0, const char open_string_note = 0, const int max_amplitude = 0, const int min_threshold = 0, const int max_wave_period = 0);
+  GuitarString(AnalogReaderInterface* analog_reader, const int string_number = 0, const int input_pin = 0, const char open_string_note = 0, const int max_amplitude = 0, const int min_threshold = 0, const int max_wave_period = 0);
   void detect_note_on(bool debug_sine_wave=false, int string_number=0 , int number_of_values=1000);
   void detect_note_off();
   void updateStringMIDIValue();
@@ -20,9 +21,8 @@ protected:
   void update_last_peak_value();
   void printSineWaveValues(int iteration, int number_of_iterations);
   void detect_peak_value_soft();
-  virtual int analog_reader_right_hand(int pin);
-  virtual int analog_reader_left_hand(int pin);
 
+  AnalogReaderInterface* _analog_reader;
   bool _note_on = false;
   int _pressed_fret = 0;
   int _string_number;
