@@ -32,8 +32,8 @@ class GuitarStringMock : public GuitarString {
   private:
     int analog_reader_right_hand(int pin) override;
     int analog_reader_left_hand(int pin) override;
-    int _mock_sine_wave_index = 0;
-    int _mock_fret_index = 0;
+    int _mock_sine_wave_index;
+    int _mock_fret_index;
 };
 
 

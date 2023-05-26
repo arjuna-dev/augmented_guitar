@@ -23,7 +23,20 @@ GuitarString::GuitarString(
   _open_string_note(open_string_note),
   _max_amplitude(max_amplitude),
   _min_threshold(min_threshold),
-  _max_wave_period(max_wave_period){}
+  _max_wave_period(max_wave_period),
+
+  _note_on(false),
+  _pressed_fret(0),
+  _note_on_timestamp(0),
+  _current_amplitude(0),
+  _previous_amplitude(0),
+  _peak_value(0),
+  _last_peak_value(0),
+  _last_sent_pressed_fret(0),
+  _last_sent_note_on_fret(0),
+  _accumulated_decrements(0),
+  _trough_count(0)
+  {}
 
 int GuitarString::analog_reader_right_hand(int pin){
   return analogRead(pin);
