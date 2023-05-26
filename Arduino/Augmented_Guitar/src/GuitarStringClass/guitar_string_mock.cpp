@@ -1,7 +1,33 @@
 #include "Arduino.h"
-#include "guitar_string_testable.h"
+#include "guitar_string_mock.h"
 
-void GuitarStringTestable::set_note_on(bool note_on){
+
+GuitarStringMock::GuitarStringMock(      
+  MIDIInterface* midi_methods,
+  const int string_number,
+  const int input_pin,
+  const char open_string_note,
+  const int max_amplitude,
+  const int min_threshold,
+  const int max_wave_period,
+  const vector<int> mock_sine_wave_vector,
+  vector<vector<int>>& mock_pressed_frets_arr) :
+  GuitarString(
+    midi_methods,
+    string_number,
+    input_pin,
+    open_string_note,
+    max_amplitude,
+    min_threshold,
+    max_wave_period
+  ),
+  _mock_sine_wave_vector(mock_sine_wave_vector),
+  _mock_sine_wave_index(0),
+  _mock_pressed_frets_arr(mock_pressed_frets_arr),
+  _mock_fret_index(0)
+  {};
+
+void GuitarStringMock::set_note_on(bool note_on){
   _note_on = note_on;
 };
 
