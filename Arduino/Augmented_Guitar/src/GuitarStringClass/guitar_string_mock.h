@@ -3,6 +3,7 @@
 
 #include "../device_specs/device_specs.h"
 #include "guitar_string.h"
+#include "../MIDI/midi_interface.h"
 #include <vector>
 
 using namespace std;
