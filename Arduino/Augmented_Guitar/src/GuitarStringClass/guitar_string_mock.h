@@ -1,5 +1,5 @@
-#ifndef GUITAR_STRING_TESTABLE_H
-#define GUITAR_STRING_TESTABLE_H
+#ifndef GUITAR_STRING_MOCK_H
+#define GUITAR_STRING_MOCK_H
 
 #include "../device_specs/device_specs.h"
 #include "guitar_string.h"
