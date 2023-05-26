@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include "guitar_string.h"
-#include "../MIDI/midi.h"
+#include "../MIDI/midi_interface.h"
 #include "../debug/debug.h"
 #include "../device_specs/device_specs.h"
 #include "../mux/mux.h"
@@ -141,7 +141,7 @@ void GuitarString::detect_note_on(bool debug_sine_wave, int string_number, int n
   if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
     _note_on = true;
     _note_on_timestamp = millis();
-    MIDI_note_on(_string_number, _peak_value, _pressed_fret);
+    _midi_methods->MIDI_note_on(_string_number, _peak_value, _pressed_fret);
     _last_sent_note_on_fret = _pressed_fret;
   }
   update_last_peak_value();
