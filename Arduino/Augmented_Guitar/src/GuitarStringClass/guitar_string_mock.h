@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class GuitarStringTestable : public GuitarString {
+class GuitarStringMock : public GuitarString {
 
   public:
     GuitarStringMock(
