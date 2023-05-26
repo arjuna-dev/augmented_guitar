@@ -176,7 +176,7 @@ testF(RightHandFixture, detect_note_off_through_amplitude){
   bool detected_note_offs[NUM_OF_STRINGS] = {false};
   for (int j = 0; j < iterations; j++) {
     for (int i = 0; i < NUM_OF_STRINGS; i++) {
-      guitar_string_mocks[i].set_current_amplitude(min_thresholds_mock[i]-5);
+      guitar_string_mocks[i].set_current_amplitude(min_thresholds_mock[i]-1);
       guitar_string_mocks[i].detect_note_off();
 
       if (guitar_string_mocks[i].get_note_on() == false && detected_note_offs[i] == false) {
@@ -222,7 +222,7 @@ testF(RightHandFixture, detect_note_off_false_positive_through_amplitude){
 
   for (int j = 0; j < values_size; j++) {
     for (int i = 0; i < NUM_OF_STRINGS; i++) {
-      guitar_string_mocks[i].set_current_amplitude(min_thresholds_mock[i]+5);
+      guitar_string_mocks[i].set_current_amplitude(min_thresholds_mock[i]+1);
       guitar_string_mocks[i].detect_note_off();
 
       if (guitar_string_mocks[i].get_note_on() == false) {
