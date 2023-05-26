@@ -7,7 +7,7 @@
 class GuitarString {
 
 public:
-  GuitarString(const int string_number = 0, const int input_pin = 0, const char open_string_note = 0, const int max_amplitude = 0, const int min_threshold = 0, const int max_wave_period = 0);
+  GuitarString(MIDIInterface* midi_methods, const int string_number, const int input_pin, const char open_string_note, const int max_amplitude, const int min_threshold, const int max_wave_period);
   void detect_note_on(bool debug_sine_wave=false, int string_number=0 , int number_of_values=1000);
   void detect_note_off();
   void updateStringMIDIValue();
@@ -23,6 +23,7 @@ protected:
   virtual int analog_reader_right_hand(int pin);
   virtual int analog_reader_left_hand(int pin);
 
+  MIDIInterface* _midi_methods;
   bool _note_on = false;
   int _pressed_fret = 0;
   int _string_number;
