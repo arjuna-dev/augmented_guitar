@@ -27,7 +27,7 @@ class GuitarStringMock : public GuitarString {
     void set_current_amplitude(int amplitude);
     void set_pressed_fret(int fret, int value);
     vector<int> _mock_sine_wave_vector;
-    vector<vector<int>> _mock_pressed_frets_arr;
+    vector<vector<int>>& _mock_pressed_frets_arr;
   private:
     int analog_reader_right_hand(int pin) override;
     int analog_reader_left_hand(int pin) override;
