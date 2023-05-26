@@ -31,11 +31,11 @@ void MIDIMethodsMock::MIDI_note_off(int string, int fret) {
 
 int MIDIMethodsMock::get_last_sent_CC_value(){
   return _sent_CC_value;
-};
+}
 
 int MIDIMethodsMock::get_last_sent_MIDI_note_value(){
   return _sent_MIDI_note_value;
-};
+}
 
 int MIDIMethodsMock::get_last_sent_MIDI_velocity_value(){
   return _sent_MIDI_velocity_value;
