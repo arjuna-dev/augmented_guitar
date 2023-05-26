@@ -53,3 +53,7 @@ int GuitarStringTestable::analog_reader_left_hand(int mux_pin){
   }
   return _mock_pressed_frets_arr[_string_number][_mock_fret_index++];
 }
+
+void GuitarStringMock::set_pressed_fret(int fret, int value) {
+    _mock_pressed_frets_arr[_string_number][fret] = value;
+}

@@ -241,7 +241,7 @@ testF(RightHandFixture, detect_note_off_false_positive_through_amplitude){
 testF(LeftHandFixture, detect_finger_position_all_frets_pressed){
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
-    guitar_string_mocks[i]._mock_pressed_frets_arr[i][3] = 1000;
+    guitar_string_mocks[i].set_pressed_fret(3, 1000);
   }
 
   // Update the MIDI values according to pressed frets
