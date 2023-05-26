@@ -25,7 +25,7 @@ void GuitarString::updateStringMIDIValue() {
 
   for (int j = 0; j < 4; j++) {
     selectMuxChannel(fret_position_to_mux[_string_number][j][1]);
-    int fret_value = _analog_reader->analogReaderLeft(fret_position_to_mux[_string_number][j][0]);
+    int fret_value = _analog_reader->analog_reader_left(fret_position_to_mux[_string_number][j][0], _string_number);
     if (fret_value > _fret_touched_threshold) {
       is_fret_touched = true;
       any_fret_touched = true;
@@ -113,7 +113,7 @@ int GuitarString::get_MIDI_value() {
 
 void GuitarString::update_prev_and_current_amplitudes() {
   _previous_amplitude = _current_amplitude;
-  _current_amplitude = _analog_reader->analogReaderRight(_input_pin);
+  _current_amplitude = _analog_reader->analog_reader_right(_input_pin);
 }
 
 

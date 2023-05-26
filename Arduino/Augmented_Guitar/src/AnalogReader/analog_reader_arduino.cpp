@@ -4,10 +4,10 @@
 
 AnalogReaderArduino::AnalogReaderArduino(){};
 
-int AnalogReaderArduino::analogReaderLeft(int pin) {
+int AnalogReaderArduino::analog_reader_left(int pin, int string) {
     analogRead(pin);
 }
 
-int AnalogReaderArduino::analogReaderRight(int pin) {
+int AnalogReaderArduino::analog_reader_right(int pin) {
     analogRead(pin);
 }

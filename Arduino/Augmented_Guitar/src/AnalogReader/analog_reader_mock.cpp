@@ -10,14 +10,14 @@ AnalogReaderMock::AnalogReaderMock(const vector<int>& mock_sine_wave_vector, vec
   _mock_fret_index(0)
   {};
 
-int AnalogReaderMock::analogReaderLeft(int pin) {
+int AnalogReaderMock::analog_reader_left(int pin, int string) {
   if (_mock_fret_index >= NUM_OF_FRETS){
     _mock_fret_index = 0;
   }
-  return _mock_pressed_frets_arr[_string_number][_mock_fret_index++];
+  return _mock_pressed_frets_arr[string][_mock_fret_index++];
 }
 
-int AnalogReaderMock::analogReaderRight(int pin) {
+int AnalogReaderMock::analog_reader_right(int pin) {
   return _mock_sine_wave_vector[_mock_sine_wave_index++];
 }
 
