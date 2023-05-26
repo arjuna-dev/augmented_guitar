@@ -2,6 +2,7 @@
 #define GUITAR_STRING_H
 
 #include "../device_specs/device_specs.h"
+#include "../MIDI/midi_interface.h"
 
 
 class GuitarString {
@@ -25,22 +26,22 @@ protected:
 
   MIDIInterface* _midi_methods;
   bool _note_on = false;
-  int _pressed_fret = 0;
+  int _pressed_fret;
   int _string_number;
   int _input_pin;
   int _open_string_note;
   int _max_amplitude;
   int _min_threshold;
   int _max_wave_period;
-  unsigned long _note_on_timestamp = 0;
-  int _current_amplitude = 0;
-  int _previous_amplitude = 0;
-  int _peak_value = 0;
-  int _last_peak_value = 0;
-  int _last_sent_pressed_fret = 0;
-  int _last_sent_note_on_fret = 0;
-  int _accumulated_decrements = 0;
-  int _trough_count = 0;
+  unsigned long _note_on_timestamp;
+  int _current_amplitude;
+  int _previous_amplitude;
+  int _peak_value;
+  int _last_peak_value;
+  int _last_sent_pressed_fret;
+  int _last_sent_note_on_fret;
+  int _accumulated_decrements;
+  int _trough_count;
 };
 
 

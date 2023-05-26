@@ -9,7 +9,21 @@
 #define peak_diff_threshold 30
 #define _fret_touched_threshold 950
 
+GuitarString::GuitarString(
   MIDIInterface* midi_methods,
+  const int string_number,
+  const int input_pin,
+  const char open_string_note,
+  const int max_amplitude,
+  const int min_threshold,
+  const int max_wave_period) :
+  _midi_methods(midi_methods),
+  _string_number(string_number),
+  _input_pin(input_pin),
+  _open_string_note(open_string_note),
+  _max_amplitude(max_amplitude),
+  _min_threshold(min_threshold),
+  _max_wave_period(max_wave_period){}
 
 int GuitarString::analog_reader_right_hand(int pin){
   return analogRead(pin);
