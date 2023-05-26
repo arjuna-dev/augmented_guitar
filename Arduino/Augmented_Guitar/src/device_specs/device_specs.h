@@ -18,4 +18,6 @@ constexpr int fret_position_to_mux[NUM_OF_STRINGS][NUM_OF_FRETS][2] = {
   {{mux_sig_pin_2, 10}, {mux_sig_pin_2, 4}, {mux_sig_pin_1, 1}, {mux_sig_pin_1, 7}},
 };
 
+constexpr int MIDI_open_string_notes[NUM_OF_STRINGS] = {40, 45, 50, 55, 59, 64};
+
 #endif
