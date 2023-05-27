@@ -44,9 +44,7 @@ void populate_array_rand(int arr[], int size, int min = 0, int max = 0) {
 
 class RightHandFixture: public aunit::TestOnce {
   protected:
-    MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
-    vector<GuitarStringMock> guitar_string_mocks;
-    vector<vector<int>> mock_pressed_frets_arr = {
+    vector<vector<int>> mock_pressed_frets_values = {
       {0, 0, 0, 0},
       {0, 0, 0, 0},
       {0, 0, 0, 0},
