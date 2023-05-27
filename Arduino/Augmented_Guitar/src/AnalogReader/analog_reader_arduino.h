@@ -8,7 +8,7 @@ class AnalogReaderArduino : public AnalogReaderInterface
   public:
     AnalogReaderArduino();
   protected:
-    int analog_reader_left(int pin, int string) override;
+    int analog_reader_left(int pin) override;
     int analog_reader_right(int pin) override;
 };
 

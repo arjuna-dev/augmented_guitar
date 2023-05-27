@@ -8,6 +8,8 @@
 #include "../guitarStringClass/guitar_string_mock.h"
 #include "../MIDI/midi_methods_mock.h"
 #include "../MIDI/midi_interface.h"
+#include "../AnalogReader/analog_reader_interface.h"
+#include "../AnalogReader/analog_reader_mock.h"
 #include <algorithm>
 #include <numeric>
 #include <vector>
@@ -51,11 +53,13 @@ class RightHandFixture: public aunit::TestOnce {
       {0, 0, 0, 0},
       {0, 0, 0, 0}
     };
+    MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
+    vector<AnalogReaderInterface*> analog_reader_mocks;
+    vector<GuitarString> guitar_string_mocks;
     void setup() override {
       TestOnce::setup();
-
-      for (int i = 0; i < 6; i++) {
-        guitar_string_mocks.push_back(GuitarStringMock(midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i], mock_pressed_frets_arr));
+        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(_strings_sine_wave_mocks[i], mock_pressed_frets_values, i);
+        guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
       }
     }
 

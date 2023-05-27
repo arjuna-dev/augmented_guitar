@@ -4,7 +4,7 @@
 class AnalogReaderInterface 
 {
   public:
-    virtual int analog_reader_left(int pin, int string) = 0;
+    virtual int analog_reader_left(int pin) = 0;
     virtual int analog_reader_right(int pin) = 0;
 };
 

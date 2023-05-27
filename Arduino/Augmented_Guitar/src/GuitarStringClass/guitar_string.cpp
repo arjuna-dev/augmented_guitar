@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "guitar_string.h"
 #include "../MIDI/midi_interface.h"
+#include "../AnalogReader/analog_reader_interface.h"
 #include "../debug/debug.h"
 #include "../device_specs/device_specs.h"
 #include "../mux/mux.h"
@@ -10,7 +11,7 @@
 #define _fret_touched_threshold 950
 
 GuitarString::GuitarString(
-  AnalogReader* analog_reader,
+  AnalogReaderInterface* analog_reader,
   MIDIInterface* midi_methods,
   const int string_number,
   const int input_pin,
@@ -46,7 +47,7 @@ void GuitarString::update_string_MIDI_value() {
 
   for (int j = 0; j < 4; j++) {
     selectMuxChannel(fret_position_to_mux[_string_number][j][1]);
-    int fret_value = _analog_reader->analog_reader_left(fret_position_to_mux[_string_number][j][0], _string_number);
+    int fret_value = _analog_reader->analog_reader_left(fret_position_to_mux[_string_number][j][0]);
     if (fret_value > _fret_touched_threshold) {
       is_fret_touched = true;
       any_fret_touched = true;

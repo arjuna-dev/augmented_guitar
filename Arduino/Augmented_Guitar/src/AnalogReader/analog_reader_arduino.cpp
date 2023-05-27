@@ -4,7 +4,7 @@
 
 AnalogReaderArduino::AnalogReaderArduino(){};
 
-int AnalogReaderArduino::analog_reader_left(int pin, int string) {
+int AnalogReaderArduino::analog_reader_left(int pin) {
     analogRead(pin);
 }
 

@@ -9,16 +9,16 @@ using namespace std;
 class AnalogReaderMock : public AnalogReaderInterface
 {
   public:
-    AnalogReaderMock(const vector<int>& mock_sine_wave_vector, vector<vector<int>>& mock_pressed_frets_arr);
-    void setFretValue(int string_index, int fret_index, int value);
+    AnalogReaderMock(vector<int>& mock_sine_wave_vector, vector<vector<int>>& mock_pressed_frets_arr, int string_number);
   protected:
-    int analog_reader_left(int pin, int string) override;
+    int analog_reader_left(int pin) override;
     int analog_reader_right(int pin) override;
   private:
-    vector<int> _mock_sine_wave_vector;
+    vector<int>& _mock_sine_wave_vector;
     int _mock_sine_wave_index;
     vector<vector<int>>& _mock_pressed_frets_arr;
     int _mock_fret_index;
+    int _string_number;
 };
 
 #endif
