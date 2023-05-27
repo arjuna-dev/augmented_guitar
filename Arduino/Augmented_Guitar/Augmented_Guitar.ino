@@ -45,11 +45,6 @@ void setup() {
     guitar_strings.push_back(GuitarString(analog_reader, midi_methods, i, string_input_pins[i], open_string_notes[i], max_amplitudes[i], min_thresholds[i], max_wave_periods[i]));
   }
 
-  // /*_-_-GuitarString Class setup_-_-*/
-  // for (int i = 0; i < 6; i++) {
-  //   guitar_strings[i] = {i, string_input_pins[i], open_string_notes[i], max_amplitudes[i], min_thresholds[i], max_wave_periods[i]};
-  // }
-
   /*_-_-Mux setup_-_-*/
   selectMuxChannel(0);
   for (int i = 0; i < 4; i++) {
