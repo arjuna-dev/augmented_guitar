@@ -1,88 +1,10 @@
-#ifndef TESTS_H
-#define TESTS_H
-
-#include "AUnit.h"
-#include "Arduino.h"
-#include "mock_values.h"
-#include "../device_specs/device_specs.h"
-#include "../GuitarStringClass/guitar_string.h"
-#include "../GuitarStringClass/guitar_string_friend.h"
-#include "../MIDI/midi_methods_mock.h"
-#include "../MIDI/midi_interface.h"
-#include "../AnalogReader/analog_reader_interface.h"
-#include "../AnalogReader/analog_reader_mock.h"
+#include "test_fixtures.h"
 #include <algorithm>
 #include <numeric>
-#include <vector>
 
-void populate_array(int arr[], int size, int value) {
-  for (int i=0; i<size; i++) {
-      arr[i] = value;
-  }
-}
-
-void populate_array_rand(int arr[], int size, int min = 0, int max = 0) {
-  if (min != 0 || max != 0) {
-    int range = max - min + 1;
-    for (int i=0; i<size; i++) {
-        arr[i] = (rand()% range) + min;
-    }
-  } else {
-    for (int i=0; i<size; i++) {
-        arr[i] = rand();
-    }
-  }
-}
-
-// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-// _-_-_-_-_-_-_-_-_-_-_-_-_-FIXTURES-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-
-    // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-    // _-_-_-_GuitarStringsFixture_-_-_-_
-    // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-
-class GuitarStringFixture: public aunit::TestOnce {
-  protected:
-    vector<vector<int>> mock_pressed_frets_values = {
-      {0, 0, 0, 0},
-      {0, 0, 0, 0},
-      {0, 0, 0, 0},
-      {0, 0, 0, 0},
-      {0, 0, 0, 0},
-      {0, 0, 0, 0}
-    };
-    MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
-    vector<AnalogReaderInterface*> analog_reader_mocks;
-    vector<GuitarString> guitar_string_mocks;
-    GuitarStringFriend guitar_string_friend;
-    vector<int> _strings_sine_wave_mocks[NUM_OF_STRINGS];
-    void setup() override {
-      TestOnce::setup();
-      // make copies of sine waves
-      for (int i = 0; i < NUM_OF_STRINGS; i++) {
-        _strings_sine_wave_mocks[i] = strings_sine_wave_mocks[i];
-      }
-      for (int i = 0; i < NUM_OF_STRINGS; i++) {
-        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(_strings_sine_wave_mocks[i], mock_pressed_frets_values, i);
-        guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
-      }
-    }
-
-    void teardown() override {
-      // Teardown code here
-      TestOnce::teardown();
-    }
-
-};
-
-// // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-// // _-_-_-_-_-_-_-_-_-_-_-_-_TESTS_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-// // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-
-    // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-    // _-_-_-_-_-Right Hand-_-_-_-_-_-
-    // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+// _-_-_-_-_-Right Hand-_-_-_-_-_-
+// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 testF(GuitarStringFixture, detect_note_on){
   int vector_size = strings_sine_wave_mocks[0].size();
@@ -236,5 +158,3 @@ testF(GuitarStringFixture, detect_finger_position_all_frets_pressed){
     assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i] + NUM_OF_FRETS);
   }
 }
-
-#endif

@@ -8,7 +8,7 @@
   white  :E string
 */
 
-#include "src/unit_tests/unit_tests.h"
+#include "src/unit_tests/unit_tests.cpp"
 #include "src/debug/debug.h"
 #include "src/mux/mux.h"
 #include "src/MIDI/midi_interface.h"
