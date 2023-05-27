@@ -11,7 +11,8 @@
 #include "src/unit_tests/unit_tests.h"
 #include "src/debug/debug.h"
 #include "src/mux/mux.h"
-#include "src/MIDI/midi.h"
+#include "src/MIDI/midi_interface.h"
+#include "src/MIDI/midi_methods.h"
 #include "src/device_specs/device_specs.h"
 #include "src/GuitarStringClass/guitar_string.h"
 #include "src/AnalogReader/analog_reader_interface.h"
@@ -32,6 +33,7 @@ constexpr int max_wave_periods[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
 int mux_signal_pins[NUM_OF_MUX_PINS] = {mux_sig_pin_1, mux_sig_pin_2};
 
 AnalogReaderInterface* analog_reader = new AnalogReaderArduino();
+MIDIInterface* midi_methods = new MIDIMethods();
 
 vector<GuitarString> guitar_strings;
 
@@ -40,7 +42,7 @@ void setup() {
 
   /*_-_-GuitarString Class setup_-_-*/
   for (int i = 0; i < 6; i++) {
-    guitar_strings.push_back(GuitarString(analog_reader, i, string_input_pins[i], open_string_notes[i], max_amplitudes[i], min_thresholds[i], max_wave_periods[i]));
+    guitar_strings.push_back(GuitarString(analog_reader, midi_methods, i, string_input_pins[i], open_string_notes[i], max_amplitudes[i], min_thresholds[i], max_wave_periods[i]));
   }
 
   // /*_-_-GuitarString Class setup_-_-*/

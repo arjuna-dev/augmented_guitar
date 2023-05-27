@@ -1,15 +1,16 @@
 #ifndef TESTS_H
 #define TESTS_H
 
+#include "AUnit.h"
 #include "Arduino.h"
+#include "../device_specs/device_specs.h"
+#include "mock_values.h"
+#include "../guitarStringClass/guitar_string_mock.h"
+#include "../MIDI/midi_methods_mock.h"
+#include "../MIDI/midi_interface.h"
 #include <algorithm>
 #include <numeric>
 #include <vector>
-#include "AUnit.h"
-#include "../device_specs/device_specs.h"
-#include "mock_values.h"
-#include "../guitarStringClass/guitar_string_testable.h"
-#include "../MIDI/midi.h"
 
 void populate_array(int arr[], int size, int value) {
   for (int i=0; i<size; i++) {
@@ -40,7 +41,8 @@ void populate_array_rand(int arr[], int size, int min = 0, int max = 0) {
 
 class RightHandFixture: public aunit::TestOnce {
   protected:
-    GuitarStringTestable guitar_string_mocks[6];
+    MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
+    vector<GuitarStringMock> guitar_string_mocks;
     vector<vector<int>> mock_pressed_frets_arr = {
       {0, 0, 0, 0},
       {0, 0, 0, 0},
@@ -51,8 +53,9 @@ class RightHandFixture: public aunit::TestOnce {
     };
     void setup() override {
       TestOnce::setup();
+
       for (int i = 0; i < 6; i++) {
-        guitar_string_mocks[i] = {i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i], mock_pressed_frets_arr};
+        guitar_string_mocks.push_back(GuitarStringMock(midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i], mock_pressed_frets_arr));
       }
     }
 
@@ -74,11 +77,12 @@ class LeftHandFixture: public aunit::TestOnce {
       {0, 0, 0, 0}
     };
   protected:
-    GuitarStringTestable guitar_string_mocks[6];
+    MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
+    vector<GuitarStringMock> guitar_string_mocks;
     void setup() override {
       TestOnce::setup();
       for (int i = 0; i < 6; i++) {
-        guitar_string_mocks[i] = {i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i], mock_pressed_frets_arr};
+        guitar_string_mocks.push_back(GuitarStringMock(midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i], strings_sine_wave_mocks[i], mock_pressed_frets_arr));
       }
     }
 
@@ -237,7 +241,7 @@ testF(RightHandFixture, detect_note_off_false_positive_through_amplitude){
 testF(LeftHandFixture, detect_finger_position_all_frets_pressed){
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
-    guitar_string_mocks[i]._mock_pressed_frets_arr[i][3] = 1000;
+    guitar_string_mocks[i].set_pressed_fret(3, 1000);
   }
 
   // Update the MIDI values according to pressed frets

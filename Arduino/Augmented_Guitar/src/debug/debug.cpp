@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "debug.h"
-#include "../MIDI/midi.h"
 
 void printCurrentMIDIValues(GuitarString guitar_strings[6]) {
   for (int i = 0; i < 6; i++) {

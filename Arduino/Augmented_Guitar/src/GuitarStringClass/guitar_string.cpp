@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include "guitar_string.h"
-#include "../MIDI/midi.h"
+#include "../MIDI/midi_interface.h"
 #include "../debug/debug.h"
 #include "../device_specs/device_specs.h"
 #include "../mux/mux.h"
@@ -9,15 +9,36 @@
 #define peak_diff_threshold 30
 #define _fret_touched_threshold 950
 
-GuitarString::GuitarString(AnalogReaderInterface* analog_reader, const int string_number, const int input_pin, const char open_string_note, const int max_amplitude, const int min_threshold, const int max_wave_period) {
-  _analog_reader = analog_reader;
-  _string_number  = string_number;
-  _open_string_note  = open_string_note;
-  _max_amplitude  = max_amplitude;
-  _max_wave_period  = max_wave_period;
-  _input_pin  = input_pin;
-  _min_threshold  = min_threshold;
-}
+GuitarString::GuitarString(
+  AnalogReader* analog_reader,
+  MIDIInterface* midi_methods,
+  const int string_number,
+  const int input_pin,
+  const char open_string_note,
+  const int max_amplitude,
+  const int min_threshold,
+  const int max_wave_period) :
+  _analog_reader(analog_reader),
+  _midi_methods(midi_methods),
+  _string_number(string_number),
+  _input_pin(input_pin),
+  _open_string_note(open_string_note),
+  _max_amplitude(max_amplitude),
+  _min_threshold(min_threshold),
+  _max_wave_period(max_wave_period),
+
+  _note_on(false),
+  _pressed_fret(0),
+  _note_on_timestamp(0),
+  _current_amplitude(0),
+  _previous_amplitude(0),
+  _peak_value(0),
+  _last_peak_value(0),
+  _last_sent_pressed_fret(0),
+  _last_sent_note_on_fret(0),
+  _accumulated_decrements(0),
+  _trough_count(0)
+  {}
 
 void GuitarString::updateStringMIDIValue() {
   bool is_fret_touched = false;
@@ -41,8 +62,8 @@ void GuitarString::updateStringMIDIValue() {
   }
 
   if (_pressed_fret != _last_sent_pressed_fret) {
-    MIDI_lift_fret(_string_number, _last_sent_pressed_fret);
-    MIDI_press_fret(_string_number, _pressed_fret);
+    _midi_methods->MIDI_lift_fret(_string_number, _last_sent_pressed_fret);
+    _midi_methods->MIDI_press_fret(_string_number, _pressed_fret);
     _last_sent_pressed_fret = _pressed_fret;
   }
 
@@ -57,7 +78,7 @@ void GuitarString::detect_note_off() {
 
     // If an above-threshold value didn't occur in a wave period time, send note_off
     if (_note_on_timestamp + _max_wave_period < millis()) {
-      MIDI_note_off(_string_number, _last_sent_note_on_fret);
+      _midi_methods->MIDI_note_off(_string_number, _last_sent_note_on_fret);
       _note_on = false;
     }
   }
@@ -127,7 +148,7 @@ void GuitarString::detect_note_on(bool debug_sine_wave, int string_number, int n
   if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
     _note_on = true;
     _note_on_timestamp = millis();
-    MIDI_note_on(_string_number, _peak_value, _pressed_fret);
+    _midi_methods->MIDI_note_on(_string_number, _peak_value, _pressed_fret);
     _last_sent_note_on_fret = _pressed_fret;
   }
   update_last_peak_value();
