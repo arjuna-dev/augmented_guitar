@@ -56,8 +56,14 @@ class RightHandFixture: public aunit::TestOnce {
     vector<AnalogReaderInterface*> analog_reader_mocks;
     vector<GuitarString> guitar_string_mocks;
     GuitarStringFriend guitar_string_friend;
+    vector<int> _strings_sine_wave_mocks[NUM_OF_STRINGS];
     void setup() override {
       TestOnce::setup();
+      // make copies of sine waves
+      for (int i = 0; i < NUM_OF_STRINGS; i++) {
+        _strings_sine_wave_mocks[i] = strings_sine_wave_mocks[i];
+      }
+      for (int i = 0; i < NUM_OF_STRINGS; i++) {
         AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(_strings_sine_wave_mocks[i], mock_pressed_frets_values, i);
         guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
       }
