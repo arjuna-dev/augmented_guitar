@@ -246,7 +246,7 @@ testF(LeftHandFixture, detect_finger_position_all_frets_pressed){
 
   // Update the MIDI values according to pressed frets
   for (int i = 0; i < 6; i++) {
-    guitar_string_mocks[i].updateStringMIDIValue();
+    guitar_string_mocks[i].update_string_MIDI_value();
   }
   for (int i = 0; i < 6; i++) {
     assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i] + NUM_OF_FRETS);

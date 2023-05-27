@@ -70,7 +70,7 @@ void loop() {
 
   // Update the MIDI values according to pressed frets
   for (int i = 0; i < 6; i++) {
-    guitar_strings[i].updateStringMIDIValue();
+    guitar_strings[i].update_string_MIDI_value();
   }
 
   // Detect peak and play MIDI for each string

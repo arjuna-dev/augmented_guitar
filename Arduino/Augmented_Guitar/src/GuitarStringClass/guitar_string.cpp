@@ -40,7 +40,7 @@ GuitarString::GuitarString(
   _trough_count(0)
   {}
 
-void GuitarString::updateStringMIDIValue() {
+void GuitarString::update_string_MIDI_value() {
   bool is_fret_touched = false;
   bool any_fret_touched = false;
 
