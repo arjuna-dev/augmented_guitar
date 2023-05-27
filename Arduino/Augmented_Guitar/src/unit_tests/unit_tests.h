@@ -3,6 +3,7 @@
 
 #include "AUnit.h"
 #include "Arduino.h"
+#include "mock_values.h"
 #include "../device_specs/device_specs.h"
 #include "../GuitarStringClass/guitar_string.h"
 #include "../GuitarStringClass/guitar_string_friend.h"
