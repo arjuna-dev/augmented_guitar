@@ -58,6 +58,30 @@ class GuitarStringFixture: public aunit::TestOnce {
     vector<GuitarString> guitar_string_mocks;
     GuitarStringFriend guitar_string_friend;
 
+    void initialize_all(){
+      for (int i = 0; i < NUM_OF_STRINGS; i++) {
+        MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
+        midi_methods_mocks.push_back(midi_methods_mock); 
+        guitar_string_mocks.push_back(GuitarString(analog_reader_mocks[i], midi_methods_mocks[i], i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
+      }
+    }
+
+    void custom_sine_setup(vector<int> _amplitude_mock_values_empty){
+      for (int i = 0; i < NUM_OF_STRINGS; i++) {
+        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(_amplitude_mock_values_empty, mock_pressed_frets_values, i);
+        analog_reader_mocks.push_back(analog_reader_mock);
+      }
+      initialize_all();
+    }
+
+    void custom_sine_setup(vector<int>* _strings_sine_wave_mocks){
+      for (int i = 0; i < NUM_OF_STRINGS; i++) {
+        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(_strings_sine_wave_mocks[i], mock_pressed_frets_values, i);
+        analog_reader_mocks.push_back(analog_reader_mock);
+      }
+      initialize_all();
+    }
+
     void setup() override {
       TestOnce::setup();
     }
@@ -82,13 +106,7 @@ class RightHandEmptySineFixture: public GuitarStringFixture {
   protected:
     void setup() override {
       TestOnce::setup();
-      for (int i = 0; i < NUM_OF_STRINGS; i++) {
-        MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
-        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(amplitude_mock_values_empty, mock_pressed_frets_values, i);
-        guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
-        analog_reader_mocks.push_back(analog_reader_mock);
-        midi_methods_mocks.push_back(midi_methods_mock); 
-      }
+      custom_sine_setup(amplitude_mock_values_empty);
     }
 };
 
@@ -96,13 +114,7 @@ class RightHandFullSineFixture: public GuitarStringFixture {
   protected:
     void setup() override {
       TestOnce::setup();
-      for (int i = 0; i < NUM_OF_STRINGS; i++) {
-        MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
-        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(strings_sine_wave_mocks[i], mock_pressed_frets_values, i);
-        guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
-        analog_reader_mocks.push_back(analog_reader_mock);
-        midi_methods_mocks.push_back(midi_methods_mock); 
-      }
+      custom_sine_setup(strings_sine_wave_mocks);
     }
 };
 
@@ -110,13 +122,7 @@ class LeftHandFixture: public GuitarStringFixture {
   protected:
     void setup() override {
       TestOnce::setup();
-      for (int i = 0; i < NUM_OF_STRINGS; i++) {
-        MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
-        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(amplitude_mock_values_empty, mock_pressed_frets_values, i);
-        guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
-        analog_reader_mocks.push_back(analog_reader_mock);
-        midi_methods_mocks.push_back(midi_methods_mock); 
-      }
+      custom_sine_setup(amplitude_mock_values_empty);
     }
 };
 
