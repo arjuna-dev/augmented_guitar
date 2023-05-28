@@ -12,6 +12,7 @@
 #include "../AnalogReader/analog_reader_interface.h"
 #include "../AnalogReader/analog_reader_mock.h"
 #include "../MIDI/midi_interface.h"
+#include <limits.h>
 #include <algorithm>
 #include <numeric>
 #include <vector>
@@ -159,6 +160,30 @@ testF(RightHandFullSineFixture, detect_note_on){
   fail();
 }
 
+testF(RightHandFullSineFixture, detect_note_on_MIDI){
+  int vector_size = strings_sine_wave_mocks[0].size();
+  bool detected_note_ons[NUM_OF_STRINGS] = {false};
+  for (int i = 0; i < NUM_OF_STRINGS; i++) {
+    guitar_string_friend.set_note_on(guitar_string_mocks[i], false);
+  }
+  for (int j = 0; j < vector_size; j++) {
+    for (int i = 0; i < NUM_OF_STRINGS; i++) {
+      global_last_CC_mock = UNDEFINED;
+      global_last_note_mock = 0;
+      global_last_velocity_mock = -1;
+      guitar_string_mocks[i].detect_note_on();
+      guitar_string_mocks[i].update_prev_and_current_amplitudes();
+      if (guitar_string_friend.get_note_on(guitar_string_mocks[i]) == true && detected_note_ons[i] == false) {
+        detected_note_ons[i] = true;
+        assertEqual(global_last_CC_mock, NOTE_ON);
+        assertEqual(global_last_note_mock, MIDI_open_string_notes[i]);
+        assertMore(global_last_velocity_mock, 0);
+        assertLessOrEqual(global_last_velocity_mock, 127);
+      }
+    }
+  }
+}
+
 testF(RightHandEmptySineFixture, detect_note_on_false_positive){
   int vector_size = strings_sine_wave_mocks[0].size();
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
@@ -274,9 +299,9 @@ testF(RightHandFullSineFixture, detect_note_off_false_positive_through_amplitude
     // _-_-_-_-_-Left Hand-_-_-_-_-_-_
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-testF(LeftHandFixture, detect_fingers_position_all_frets_pressed){
+int max_ADC_value = 1024;
 
-  int max_ADC_value = 1024;
+testF(LeftHandFixture, detect_all_frets_pressed){
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
     for (int j = 0; j < NUM_OF_FRETS; j++) {
@@ -292,24 +317,63 @@ testF(LeftHandFixture, detect_fingers_position_all_frets_pressed){
   }
 }
 
-testF(LeftHandFixture, detect_fingers_position_fret_above_boundary_case){
+testF(LeftHandFixture, detect_all_frets_pressed_above_max_ADC_value){
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
     for (int j = 0; j < NUM_OF_FRETS; j++) {
-      mock_pressed_frets_values[i][j] = _fret_touched_threshold+1;
+      mock_pressed_frets_values[i][j] = random(max_ADC_value, INT_MAX);
+    }
+  }
+
+  for (int i = 0; i < 6; i++) {
+    guitar_string_mocks[i].update_string_MIDI_value();
+  }
+  for (int i = 0; i < 6; i++) {
+    assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i] + NUM_OF_FRETS);
+  }
+}
+
+testF(LeftHandFixture, detect_each_fret_above_boundary){
+
+  for (int i = 0; i < NUM_OF_STRINGS; i++) {
+    for (int j = 0; j < NUM_OF_FRETS; j++) {
+      mock_pressed_frets_values[i][j] = fret_touched_threshold+1;
       guitar_string_mocks[i].update_string_MIDI_value();
       assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i] + j + 1);
     }
   }
 }
 
-testF(LeftHandFixture, detect_finger_position_fourth_fret_MIDI){
+testF(LeftHandFixture, detect_each_fret_below_boundary){
+
+  for (int i = 0; i < NUM_OF_STRINGS; i++) {
+    for (int j = 0; j < NUM_OF_FRETS; j++) {
+      mock_pressed_frets_values[i][j] = fret_touched_threshold-1;
+      guitar_string_mocks[i].update_string_MIDI_value();
+      assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i]);
+    }
+  }
+}
+
+
+testF(LeftHandFixture, detect_each_fret_MIDI){
+  for (int i = 0; i < NUM_OF_STRINGS; i++) {
+    for (int j = 0; j < NUM_OF_FRETS; j++) {
+      mock_pressed_frets_values[i][j] = fret_touched_threshold+random(max_ADC_value-fret_touched_threshold);
+      guitar_string_mocks[i].update_string_MIDI_value();
+      assertEqual(global_last_CC_mock, PRESS_FRET);
+      assertEqual(global_last_note_mock, MIDI_open_string_notes[i] + j + 1);
+      assertEqual(global_last_velocity_mock, 0);
+      mock_pressed_frets_values[i][j] = fret_touched_threshold-random(fret_touched_threshold-1);
+      guitar_string_mocks[i].update_string_MIDI_value();
+      assertEqual(global_last_CC_mock, PRESS_FRET);
+      assertEqual(global_last_note_mock, MIDI_open_string_notes[i]);
+      assertEqual(global_last_velocity_mock, 0);
+    }
+  }
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
     mock_pressed_frets_values[i][3] = 1000;
     guitar_string_mocks[i].update_string_MIDI_value();
-    assertEqual(global_last_CC_mock, PRESS_FRET);
-    assertEqual(global_last_note_mock, MIDI_open_string_notes[i]+4);
-    assertEqual(global_last_velocity_mock, 0);
   }
 }
 
