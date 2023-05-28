@@ -44,7 +44,7 @@ void GuitarString::update_string_MIDI_value() {
   for (int j = 0; j < 4; j++) {
     selectMuxChannel(fret_position_to_mux[_string_number][j][1]);
     int fret_value = _analog_reader->analog_reader_left(fret_position_to_mux[_string_number][j][0]);
-    if (fret_value > _fret_touched_threshold) {
+    if (fret_value > fret_touched_threshold) {
       is_fret_touched = true;
       any_fret_touched = true;
     } else {
