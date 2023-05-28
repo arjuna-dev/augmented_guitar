@@ -58,12 +58,12 @@ export default {
       return this.number_of_strings * this.number_of_frets;
     },
     fretDistances() {
-      let fretDist = [];
+      let fretDist = [10];
       // Adjustment for screen resolution distance discrepancies
       let newLength = this.string_length * 0.867469097;
       // let newLength = this.string_length * 0.85981;
       // let newLength = this.string_length * 0.85981551561;
-      for (let i = 0; i < this.number_of_frets; i++) {
+      for (let i = 0; i < this.number_of_frets - 1; i++) {
         let d = newLength / 17.817;
         fretDist.push(d);
         newLength = newLength - d;
@@ -96,8 +96,8 @@ export default {
       for (let i = this.number_of_strings - 1; i >= 0; i--) {
         let firstNoteOfString = this.tuning[i];
         for (let j = 0; j < this.number_of_frets; j++) {
-          let noteIndex = (this.all_notes.indexOf(firstNoteOfString) + j + 1) % 12;
-          let MIDI_note = this.open_string_MIDI_notes[i] + j + 1;
+          let noteIndex = (this.all_notes.indexOf(firstNoteOfString) + j) % 12;
+          let MIDI_note = this.open_string_MIDI_notes[i] + j;
           // let text = MIDI_note;
           let text = this.all_notes[noteIndex];
           let color = "";
@@ -107,7 +107,7 @@ export default {
 
           let note_object = {};
           note_object.note = MIDI_note;
-          note_object.fret = j + 1;
+          note_object.fret = j;
 
           const is_pressed = this.pressed_notes.some((obj) => obj.note === note_object.note && obj.fret === note_object.fret);
           const is_playing = this.playing_notes.some((obj) => obj.note === note_object.note && obj.fret === note_object.fret);
@@ -135,6 +135,7 @@ export default {
           if (this.playing_notes.length > 0 && is_playing && is_in_scale) {
             color = "black";
             border = "10px solid white";
+            text_color = "white";
             z_index = "100";
           } else if (this.playing_notes.length > 0 && is_playing && !is_in_scale) {
             color = "red";
