@@ -11,6 +11,7 @@
 #include "../MIDI/midi_interface.h"
 #include "../AnalogReader/analog_reader_interface.h"
 #include "../AnalogReader/analog_reader_mock.h"
+#include "../MIDI/midi_interface.h"
 #include <algorithm>
 #include <numeric>
 #include <vector>
@@ -279,6 +280,17 @@ testF(LeftHandFixture, detect_finger_position_fourth_fret_pressed){
   }
   for (int i = 0; i < 6; i++) {
     assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i] + NUM_OF_FRETS);
+  }
+}
+
+
+testF(LeftHandFixture, detect_finger_position_fourth_fret_MIDI){
+  for (int i = 0; i < NUM_OF_STRINGS; i++) {
+    mock_pressed_frets_values[i][3] = 1000;
+    guitar_string_mocks[i].update_string_MIDI_value();
+    assertEqual(global_last_CC_mock, PRESS_FRET);
+    assertEqual(global_last_note_mock, MIDI_open_string_notes[i]+4);
+    assertEqual(global_last_velocity_mock, 0);
   }
 }
 
