@@ -274,13 +274,16 @@ testF(RightHandFullSineFixture, detect_note_off_false_positive_through_amplitude
     // _-_-_-_-_-Left Hand-_-_-_-_-_-_
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-testF(LeftHandFixture, detect_finger_position_fourth_fret_pressed){
+testF(LeftHandFixture, detect_fingers_position_all_frets_pressed){
+
+  int max_ADC_value = 1024;
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
-    mock_pressed_frets_values[i][3] = 1000;
+    for (int j = 0; j < NUM_OF_FRETS; j++) {
+      mock_pressed_frets_values[i][j] = max_ADC_value;
+    }
   }
 
-  // Update the MIDI values according to pressed frets
   for (int i = 0; i < 6; i++) {
     guitar_string_mocks[i].update_string_MIDI_value();
   }
