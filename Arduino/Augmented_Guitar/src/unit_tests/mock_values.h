@@ -16,6 +16,10 @@ extern const int max_amplitudes_mock[NUM_OF_STRINGS];
 extern const int min_thresholds_mock[NUM_OF_STRINGS];
 extern const int max_wave_periods_mock[NUM_OF_STRINGS];
 
+extern CC_Types global_last_CC_mock;
+extern int global_last_note_mock;
+extern int global_last_velocity_mock;
+
 extern vector<int> amplitude_mock_values_empty;
 extern vector<int> amplitude_mock_values_E;
 extern vector<int> amplitude_mock_values_A;

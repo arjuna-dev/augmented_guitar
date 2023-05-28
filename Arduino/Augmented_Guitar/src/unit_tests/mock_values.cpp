@@ -10,10 +10,9 @@ constexpr int min_thresholds_mock[NUM_OF_STRINGS] = {15, 18, 20, 20, 15, 23};
 constexpr int max_wave_periods_mock[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
 
 // Left hand
-
-void selectMuxChannelMock(int mux_ch) {}
-
-int mock_mux_sig_pin = 0;
+CC_Types global_last_CC_mock = UNDEFINED;
+int global_last_note_mock = 0;
+int global_last_velocity_mock = 0;
 
 // Right hand
 

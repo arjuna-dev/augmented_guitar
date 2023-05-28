@@ -5,7 +5,8 @@ enum CC_Types {
   NOTE_ON = 20,
   NOTE_OFF = 21,
   PRESS_FRET = 22,
-  LIFT_FRET = 23
+  LIFT_FRET = 23,
+  UNDEFINED = -1
 };
 
 class MIDIInterface {
