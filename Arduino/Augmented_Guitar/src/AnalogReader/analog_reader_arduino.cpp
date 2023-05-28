@@ -5,9 +5,9 @@
 AnalogReaderArduino::AnalogReaderArduino(){};
 
 int AnalogReaderArduino::analog_reader_left(int pin) {
-    analogRead(pin);
+    return analogRead(pin);
 }
 
 int AnalogReaderArduino::analog_reader_right(int pin) {
-    analogRead(pin);
+    return analogRead(pin);
 }
