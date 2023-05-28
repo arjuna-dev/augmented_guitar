@@ -289,6 +289,16 @@ testF(LeftHandFixture, detect_finger_position_fourth_fret_pressed){
   }
 }
 
+testF(LeftHandFixture, detect_fingers_position_fret_above_boundary_case){
+
+  for (int i = 0; i < NUM_OF_STRINGS; i++) {
+    for (int j = 0; j < NUM_OF_FRETS; j++) {
+      mock_pressed_frets_values[i][j] = _fret_touched_threshold+1;
+      guitar_string_mocks[i].update_string_MIDI_value();
+      assertEqual(guitar_string_mocks[i].get_MIDI_value(), MIDI_open_string_notes[i] + j + 1);
+    }
+  }
+}
 
 testF(LeftHandFixture, detect_finger_position_fourth_fret_MIDI){
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
