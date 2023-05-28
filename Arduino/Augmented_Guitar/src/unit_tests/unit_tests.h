@@ -39,7 +39,7 @@ void populate_array_rand(int arr[], int size, int min = 0, int max = 0) {
 // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-    // _-_-_-_GuitarStringsFixture_-_-_-_
+    // _-_-_-_-_-RightHandFixtures_-_-_-_
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
 class GuitarStringFixture: public aunit::TestOnce {
@@ -52,14 +52,14 @@ class GuitarStringFixture: public aunit::TestOnce {
       {0, 0, 0, 0},
       {0, 0, 0, 0}
     };
-    MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
     vector<AnalogReaderInterface*> analog_reader_mocks;
     vector<MIDIInterface*> midi_methods_mocks;
     vector<GuitarString> guitar_string_mocks;
     GuitarStringFriend guitar_string_friend;
-    vector<int> _strings_sine_wave_mocks[NUM_OF_STRINGS];
+
     void setup() override {
       TestOnce::setup();
+    }
 
     void teardown() override {
       // delete all dynamically allocated objects
@@ -75,31 +75,61 @@ class GuitarStringFixture: public aunit::TestOnce {
       guitar_string_mocks.clear();
       TestOnce::teardown();
     }
+};
+
+class RightHandEmptySineFixture: public GuitarStringFixture {
+  protected:
+    void setup() override {
+      TestOnce::setup();
       for (int i = 0; i < NUM_OF_STRINGS; i++) {
-        analog_reader_mocks.push_back(analog_reader_mock);
-        midi_methods_mocks.push_back(midi_methods_mock); 
-      }
-      for (int i = 0; i < NUM_OF_STRINGS; i++) {
-        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(_strings_sine_wave_mocks[i], mock_pressed_frets_values, i);
+        MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
+        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(amplitude_mock_values_empty, mock_pressed_frets_values, i);
         guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
         analog_reader_mocks.push_back(analog_reader_mock);
         midi_methods_mocks.push_back(midi_methods_mock); 
       }
     }
-
-        analog_reader_mocks.push_back(analog_reader_mock);
-        midi_methods_mocks.push_back(midi_methods_mock); 
 };
 
-// // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-// // _-_-_-_-_-_-_-_-_-_-_-_-_TESTS_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-// // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+class RightHandFullSineFixture: public GuitarStringFixture {
+  protected:
+    void setup() override {
+      TestOnce::setup();
+      for (int i = 0; i < NUM_OF_STRINGS; i++) {
+        MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
+        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(strings_sine_wave_mocks[i], mock_pressed_frets_values, i);
+        guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
+        analog_reader_mocks.push_back(analog_reader_mock);
+        midi_methods_mocks.push_back(midi_methods_mock); 
+      }
+    }
+};
+
+class LeftHandFixture: public GuitarStringFixture {
+  protected:
+    void setup() override {
+      TestOnce::setup();
+      for (int i = 0; i < NUM_OF_STRINGS; i++) {
+        MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
+        AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(amplitude_mock_values_empty, mock_pressed_frets_values, i);
+        guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
+        analog_reader_mocks.push_back(analog_reader_mock);
+        midi_methods_mocks.push_back(midi_methods_mock); 
+      }
+    }
+};
+
+
+// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+// _-_-_-_-_-_-_-_-_-_-_-_-_TESTS_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
 
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
     // _-_-_-_-_-Right Hand-_-_-_-_-_-
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-testF(GuitarStringFixture, detect_note_on){
+
+testF(RightHandFullSineFixture, detect_note_on){
   int vector_size = strings_sine_wave_mocks[0].size();
   bool detected_note_ons[NUM_OF_STRINGS] = {false};
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
@@ -122,10 +152,9 @@ testF(GuitarStringFixture, detect_note_on){
   fail();
 }
 
-testF(GuitarStringFixture, detect_note_on_false_positive){
+testF(RightHandEmptySineFixture, detect_note_on_false_positive){
   int vector_size = strings_sine_wave_mocks[0].size();
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
-    std::fill(_strings_sine_wave_mocks[i].begin(), _strings_sine_wave_mocks[i].end(), 0);
     guitar_string_friend.set_note_on(guitar_string_mocks[i], false);
   }
   for (int j = 0; j < vector_size; j++) {
@@ -141,7 +170,7 @@ testF(GuitarStringFixture, detect_note_on_false_positive){
   pass();
 }
 
-testF(GuitarStringFixture, detect_note_off_through_time){
+testF(RightHandFullSineFixture, detect_note_off_through_time){
   int iterations = 500;
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
@@ -166,7 +195,7 @@ testF(GuitarStringFixture, detect_note_off_through_time){
   fail();
 }
 
-testF(GuitarStringFixture, detect_note_off_through_amplitude){
+testF(RightHandFullSineFixture, detect_note_off_through_amplitude){
   int iterations = 1000;
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
@@ -191,7 +220,7 @@ testF(GuitarStringFixture, detect_note_off_through_amplitude){
   fail();
 }
 
-testF(GuitarStringFixture, detect_note_off_through_time_false_positive){
+testF(RightHandFullSineFixture, detect_note_off_through_time_false_positive){
   int values_size = 1000;
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
@@ -212,7 +241,7 @@ testF(GuitarStringFixture, detect_note_off_through_time_false_positive){
   pass();
 }
 
-testF(GuitarStringFixture, detect_note_off_false_positive_through_amplitude){
+testF(RightHandFullSineFixture, detect_note_off_false_positive_through_amplitude){
   int values_size = 1000;
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
@@ -233,11 +262,12 @@ testF(GuitarStringFixture, detect_note_off_false_positive_through_amplitude){
   pass();
 }
 
+
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
     // _-_-_-_-_-Left Hand-_-_-_-_-_-_
     // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-testF(GuitarStringFixture, detect_finger_position_all_frets_pressed){
+testF(LeftHandFixture, detect_finger_position_fourth_fret_pressed){
 
   for (int i = 0; i < NUM_OF_STRINGS; i++) {
     mock_pressed_frets_values[i][3] = 1000;
