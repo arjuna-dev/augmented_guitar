@@ -54,26 +54,41 @@ class GuitarStringFixture: public aunit::TestOnce {
     };
     MIDIInterface* midi_methods_mock = new MIDIMethodsMock();
     vector<AnalogReaderInterface*> analog_reader_mocks;
+    vector<MIDIInterface*> midi_methods_mocks;
     vector<GuitarString> guitar_string_mocks;
     GuitarStringFriend guitar_string_friend;
     vector<int> _strings_sine_wave_mocks[NUM_OF_STRINGS];
     void setup() override {
       TestOnce::setup();
-      // make copies of sine waves
+
+    void teardown() override {
+      // delete all dynamically allocated objects
+      for (auto mock : analog_reader_mocks) {
+        delete mock;
+      }
+      for (auto mock : midi_methods_mocks) {
+        delete mock;
+      }
+      // clear the vector for the next setup
+      analog_reader_mocks.clear();
+      midi_methods_mocks.clear();
+      guitar_string_mocks.clear();
+      TestOnce::teardown();
+    }
       for (int i = 0; i < NUM_OF_STRINGS; i++) {
-        _strings_sine_wave_mocks[i] = strings_sine_wave_mocks[i];
+        analog_reader_mocks.push_back(analog_reader_mock);
+        midi_methods_mocks.push_back(midi_methods_mock); 
       }
       for (int i = 0; i < NUM_OF_STRINGS; i++) {
         AnalogReaderInterface* analog_reader_mock = new AnalogReaderMock(_strings_sine_wave_mocks[i], mock_pressed_frets_values, i);
         guitar_string_mocks.push_back(GuitarString(analog_reader_mock, midi_methods_mock, i, string_input_pins_mock[i], open_string_notes_mock[i], max_amplitudes_mock[i], min_thresholds_mock[i], max_wave_periods_mock[i]));
+        analog_reader_mocks.push_back(analog_reader_mock);
+        midi_methods_mocks.push_back(midi_methods_mock); 
       }
     }
 
-    void teardown() override {
-      // Teardown code here
-      TestOnce::teardown();
-    }
-
+        analog_reader_mocks.push_back(analog_reader_mock);
+        midi_methods_mocks.push_back(midi_methods_mock); 
 };
 
 // // _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-

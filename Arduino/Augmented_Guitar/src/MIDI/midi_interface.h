@@ -10,6 +10,7 @@ enum CC_Types {
 
 class MIDIInterface {
   public:
+    virtual ~MIDIInterface() = default;
     virtual void MIDI_press_fret(int string, int fret);
     virtual void MIDI_lift_fret(int string, int fret);
     virtual void MIDI_note_on(int string, int velocity, int fret);
