@@ -5,6 +5,9 @@
 #include "../AnalogReader/analog_reader_interface.h"
 #include "../MIDI/midi_interface.h"
 
+#define sine_wave_falling_edge 35
+#define peak_diff_threshold 30
+#define _fret_touched_threshold 950
 
 class GuitarString {
 

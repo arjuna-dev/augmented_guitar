@@ -6,10 +6,6 @@
 #include "../device_specs/device_specs.h"
 #include "../mux/mux.h"
 
-#define sine_wave_falling_edge 35
-#define peak_diff_threshold 30
-#define _fret_touched_threshold 950
-
 GuitarString::GuitarString(
   AnalogReaderInterface* analog_reader,
   MIDIInterface* midi_methods,
