@@ -22,7 +22,7 @@ public:
     const int min_threshold,
     const int max_wave_period);
 
-    void detect_note_on(bool debug_sine_wave=false, int string_number=0 , int number_of_values=1000);
+    void detect_note_on();
     void detect_note_off();
     void update_string_MIDI_value();
     void update_prev_and_current_amplitudes();

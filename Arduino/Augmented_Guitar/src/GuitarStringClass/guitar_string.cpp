@@ -135,11 +135,7 @@ void GuitarString::update_prev_and_current_amplitudes() {
 }
 
 
-void GuitarString::detect_note_on(bool debug_sine_wave, int string_number, int number_of_values) {
-
-  if (debug_sine_wave == true) {
-    printSineWaveValues(string_number, number_of_values);
-  }
+void GuitarString::detect_note_on() {
   
   detect_peak_value();
   if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
@@ -150,35 +146,6 @@ void GuitarString::detect_note_on(bool debug_sine_wave, int string_number, int n
   }
   update_last_peak_value();
 
-}
-
-// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-// _-_-_-_-_-_-_-_-_-_-_- Debug _-_-_-_-_-_-_-_-_-_-_-_-_-
-// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-
-#define NUM_OF_ARR_VALUES 1000
-#define hysteresis 25
-bool sine_wave_started = false;
-int record_sine_wave_counter = 0;
-int sine_wave_array[NUM_OF_ARR_VALUES];
-
-void GuitarString::printSineWaveValues(int string_number, int number_of_values) {
-  if (_string_number == string_number) {
-
-    if (sine_wave_started == false && _current_amplitude > _min_threshold && _current_amplitude > _previous_amplitude + hysteresis) {
-      sine_wave_started = true;
-      digitalWrite(LED_BUILTIN, HIGH);
-    }
-    if (sine_wave_started && record_sine_wave_counter < number_of_values) {
-      sine_wave_array[record_sine_wave_counter] = _current_amplitude;
-      record_sine_wave_counter++;
-    }
-    if (record_sine_wave_counter == number_of_values - 1) {
-      for (int j = 0; j < number_of_values - 1; j++) {
-        Serial.println(sine_wave_array[j]);
-      }
-    }
-  }
 }
 
 int GuitarString::get_current_amplitude() {
