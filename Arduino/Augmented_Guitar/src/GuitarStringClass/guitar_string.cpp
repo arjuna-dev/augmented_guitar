@@ -181,6 +181,6 @@ void GuitarString::printSineWaveValues(int string_number, int number_of_values) 
   }
 }
 
-int GuitarString::getAnalogValues() {
+int GuitarString::get_current_amplitude() {
   return _current_amplitude;
 }

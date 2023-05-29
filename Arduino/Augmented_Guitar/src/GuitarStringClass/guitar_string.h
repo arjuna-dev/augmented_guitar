@@ -27,7 +27,7 @@ public:
     void update_string_MIDI_value();
     void update_prev_and_current_amplitudes();
     int get_MIDI_value();  
-    int getAnalogValues();
+    int get_current_amplitude();
 
   friend class GuitarStringFriend;
 
