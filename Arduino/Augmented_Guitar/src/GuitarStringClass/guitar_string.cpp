@@ -5,6 +5,7 @@
 #include "../debug/debug.h"
 #include "../device_specs/device_specs.h"
 #include "../mux/mux.h"
+#include "../Settings/settings.h"
 
 GuitarString::GuitarString(
   AnalogReaderInterface* analog_reader,

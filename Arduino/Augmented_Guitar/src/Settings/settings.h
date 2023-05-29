@@ -8,11 +8,19 @@ enum PlayingMode {
   PLAYING_MODE_LEFT_NOTES_ONLY
 };
 
+enum NoteOffMode {
+  NOTE_OFF_MODE_WAVEFORM,
+  NOTE_OFF_MODE_FINGER_LIFT
+};
+
 class Settings {
   public:
     Settings();
-  private:
-    int _playing_mode;
+    bool hammer_ons_pull_ups_enabled;
+    NoteOffMode note_off_mode;
+    int playing_mode;
 };
+
+extern Settings settings;
 
 #endif
