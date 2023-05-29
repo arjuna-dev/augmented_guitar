@@ -4,6 +4,7 @@
 #include "../device_specs/device_specs.h"
 #include "../AnalogReader/analog_reader_interface.h"
 #include "../MIDI/midi_interface.h"
+#include "../Settings/settings.h"
 
 #define sine_wave_falling_edge 35
 #define peak_diff_threshold 30
@@ -36,6 +37,7 @@ protected:
   void update_last_peak_value();
   void printSineWaveValues(int iteration, int number_of_iterations);
   void detect_peak_value_soft();
+  void send_note_on();
 
   AnalogReaderInterface* _analog_reader;
   MIDIInterface* _midi_methods;
