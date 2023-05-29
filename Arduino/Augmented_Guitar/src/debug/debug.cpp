@@ -35,8 +35,10 @@ void print(String str1, int var1) {
 
 int sine_wave_buffer[1000];
 int sine_wave_counter = 0;
+bool record_waveform_threshold_crossed = false;
+int record_waveform_threshold = 80;
 
-void collect_analog_values(const GuitarString& guitar_string, int iteration, int string_number){
+void collect_analog_values(const GuitarString& guitar_string, int iteration, int string_number, bool& record_waveform_threshold_crossed) {
   /**
    * Collects analog values from a guitar string and stores them in a buffer. (Printing on each iteration would slow down the code significantly ang give unreliable results)
    *
@@ -47,23 +49,30 @@ void collect_analog_values(const GuitarString& guitar_string, int iteration, int
    * Place in the detect note_on/note_off for loop.
    */
   if (iteration == string_number) {
-    sine_wave_buffer[sine_wave_counter] = guitar_string.getAnalogValues();
+    int current_amplitude = guitar_string.get_current_amplitude();
+    sine_wave_buffer[sine_wave_counter] = current_amplitude;
     sine_wave_counter++;
+    if (current_amplitude > record_waveform_threshold) {
+      record_waveform_threshold_crossed = true;
+    }
     if (sine_wave_counter >= 1000) {
       sine_wave_counter = 0;
     }
   }
 };
 
-void print_analog_values(){
+void print_analog_values(bool& record_waveform_threshold_crossed) {
   /**
    * Prints analog values from a guitar string.
    *
    * Place after the detect note_on/note_off for loop.
    */
   if (sine_wave_counter >= 1000-1) {
-    for (int i = 0; i < 1000; i++) {
-      println(sine_wave_buffer[i]);
+    if (record_waveform_threshold_crossed) {
+      record_waveform_threshold_crossed = false;
+      for (int i = 0; i < 1000; i++) {
+        println(sine_wave_buffer[i]);
+      }
     }
   }
 };

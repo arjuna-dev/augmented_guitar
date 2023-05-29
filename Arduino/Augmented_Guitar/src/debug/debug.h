@@ -10,8 +10,8 @@ void println(String str1, int var1);
 void print(String str1);
 void print(int var1);
 void print(String str1, int var1);
-void collect_analog_values(const GuitarString& guitar_string, int iteration, int string_number);
-void print_analog_values();
-
+void collect_analog_values(const GuitarString& guitar_string, int iteration, int string_number, bool& threshold_crossed);
+void print_analog_values(bool& threshold_crossed);
+extern bool record_waveform_threshold_crossed;
 
 #endif
