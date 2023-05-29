@@ -47,6 +47,7 @@ void collect_analog_values(const GuitarString& guitar_string, int iteration, int
    * @param string_number The string we want to collect values from
    * 
    * Place in the detect note_on/note_off for loop.
+   * e.g.: collect_analog_values(guitar_strings[i], i, 1, record_waveform_threshold_crossed);
    */
   if (iteration == string_number) {
     int current_amplitude = guitar_string.get_current_amplitude();
@@ -66,6 +67,7 @@ void print_analog_values(bool& record_waveform_threshold_crossed) {
    * Prints analog values from a guitar string.
    *
    * Place after the detect note_on/note_off for loop.
+   * e.g.: print_analog_values(record_waveform_threshold_crossed);
    */
   if (sine_wave_counter >= 1000-1) {
     if (record_waveform_threshold_crossed) {
