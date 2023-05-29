@@ -41,6 +41,8 @@ void collect_analog_values(const GuitarString& guitar_string, int iteration, int
    * Collects analog values from a guitar string and stores them in a buffer. (Printing on each iteration would slow down the code significantly ang give unreliable results)
    *
    * @param string_number The index of the guitar string to collect values from.
+   * @param iteration the iteration number comping from a loop enclosing this function.
+   * @param string_number The string we want to collect values from
    * 
    * Place in the detect note_on/note_off for loop.
    */
