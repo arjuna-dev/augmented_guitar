@@ -35,7 +35,6 @@ public:
 private:
   void detect_peak_value();
   void update_last_peak_value();
-  void printSineWaveValues(int iteration, int number_of_iterations);
   void detect_peak_value_soft();
   void send_note_on();
 
