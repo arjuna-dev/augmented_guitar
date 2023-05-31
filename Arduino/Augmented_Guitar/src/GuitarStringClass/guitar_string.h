@@ -37,6 +37,7 @@ private:
   void update_last_peak_value();
   void detect_peak_value_soft();
   void send_note_on();
+  void send_note_off();
 
   AnalogReaderInterface* _analog_reader;
   MIDIInterface* _midi_methods;
