@@ -16,9 +16,9 @@ enum NoteOffMode {
 class Settings {
   public:
     Settings();
+    int playing_mode;
     bool hammer_ons_pull_ups_enabled;
     NoteOffMode note_off_mode;
-    int playing_mode;
 };
 
 extern Settings settings;
