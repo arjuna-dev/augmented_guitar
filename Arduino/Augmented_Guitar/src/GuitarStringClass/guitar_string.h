@@ -5,6 +5,9 @@
 #include "../AnalogReader/analog_reader_interface.h"
 #include "../MIDI/midi_interface.h"
 #include "../Settings/settings.h"
+#include <vector>
+
+using namespace std;
 
 #define sine_wave_falling_edge 35
 #define peak_diff_threshold 30
@@ -33,6 +36,8 @@ public:
   friend class GuitarStringFriend;
 
 private:
+  static vector<bool> static_strings_pressed_states;
+
   void detect_peak_value();
   void update_last_peak_value();
   void detect_peak_value_soft();

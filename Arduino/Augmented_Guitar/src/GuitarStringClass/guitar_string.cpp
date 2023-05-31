@@ -6,6 +6,8 @@
 #include "../device_specs/device_specs.h"
 #include "../mux/mux.h"
 #include "../Settings/settings.h"
+#include <algorithm>
+
 
 GuitarString::GuitarString(
   AnalogReaderInterface* analog_reader,
@@ -38,6 +40,8 @@ GuitarString::GuitarString(
   _trough_count(0)
   {}
 
+vector<bool> GuitarString::static_strings_pressed_states(NUM_OF_STRINGS, false);
+
 void GuitarString::update_string_MIDI_value() {
   bool is_fret_touched = false;
   bool any_fret_touched = false;
@@ -48,6 +52,7 @@ void GuitarString::update_string_MIDI_value() {
     if (fret_value > fret_touched_threshold) {
       is_fret_touched = true;
       any_fret_touched = true;
+      static_strings_pressed_states[_string_number] = true;
     } else {
       is_fret_touched = false;
     }
