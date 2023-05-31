@@ -134,6 +134,11 @@ void GuitarString::update_prev_and_current_amplitudes() {
 }
 
 
+void GuitarString::send_note_on() {
+  _midi_methods->MIDI_note_on(_string_number, _peak_value, _pressed_fret);
+  _last_sent_note_on_fret = _pressed_fret;
+}
+
 void GuitarString::detect_note_on() {
   
   detect_peak_value();
