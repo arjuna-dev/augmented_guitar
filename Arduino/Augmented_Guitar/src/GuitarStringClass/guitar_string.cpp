@@ -145,8 +145,7 @@ void GuitarString::detect_note_on() {
   if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
     _note_on = true;
     _note_on_timestamp = millis();
-    _midi_methods->MIDI_note_on(_string_number, _peak_value, _pressed_fret);
-    _last_sent_note_on_fret = _pressed_fret;
+    send_note_on();
   }
   update_last_peak_value();
 
