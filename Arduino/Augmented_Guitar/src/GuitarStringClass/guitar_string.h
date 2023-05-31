@@ -32,7 +32,7 @@ public:
 
   friend class GuitarStringFriend;
 
-protected:
+private:
   void detect_peak_value();
   void update_last_peak_value();
   void printSineWaveValues(int iteration, int number_of_iterations);
