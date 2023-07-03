@@ -34,6 +34,7 @@ GuitarString::GuitarString(
   _previous_amplitude(0),
   _peak_value(0),
   _last_peak_value(0),
+  _last_peak_value_sent(0),
   _last_sent_pressed_fret(0),
   _last_sent_note_on_fret(0),
   _accumulated_decrements(0),
@@ -41,6 +42,7 @@ GuitarString::GuitarString(
   {}
 
 vector<bool> GuitarString::static_strings_pressed_states(NUM_OF_STRINGS, false);
+vector<bool> GuitarString::static_strings_notes_on_states(NUM_OF_STRINGS, false);
 
 void GuitarString::update_string_MIDI_value() {
   bool is_fret_touched = false;
@@ -56,14 +58,21 @@ void GuitarString::update_string_MIDI_value() {
     } else {
       is_fret_touched = false;
     }
+    // if (settings.hammer_ons_pull_ups_enabled){
+    //   if (is_fret_touched) {
+    //     _pressed_fret = j + 1;
+    //   }
+    // } else if (!settings.hammer_ons_pull_ups_enabled) {
     if (is_fret_touched && !_note_on) {
       _pressed_fret = j + 1;
     }
+    // }
   }
   if (!any_fret_touched) {
     _pressed_fret = 0;
+    static_strings_pressed_states[_string_number] = false;
   }
-
+  
   if (_pressed_fret != _last_sent_pressed_fret) {
     _midi_methods->MIDI_lift_fret(_string_number, _last_sent_pressed_fret);
     _midi_methods->MIDI_press_fret(_string_number, _pressed_fret);
@@ -74,15 +83,36 @@ void GuitarString::update_string_MIDI_value() {
 
 void GuitarString::detect_note_off() {
   if (_note_on) {
-    // Threshold crossed, reset note_on_timestamp
-    if (_current_amplitude > _min_threshold) {
-      _note_on_timestamp = millis();
-    }
 
+    if (settings.playing_mode == PLAYING_MODE_CHORDS_ONLY) {
+      if (all_of(static_strings_pressed_states.begin(), static_strings_pressed_states.end(), [](int i){ return i == 0; })) {
+        send_note_off();
+      }
+    } else if (settings.note_off_mode == NOTE_OFF_MODE_FINGER_LIFT) {
+      // TODO: not working correctly
+      if (_last_sent_note_on_fret != 0 && _pressed_fret == 0) {
+        send_note_off();
+      }
+      
+    } else if (settings.note_off_mode == NOTE_OFF_MODE_WAVEFORM) {
+      // Threshold crossed, reset note_on_timestamp
+      if (_current_amplitude > _min_threshold) {
+        _note_on_timestamp = millis();
+      }
+
+      // If an above-threshold value didn't occur in a wave period time, send note_off
+      if (_note_on_timestamp + _max_wave_period < millis()) {
+        send_note_off();
+      }
+    }
+    
+  }
+}
 
 void GuitarString::send_note_off() {
   _midi_methods->MIDI_note_off(_string_number, _last_sent_note_on_fret);
   _note_on = false;
+  static_strings_notes_on_states[_string_number] = false;
 }
 
 void GuitarString::detect_peak_value_soft() {
@@ -141,16 +171,49 @@ void GuitarString::update_prev_and_current_amplitudes() {
 
 void GuitarString::send_note_on() {
   _midi_methods->MIDI_note_on(_string_number, _peak_value, _pressed_fret);
+  _note_on = true;
+  _note_on_timestamp = millis();
   _last_sent_note_on_fret = _pressed_fret;
+  _last_peak_value_sent = _peak_value;
+  static_strings_notes_on_states[_string_number] = true;
 }
 
 void GuitarString::detect_note_on() {
+
+    // Detect note on for hammer-ons/pull-ups
+    if (settings.hammer_ons_pull_ups_enabled && _last_sent_note_on_fret != _pressed_fret && _pressed_fret != 0) {
+      _midi_methods->MIDI_note_off(_string_number, _last_sent_note_on_fret);
+      send_note_on();
+    } 
   
   detect_peak_value();
+  // Next line to lock chord (no strumming):
   if (_peak_value > _last_peak_value + peak_diff_threshold && !_note_on) {
-    _note_on = true;
-    _note_on_timestamp = millis();
-    send_note_on();
+
+    if (settings.playing_mode == PLAYING_MODE_CHORDS_ONLY) {
+      int pressed_frets_count = std::count_if(static_strings_pressed_states.begin(), static_strings_pressed_states.end(), [](int i){ return i > 0; });
+      if (pressed_frets_count > 1) {
+        send_note_on();
+      }
+    } else if (settings.playing_mode == PLAYING_MODE_NOTES_ONLY) {
+      int pressed_frets_count = std::count_if(static_strings_pressed_states.begin(), static_strings_pressed_states.end(), [](int i){ return i > 0; });
+      int notes_on_count = std::count_if(static_strings_notes_on_states.begin(), static_strings_notes_on_states.end(), [](int i){ return i > 0; });
+      if (pressed_frets_count <= 1 && notes_on_count == 0) {
+        send_note_on();
+      }
+    } else if (settings.playing_mode == PLAYING_MODE_CHORD_NOTE_AUTO) {
+      // TODO: write algorithm
+      send_note_on();
+    } else {
+      send_note_on();
+    }
+      // int pressed_frets_count = std::count_if(static_strings_pressed_states.begin(), static_strings_pressed_states.end(), [](int i){ return i > 0; });
+      // int notes_on_count = std::count_if(static_strings_notes_on_states.begin(), static_strings_notes_on_states.end(), [](int i){ return i > 0; });
+      // if (pressed_frets_count <= 1 && notes_on_count == 0) {
+      //   send_note_on();
+      // } else if (pressed_frets_count > 1) {
+      //   send_note_on();
+      // }
   }
   update_last_peak_value();
 

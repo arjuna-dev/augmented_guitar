@@ -99,6 +99,11 @@ class GuitarStringFixture: public aunit::TestOnce {
       analog_reader_mocks.clear();
       midi_methods_mocks.clear();
       guitar_string_mocks.clear();
+
+      for (int i = 0; i < NUM_OF_STRINGS; i++) {
+        guitar_string_friend.set_note_on(guitar_string_mocks[i], false);
+      }
+
       TestOnce::teardown();
     }
 };

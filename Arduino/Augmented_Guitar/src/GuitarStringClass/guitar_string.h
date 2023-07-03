@@ -37,6 +37,7 @@ public:
 
 private:
   static vector<bool> static_strings_pressed_states;
+  static vector<bool> static_strings_notes_on_states;
 
   void detect_peak_value();
   void update_last_peak_value();
@@ -60,6 +61,7 @@ private:
   int _previous_amplitude;
   int _peak_value;
   int _last_peak_value;
+  int _last_peak_value_sent;
   int _last_sent_pressed_fret;
   int _last_sent_note_on_fret;
   int _accumulated_decrements;
