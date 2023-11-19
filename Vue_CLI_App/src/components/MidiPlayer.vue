@@ -2,6 +2,7 @@
   <div >
     <a href="#" @click.prevent="play(C4)">C4</a>
     <a href="#" @click.prevent="play(D4)">D4</a>
+    <a href="#" @click.prevent="playSound()"> play mp3</a>
 
   </div>
 </template>
@@ -9,6 +10,8 @@
 
 <script>
 /* global WebAudioFontPlayer */
+import {Howl, Howler} from 'howler';
+
 export default {
   data() {
     return {
@@ -110,6 +113,18 @@ export default {
         return false;
       }
   },
+  playSound() {
+      // Setup the new Howl.
+      const sound = new Howl({
+        src: ['/mp3/test.mp3']
+      });
+
+      // Play the sound.
+      sound.play();
+
+      // Change global volume.
+      Howler.volume(0.5);
+    },
   },
   mounted() {
     this.loadSoundFont();
