@@ -3,6 +3,7 @@
     <Fretboard />
     <Menu />
     <MIDI />
+    <MidiPlayer />
   </div>
 </template>
 
@@ -10,14 +11,16 @@
 import Fretboard from "./components/Fretboard.vue";
 import Menu from "./components/Menu.vue";
 import MIDI from "./components/MIDI.vue";
+import MidiPlayer from "./components/MidiPlayer.vue";
 
 export default {
   name: "app",
   components: {
     Fretboard,
     Menu,
-    MIDI
-  },
+    MIDI,
+    MidiPlayer,
+},
   mounted() {}
 };
 </script>
