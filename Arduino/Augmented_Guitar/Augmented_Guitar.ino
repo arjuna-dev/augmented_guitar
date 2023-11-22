@@ -26,7 +26,7 @@ using namespace std;
 constexpr int string_input_pins[NUM_OF_STRINGS] = {34, 35, 36, 37, 38, 39};
 constexpr char open_string_notes[NUM_OF_STRINGS] = {'E', 'A', 'D', 'G', 'B', 'e'};
 constexpr int max_amplitudes[NUM_OF_STRINGS] = {540, 510, 560, 580, 620, 600};
-constexpr int min_thresholds[NUM_OF_STRINGS] = {30, 40, 40, 15, 25, 43};
+constexpr int min_thresholds[NUM_OF_STRINGS] = {30, 40, 5, 15, 25, 20};
 // constexpr int min_thresholds[NUM_OF_STRINGS] = {15, 18, 20, 20, 15, 23};
 constexpr int max_wave_periods[NUM_OF_STRINGS] = {15, 10, 8, 6, 4, 3};
 

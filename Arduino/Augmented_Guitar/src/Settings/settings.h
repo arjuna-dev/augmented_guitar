@@ -18,30 +18,34 @@
  * @var PLAYING_MODE_CHORD_NOTE_AUTO
  * If one fret is pressed, we enter notes only mode. If more than one fret is pressed we enter chords only mode.
  * 
- * @var PLAYING_MODE_LEFT_HAND_CHORDS
- * when 2 or more frets are pressed the 6 strings are played. (or 5 for Am, etc.)
+ * @var PLAYING_MODE_INFINITE_SUSTAIN_CHORDS
+ * When 2 or more frets are pressed the 6 strings are played. (or 5 for Am, etc.)
+ * 
+ * @var PLAYING_MODE_INFINITE_SUSTAIN_NOTES
+ * When a fret is pressed, the note is played until the fret is unpressed.
  */
 
 enum PlayingMode {
   PLAYING_MODE_RAW,
   PLAYING_MODE_CHORDS_ONLY,
   PLAYING_MODE_NOTES_ONLY,
-  PLAYING_MODE_CHORD_NOTE_AUTO,
-  PLAYING_MODE_LEFT_HAND_CHORDS
+  PLAYING_MODE_CHORD_NOTE_AUTO
 };
 
-enum NoteOffMode {
-  NOTE_OFF_MODE_WAVEFORM,
-  NOTE_OFF_MODE_FINGER_LIFT,
-  NOTE_OFF_MODE_FINGER_LIFT_ALL
+enum SustainMode {
+  SUSTAIN_MODE_INFINITE,
+  SUSTAIN_MODE_SHORT,
+  SUSTAIN_MODE_MEDIUM,
+  SUSTAIN_MODE_LONG,
+  SUSTAIN_MODE_WAVEFORM,
 };
 
 class Settings {
   public:
     Settings();
-    int playing_mode;
+    PlayingMode playing_mode;
+    SustainMode sustain_mode;
     bool hammer_ons_pull_ups_enabled;
-    NoteOffMode note_off_mode;
 };
 
 extern Settings settings;
