@@ -2,15 +2,16 @@
   <div>
     <a href="#" @click.prevent="play(C4)">C4</a>
     <a href="#" @click.prevent="play(D4)">D4</a>
-    <a href="#" @click.prevent="playIntro()">Start Music</a>
+    <a href="#" @click.prevent="startMusic()">Start Music</a>
     <button @click="goToPreviousPart()">Previous Part</button>
     <button @click="goToNextPart()">Next Part</button>
+    <button @click="loadGuitar()">Play Guitar Chord</button>
   </div>
 </template>
 
 <script>
-/* global WebAudioFontPlayer */
 import { Howl } from "howler";
+import * as Tone from "tone";
 
 export default {
   data() {
@@ -18,8 +19,20 @@ export default {
       audioContext: null,
       player: null,
       sound: null,
-      currentPart: "part1",
-      songParts: ["part1", "part2", "part3"],
+      currentMidiMelody: null,
+      partLength: 8000,
+      startFirstPart: 2701,
+      songParts: [
+        { name: "part1", startingTime: 0, MidiSeekPoint: 100000000, midiTriggered: false },
+        { name: "part2", startingTime: 2701, MidiSeekPoint: 3.05, midiTriggered: false },
+        { name: "part3", startingTime: 2701 + 8000, MidiSeekPoint: 6.05, midiTriggered: false },
+        { name: "part4", startingTime: 2701 + 8000 * 2, MidiSeekPoint: 9.05, midiTriggered: false },
+        { name: "part5", startingTime: 2701 + 8000 * 3, MidiSeekPoint: 12.05, midiTriggered: false },
+        { name: "part6", startingTime: 2701 + 8000 * 4, MidiSeekPoint: 15.05, midiTriggered: false },
+        { name: "part7", startingTime: 2701 + 8000 * 5, MidiSeekPoint: 18.05, midiTriggered: false },
+        { name: "part8", startingTime: 2701 + 8000 * 6, MidiSeekPoint: 21.05, midiTriggered: false },
+      ],
+      currentPart: { name: "part1", startingTime: 0, MidiSeekPoint: 1000000000, midiTriggered: false },
       C2: 0 + 12 * 2,
       c2: 1 + 12 * 2,
       D2: 2 + 12 * 2,
@@ -82,60 +95,56 @@ export default {
       B6: 11 + 12 * 6,
     };
   },
-  methods: {
-    loadSoundFont() {
-      const script = document.createElement("script");
-      script.src =
-        "https://surikov.github.io/webaudiofontdata/sound/0250_SoundBlasterOld_sf2.js";
-      script.onload = () => {
-        console.log("SoundFont script loaded");
-      };
-      script.onerror = (e) => {
-        console.error("Error loading the SoundFont script", e);
-      };
-      document.head.appendChild(script);
+  computed: {
+    partNames() {
+      if (this.songParts) {
+        return this.songParts.map((part) => part.name);
+      } else {
+        return [];
+      }
     },
-    loadWebAudioFontPlayer() {
-      const script = document.createElement("script");
-      script.src =
-        "https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js";
-      script.onload = () => {
-        console.log("WebAudioFontPlayer script loaded");
-        this.player = new WebAudioFontPlayer();
-      };
-      script.onerror = (e) => {
-        console.error("Error loading the WebAudioFontPlayer script", e);
-      };
-      document.head.appendChild(script);
+  },
+  methods: {
+    loadGuitar() {
+      const sampler = new Tone.Sampler({
+        urls: {
+          C4: "C4.mp3",
+          "D#4": "Ds4.mp3",
+          "F#4": "Fs4.mp3",
+          A4: "A4.mp3",
+        },
+        release: 1,
+        baseUrl: "/instruments/guitar_electric/",
+      }).toDestination();
+
+      // Tone.loaded().then(() => {
+      //   sampler.triggerAttackRelease(["Eb5", "G4", "B3"], 0.5);
+      // });
+      // eslint-disable-next-line
+      const seq = new Tone.Sequence(
+        (time, note) => {
+          sampler.triggerAttackRelease(note, 0.1, time);
+          // subdivisions are given as subarrays
+        },
+        ["C4", ["E4", "D4", "E4"], "G4", ["A4", "G4"]]
+      ).start(0);
+      Tone.Transport.start();
     },
     play(note) {
-      if (!this.audioContext) {
-        this.audioContext = new (window.AudioContext ||
-          window.webkitAudioContext)();
-      }
-      if (window._tone_0250_SoundBlasterOld_sf2) {
-        this.player.loader.decodeAfterLoading(
-          this.audioContext,
-          "_tone_0250_SoundBlasterOld_sf2"
-        );
-        this.player.queueWaveTable(
-          this.audioContext,
-          this.audioContext.destination,
-          window._tone_0250_SoundBlasterOld_sf2,
-          0,
-          note,
-          2
-        );
-        return false;
-      }
+      const synth = new Tone.Synth().toDestination();
+      const now = Tone.now();
+      // trigger the attack immediately
+      synth.triggerAttack(note, now);
+      // wait one second before triggering the release
+      synth.triggerRelease(now + 1);
     },
-    initHowler() {
+    initHowl() {
       this.sound = new Howl({
-        // src: ['/mp3/Cmaj7_Jazzy.m4a']
-        src: ["/mp3/C_Jazz_2-5-1.wav"],
+        // src: ['/tracks/Cmaj7_Jazzy.m4a']
+        src: ["/tracks/C_Jazz_2-5-1.wav"],
         loop: true,
         sprite: {
-          part1: [0, 10701 - 6000],
+          part1: [0, 2701],
           part2: [2701, 8000 - 6000],
           part3: [10701, 8000 - 6000],
           part4: [18701, 8000 - 6000],
@@ -145,39 +154,50 @@ export default {
           part8: [50701, 8000 - 6000],
         },
       });
+    },
+    startMusic() {
       this.checkInterval = setInterval(() => {
         const seek = this.sound.seek();
-        console.log("seek", seek);
-        if (3.05 < seek <= 3) {
-          console.log("play C5");
+        console.log("seek: ", seek);
+        console.log("this.currentPart.MidiSeekPoint: ", this.currentPart.MidiSeekPoint);
+        console.log("seek >= this.currentPart.MidiSeekPoint: ", seek >= this.currentPart.MidiSeekPoint);
+        console.log("this.currentPart.midiTriggered: ", this.currentPart.midiTriggered);
+
+        if (seek >= this.currentPart.MidiSeekPoint && this.currentPart.midiTriggered == false) {
+          console.log("will play MIDI ");
           this.play(this.C5);
+          this.currentPart.midiTriggered = true;
         }
       }, 10);
-    },
-    playIntro() {
-      this.initHowler();
-      this.playPart("part1");
+      this.sound.loop(false);
+      this.sound.play(this.songParts[0].name);
+      // this.playPart(this.songParts[0]);
       this.sound.once("end", () => {
-        this.playPart("part2");
+        console.log(this.currentPart.name);
+        this.playPart(this.songParts[1]);
+        console.log(this.currentPart.name);
       });
     },
 
-    playPart(partName) {
+    playPart(part) {
+      console.log("playPart: ", part);
       this.sound.stop();
-      this.currentPart = partName;
+      this.currentPart = part;
       this.sound.loop(true);
-      this.sound.play(partName);
+      this.sound.play(part.name);
     },
     goToNextPart() {
       this.sound.once("end", () => {
         this.sound.loop(false);
         this.sound.stop();
         var currentIndex = this.songParts.indexOf(this.currentPart);
-        var nextIndex = (currentIndex + 1) % this.songParts.length;
-        if (nextIndex < this.songParts.length - 1) {
+        var nextIndex = currentIndex + 1;
+        if (nextIndex > this.partNames.length - 1) {
           nextIndex = currentIndex;
         }
-        this.playPart(this.songParts[nextIndex]);
+        this.currentPart = this.songParts[nextIndex];
+        this.currentPart.midiTriggered = false;
+        this.playPart(this.currentPart);
       });
     },
     goToPreviousPart() {
@@ -185,17 +205,18 @@ export default {
         this.sound.loop(false);
         this.sound.stop();
         var currentIndex = this.songParts.indexOf(this.currentPart);
-        var nextIndex = (currentIndex - 1) % this.songParts.length;
+        var nextIndex = currentIndex - 1;
         if (nextIndex < 1) {
           nextIndex = currentIndex;
         }
-        this.playPart(this.songParts[nextIndex]);
+        this.currentPart = this.songParts[nextIndex];
+        this.currentPart.midiTriggered = false;
+        this.playPart(this.currentPart);
       });
     },
   },
   mounted() {
-    this.loadSoundFont();
-    this.loadWebAudioFontPlayer();
+    this.initHowl();
   },
 };
 </script>
