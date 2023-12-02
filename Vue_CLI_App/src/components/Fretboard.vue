@@ -191,7 +191,7 @@ export default {
       }
       return fretboardSlots;
     },
-    add_to_pressed_notes(midi_message) {
+    update_pressed_notes(midi_message) {
       let pressed_string = this.map_jamstik_strings[midi_message.channel];
       if (
         midi_message.message_type == "cc" &&
@@ -291,7 +291,7 @@ export default {
 
     this.$parent.$on("MIDI-message", (data) => {
       if (data.message_type == "cc") {
-        this.add_to_pressed_notes(data);
+        this.update_pressed_notes(data);
       } else if (data.message_type == "note_on") {
         this.add_to_playing_notes(data);
       } else if (data.message_type == "note_off") {
