@@ -117,7 +117,7 @@ export default {
         "4n"
       );
       this.midiSeq.humanize = true;
-      this.midiSeq.loop = true;
+      this.midiSeq.loop = false;
       this.midiSeq.start(0);
       Tone.Transport.start();
     },
@@ -156,14 +156,6 @@ export default {
       this.initHowl();
       this.initTone();
       this.checkInterval = setInterval(() => {
-        if (this.midiSeq) {
-          if (this.midiSeq.progress > 0.98) {
-            this.midiSeq.stop();
-            this.midiSeq.clear();
-            this.midiSeq.dispose();
-            Tone.Transport.stop();
-          }
-        }
         const seek = this.musicTrack.seek();
         if (seek >= this.currentPart.MidiSeekPoint && !this.currentPart.midiTriggered) {
           this.currentPart.midiTriggered = true;
@@ -177,6 +169,9 @@ export default {
       });
       this.musicTrack.on("end", () => {
         this.midiSeq.stop();
+        this.midiSeq.clear();
+        this.midiSeq.dispose();
+        Tone.Transport.stop();
         this.currentPart.midiTriggered = false;
       });
     },
