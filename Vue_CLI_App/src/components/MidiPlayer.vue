@@ -1,20 +1,23 @@
 <template>
   <div>
-    <a href="#" @click.prevent="play(C4)">C4</a>
-    <a href="#" @click.prevent="play(D4)">D4</a>
-    <a href="#" @click.prevent="startMusic()">Start Music</a>
+    <!-- <a href="#" @click.prevent="play('C6')">C4</a>
+    <a href="#" @click.prevent="play('D4')">D4</a> -->
+    <button href="#" @click.prevent="startMusic()">Start Music</button>
+    <button href="#" @click.prevent="stopMusic()">Stop Music</button>
     <button @click="goToPreviousPart()">Previous Part</button>
     <button @click="goToNextPart()">Next Part</button>
-    <button @click="loadGuitar()">Play Guitar Chord</button>
-    <button @click="startMidi()">startMidi</button>
-    <button @click="stopMidi()">stopMidi</button>
+    <button @click="activateMidi()">Activate Solo</button>
+    <button @click="stopMidi()">Deactivate Solo</button>
   </div>
 </template>
 
 <script>
 import { Howl } from "howler";
 import * as Tone from "tone";
-import ChordSequence from "../utils/chordSequence";
+import MIDIMessage from "../utils/MIDIMessage.js";
+import MIDIccMessage from "../utils/MIDIccMessage.js";
+import { MIDIMessageTypesStrings } from "../utils/MIDIMessageTypes.js";
+import { midiNotesMapping as mapMidi } from "../utils/midiNotesMapping.js";
 
 export default {
   data() {
@@ -22,38 +25,54 @@ export default {
       audioContext: null,
       player: null,
       musicTrack: null,
+      isMidiTrackActive: true,
       currentMidiMelody: null,
+      isMusicPlaying: false,
       partLength: 8000,
-      startFirstPart: 2701,
+      introEnd: 2701,
       sampler: null,
       selectedIndex: 1,
       midiSeq: null,
+      midi_message: null,
       songParts: [
         {
           name: "part1",
           startingTime: 0,
-          MidiSeekPoint: 100000000,
+          duration: 0,
+          MidiSeekPoint: 0,
           midiTriggered: false,
+          midiMelody: [],
         },
         {
           name: "part2",
-          startingTime: 2701,
-          MidiSeekPoint: 3.05,
+          startingTime: null,
+          duration: 8000,
+          MidiSeekPoint: 2.702,
           midiTriggered: false,
-          midiMelody: ["A3", [["C4", "E4", "G4"]], [["E4", "G4", "B4"]], [["E4", "G4", "B4"]]],
+          midiMelody: [
+            { time: 0, note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
+            { time: 1, note: "E4", duration: "8n", string: [2, 1] },
+            { time: 2, note: "E4", duration: "8n", string: [2, 1] },
+            { time: 3, note: "A#3", duration: "8n", string: [2, 1] },
+          ],
         },
         {
           name: "part3",
-          startingTime: 2701 + 8000,
+          startingTime: null,
+          duration: 8000,
           MidiSeekPoint: 6 + 8,
           midiTriggered: false,
-          midiMelody: ["A3", [["C4", "E4", "G4"]], [["E4", "G4", "B4"]], [["D4", "E4", "A5"]]],
+          midiMelody: [
+            { time: 0, note: ["C4", "E4", "F4"], duration: "8n" },
+            { time: "0:2", note: "E4", duration: "4n" },
+            { time: "0:4", note: "F4", duration: "8n" },
+          ],
         },
-        { name: "part4", startingTime: 2701 + 8000 * 2, MidiSeekPoint: 6 + 8 * 1, midiTriggered: false },
-        { name: "part5", startingTime: 2701 + 8000 * 3, MidiSeekPoint: 6 + 8 * 2, midiTriggered: false },
-        { name: "part6", startingTime: 2701 + 8000 * 4, MidiSeekPoint: 6 + 8 * 3, midiTriggered: false },
-        { name: "part7", startingTime: 2701 + 8000 * 5, MidiSeekPoint: 6 + 8 * 4, midiTriggered: false },
-        { name: "part8", startingTime: 2701 + 8000 * 6, MidiSeekPoint: 6 + 8 * 5, midiTriggered: false },
+        { name: "part4", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 1, midiTriggered: false },
+        { name: "part5", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 2, midiTriggered: false },
+        { name: "part6", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 3, midiTriggered: false },
+        { name: "part7", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 4, midiTriggered: false },
+        { name: "part8", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 5, midiTriggered: false },
       ],
     };
   },
@@ -63,6 +82,12 @@ export default {
     },
   },
   methods: {
+    refactorSongParts() {
+      for (let i = 0; i < this.songParts.length; i++) {
+        this.songParts[i].startingTime = this.songParts[i - 1] ? this.songParts[i - 1].startingTime + this.songParts[i - 1].duration : 0;
+        this.songParts[i].duration = this.songParts[i - 1] ? this.songParts[i].duration : this.introEnd;
+      }
+    },
     loadGuitar() {
       this.sampler = new Tone.Sampler({
         urls: {
@@ -88,18 +113,19 @@ export default {
       synth.triggerRelease(now + 1);
     },
     initHowl() {
+      // const intro_time = 2701;
       this.musicTrack = new Howl({
-        src: ["/tracks/C_Jazz_2-5-1.wav"],
+        src: ["/tracks/C_Jazz_2-5-1_BPM_120.wav"],
         loop: true,
         sprite: {
-          part1: [0, 2701],
-          part2: [2701, 8000],
-          part3: [10701, 8000],
-          part4: [18701, 8000],
-          part5: [26701, 8000],
-          part6: [34701, 8000],
-          part7: [42701, 8000],
-          part8: [50701, 8000],
+          part1: [0, this.introEnd],
+          part2: [this.introEnd, this.songParts[1].duration],
+          part3: [10701, this.songParts[2].duration],
+          part4: [18701, this.songParts[3].duration],
+          part5: [26701, this.songParts[4].duration],
+          part6: [34701, this.songParts[5].duration],
+          part7: [42701, this.songParts[6].duration],
+          part8: [50701, this.songParts[7].duration],
         },
       });
     },
@@ -108,10 +134,24 @@ export default {
       this.loadGuitar();
     },
     async playMidiMelody(midiMelody) {
-      await Tone.loaded();
-      this.midiSeq = new ChordSequence(
+      if (!midiMelody.length) return;
+      this.midiSeq = new Tone.Part(
         (time, note) => {
-          this.sampler.triggerAttackRelease(note, 0.1, time);
+          this.sampler.triggerAttackRelease(note.note, note.duration, time);
+          let noteName = mapMidi[note.note];
+          if (Array.isArray(note.note)) {
+            noteName = [];
+            for (let i = 0; i < note.note.length; i++) {
+              noteName[i] = mapMidi[note.note[i]];
+            }
+          }
+          this.midi_message = new MIDIccMessage(note.string, MIDIMessageTypesStrings.cc, 0, noteName);
+          setTimeout(() => {
+            this.midi_message = new MIDIMessage(note.string, MIDIMessageTypesStrings.note_on, noteName, 127);
+          }, 1);
+          setTimeout(() => {
+            this.midi_message = new MIDIMessage(note.string, MIDIMessageTypesStrings.note_off, noteName, 0);
+          }, 400);
         },
         midiMelody,
         "4n"
@@ -119,15 +159,17 @@ export default {
       this.midiSeq.humanize = true;
       this.midiSeq.loop = false;
       this.midiSeq.start(0);
+      Tone.Transport.bpm.value = 120;
       Tone.Transport.start();
     },
-    startMidi() {
-      this.initTone();
-      this.playMidiMelody(["A3", [["C4", "E4", "G4"]], [["E4", "G4", "B4"]], [["E4", "G4", "B4"]], [["D4", "E4", "A5"]]]);
-      this.midiSeq.start(0);
+    activateMidi() {
+      this.isMidiTrackActive = true;
     },
     stopMidi() {
       this.midiSeq.stop();
+      this.midiSeq.clear();
+      this.midiSeq.dispose();
+      this.isMidiTrackActive = false;
     },
     playPart(part) {
       this.musicTrack.stop();
@@ -152,12 +194,23 @@ export default {
         this.playPart(this.currentPart);
       });
     },
+    stopMusic() {
+      this.musicTrack.stop();
+      this.midiSeq.stop();
+      this.midiSeq.clear();
+      this.midiSeq.dispose();
+      Tone.Transport.stop();
+      this.currentPart.midiTriggered = false;
+      this.isMusicPlaying = false;
+    },
     startMusic() {
+      if (this.isMusicPlaying) return;
       this.initHowl();
       this.initTone();
       this.checkInterval = setInterval(() => {
         const seek = this.musicTrack.seek();
         if (seek >= this.currentPart.MidiSeekPoint && !this.currentPart.midiTriggered) {
+          console.log("seek: ", seek);
           this.currentPart.midiTriggered = true;
           this.playMidiMelody(this.currentPart.midiMelody);
         }
@@ -174,7 +227,16 @@ export default {
         Tone.Transport.stop();
         this.currentPart.midiTriggered = false;
       });
+      this.isMusicPlaying = true;
     },
+  },
+  watch: {
+    midi_message(newValue) {
+      this.$parent.$parent.$emit("MIDI-message", newValue);
+    },
+  },
+  created() {
+    this.refactorSongParts();
   },
   mounted() {},
 };
