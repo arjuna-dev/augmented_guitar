@@ -6,20 +6,13 @@
 import { hexToDecimal, hex2bin } from "../utils/utils.js";
 import MIDIMessage from "../utils/MIDIMessage.js";
 import MIDIccMessage from "../utils/MIDIccMessage.js";
+import { MIDIMessageTypes } from "../utils/MIDIMessageTypes.js";
 
 export default {
   name: "Fretboard",
   data() {
     return {
       midi_message: "",
-      MIDI_message_types: {
-        "1000": "note_off",
-        "1001": "note_on",
-        "1011": "cc",
-        "1110": "pitch_bend",
-        "1010": "polyaftertouch",
-        "1101": "channel_pressure",
-      },
       midi: null,
       channel: "",
       type: "",
@@ -42,7 +35,7 @@ export default {
       let midi_message_velocity = message_array[2];
 
       this.channel = channel;
-      this.type = this.MIDI_message_types[type];
+      this.type = MIDIMessageTypes[type];
       this.midi_message_note = hexToDecimal(midi_message_note);
       this.midi_message_velocity = hexToDecimal(midi_message_velocity);
 
