@@ -8,11 +8,12 @@
     <button @click="goToNextPart()">Next Part</button>
     <button @click="activateMidi()">Activate Solo</button>
     <button @click="stopMidi()">Deactivate Solo</button>
+    <button @click="addToTonePart(songParts[2])">addToTonePart</button>
+    <button @click="clearTonePart()">clearTonePart</button>
   </div>
 </template>
 
 <script>
-import { Howl } from "howler";
 import * as Tone from "tone";
 import MIDIMessage from "../utils/MIDIMessage.js";
 import MIDIccMessage from "../utils/MIDIccMessage.js";
@@ -23,56 +24,116 @@ export default {
   data() {
     return {
       audioContext: null,
-      player: null,
-      musicTrack: null,
+      backingTrack: null,
+      multiPlayer: null,
       isMidiTrackActive: true,
-      currentMidiMelody: null,
       isMusicPlaying: false,
-      partLength: 8000,
-      introEnd: 2701,
       sampler: null,
       selectedIndex: 1,
-      midiSeq: null,
+      lastIndex: 1,
+      tonePart: null,
+      introEnd: 2.701,
       midi_message: null,
       songParts: [
         {
-          name: "part1",
-          startingTime: 0,
-          duration: 0,
-          MidiSeekPoint: 0,
+          name: "part0",
+          startTime: 0,
+          duration: "4m",
+          endTime: 2.701,
           midiTriggered: false,
           midiMelody: [],
         },
         {
-          name: "part2",
-          startingTime: null,
-          duration: 8000,
-          MidiSeekPoint: 2.702,
+          name: "part1",
+          startTime: 2.701,
+          duration: "4m",
+          endTime: null,
           midiTriggered: false,
           midiMelody: [
-            { time: 0, note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
-            { time: 1, note: "E4", duration: "8n", string: [2, 1] },
-            { time: 2, note: "E4", duration: "8n", string: [2, 1] },
-            { time: 3, note: "A#3", duration: "8n", string: [2, 1] },
+            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
+            { time: "1m", note: "E4", duration: "8n", string: 1 },
+            { time: "2m", note: "E4", duration: "8n", string: 1 },
+            { time: "3m", note: "A#3", duration: "8n", string: 2 },
+          ],
+        },
+        {
+          name: "part2",
+          startTime: null,
+          duration: "4m",
+          endTime: null,
+          midiTriggered: false,
+          midiMelody: [
+            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
+            { time: "1m", note: "B3", duration: "1m", string: 2 },
+            // { time: "2m", note: "B3", duration: "8n", string: 2 },
+            // { time: "3m", note: "B3", duration: "8n", string: 2 },
           ],
         },
         {
           name: "part3",
-          startingTime: null,
-          duration: 8000,
-          MidiSeekPoint: 6 + 8,
+          startTime: null,
+          endTime: null,
+          duration: "4m",
           midiTriggered: false,
           midiMelody: [
-            { time: 0, note: ["C4", "E4", "F4"], duration: "8n" },
-            { time: "0:2", note: "E4", duration: "4n" },
-            { time: "0:4", note: "F4", duration: "8n" },
+            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
+            { time: "1m", note: "B3", duration: "1m", string: 2 },
+            { time: "2m", note: "B3", duration: "8n", string: 2 },
+            { time: "3m", note: "B3", duration: "8n", string: 2 },
           ],
         },
-        { name: "part4", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 1, midiTriggered: false },
-        { name: "part5", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 2, midiTriggered: false },
-        { name: "part6", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 3, midiTriggered: false },
-        { name: "part7", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 4, midiTriggered: false },
-        { name: "part8", startingTime: null, duration: 8000, MidiSeekPoint: 6 + 8 * 5, midiTriggered: false },
+        {
+          name: "part4",
+          startTime: null,
+          endTime: null,
+          duration: "4m",
+          midiTriggered: false,
+          midiMelody: [
+            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
+            { time: "1m", note: "B3", duration: "1m", string: 2 },
+            { time: "2m", note: "B3", duration: "8n", string: 2 },
+            { time: "3m", note: "B3", duration: "8n", string: 2 },
+          ],
+        },
+        {
+          name: "part5",
+          startTime: null,
+          endTime: null,
+          duration: "4m",
+          midiTriggered: false,
+          midiMelody: [
+            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
+            { time: "1m", note: "B3", duration: "1m", string: 2 },
+            { time: "2m", note: "B3", duration: "8n", string: 2 },
+            { time: "3m", note: "B3", duration: "8n", string: 2 },
+          ],
+        },
+        {
+          name: "part6",
+          startTime: null,
+          endTime: null,
+          duration: "4m",
+          midiTriggered: false,
+          midiMelody: [
+            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
+            { time: "1m", note: "B3", duration: "1m", string: 2 },
+            { time: "2m", note: "B3", duration: "8n", string: 2 },
+            { time: "3m", note: "B3", duration: "8n", string: 2 },
+          ],
+        },
+        {
+          name: "part7",
+          startTime: null,
+          endTime: null,
+          duration: "4m",
+          midiTriggered: false,
+          midiMelody: [
+            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
+            { time: "1m", note: "B3", duration: "1m", string: 2 },
+            { time: "2m", note: "B3", duration: "8n", string: 2 },
+            { time: "3m", note: "B3", duration: "8n", string: 2 },
+          ],
+        },
       ],
     };
   },
@@ -82,10 +143,17 @@ export default {
     },
   },
   methods: {
+    play(note) {
+      const synth = new Tone.Synth().toDestination();
+      const now = Tone.now();
+      synth.triggerAttack(note, now);
+      synth.triggerRelease(now + 1);
+    },
     refactorSongParts() {
       for (let i = 0; i < this.songParts.length; i++) {
-        this.songParts[i].startingTime = this.songParts[i - 1] ? this.songParts[i - 1].startingTime + this.songParts[i - 1].duration : 0;
-        this.songParts[i].duration = this.songParts[i - 1] ? this.songParts[i].duration : this.introEnd;
+        this.songParts[i].startTime = this.songParts[i - 1] ? this.songParts[i - 1].endTime : 0;
+        const durationInSeconds = Tone.Time(this.songParts[i].duration).toSeconds();
+        this.songParts[i].endTime = this.songParts[i - 1] ? this.songParts[i].startTime + durationInSeconds : this.introEnd;
       }
     },
     loadGuitar() {
@@ -99,135 +167,125 @@ export default {
         release: 1,
         baseUrl: "/instruments/guitar_electric/",
       }).toDestination();
-
-      //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-      //Try yo create my own scheduler. Record midi with time stamp and note. Then play it back with Tone.js feeding timestamp to the time (3rd)parameter of triggerAttackRelease
-      //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
     },
-    play(note) {
-      const synth = new Tone.Synth().toDestination();
-      const now = Tone.now();
-      // trigger the attack immediately
-      synth.triggerAttack(note, now);
-      // wait one second before triggering the release
-      synth.triggerRelease(now + 1);
-    },
-    initHowl() {
-      // const intro_time = 2701;
-      this.musicTrack = new Howl({
-        src: ["/tracks/C_Jazz_2-5-1_BPM_120.wav"],
-        loop: true,
-        sprite: {
-          part1: [0, this.introEnd],
-          part2: [this.introEnd, this.songParts[1].duration],
-          part3: [10701, this.songParts[2].duration],
-          part4: [18701, this.songParts[3].duration],
-          part5: [26701, this.songParts[4].duration],
-          part6: [34701, this.songParts[5].duration],
-          part7: [42701, this.songParts[6].duration],
-          part8: [50701, this.songParts[7].duration],
-        },
-      });
+    loadPlayers() {
+      const multiPlayer = new Tone.Players({
+        backingTrack: "/tracks/C_Jazz_2-5-1_BPM_120.wav",
+      }).toDestination();
+      this.backingTrack = multiPlayer.player("backingTrack");
     },
     initTone() {
       Tone.start();
       this.loadGuitar();
+      this.loadPlayers();
     },
-    async playMidiMelody(midiMelody) {
-      if (!midiMelody.length) return;
-      this.midiSeq = new Tone.Part(
-        (time, note) => {
-          this.sampler.triggerAttackRelease(note.note, note.duration, time);
-          let noteName = mapMidi[note.note];
-          if (Array.isArray(note.note)) {
-            noteName = [];
-            for (let i = 0; i < note.note.length; i++) {
-              noteName[i] = mapMidi[note.note[i]];
-            }
+    createTonePart(midiMelody) {
+      this.tonePart = new Tone.Part((time, note) => {
+        this.sampler.triggerAttackRelease(note.note, note.duration, time);
+        let noteName = mapMidi[note.note];
+        if (Array.isArray(note.note)) {
+          noteName = [];
+          for (let i = 0; i < note.note.length; i++) {
+            noteName[i] = mapMidi[note.note[i]];
           }
-          this.midi_message = new MIDIccMessage(note.string, MIDIMessageTypesStrings.cc, 0, noteName);
-          setTimeout(() => {
-            this.midi_message = new MIDIMessage(note.string, MIDIMessageTypesStrings.note_on, noteName, 127);
-          }, 1);
-          setTimeout(() => {
-            this.midi_message = new MIDIMessage(note.string, MIDIMessageTypesStrings.note_off, noteName, 0);
-          }, 400);
-        },
-        midiMelody,
-        "4n"
-      );
-      this.midiSeq.humanize = true;
-      this.midiSeq.loop = false;
-      this.midiSeq.start(0);
-      Tone.Transport.bpm.value = 120;
-      Tone.Transport.start();
+        }
+        this.midi_message = new MIDIccMessage(note.string, MIDIMessageTypesStrings.cc, 0, noteName);
+        setTimeout(() => {
+          this.midi_message = new MIDIMessage(note.string, MIDIMessageTypesStrings.note_on, noteName, 127);
+        }, 1);
+        setTimeout(() => {
+          this.midi_message = new MIDIMessage(note.string, MIDIMessageTypesStrings.note_off, noteName, 0);
+        }, Tone.Time(note.duration).toMilliseconds());
+      }, midiMelody);
+      this.tonePart.humanize = true;
+      this.tonePart.loop = true;
+      this.tonePart.loopStart = 0;
+      this.tonePart.loopEnd = Tone.Time(this.currentPart.duration).toSeconds();
+    },
+    clearTonePart() {
+      this.tonePart.clear();
+    },
+    updateTonePart(songPart) {
+      this.tonePart.loopEnd = songPart.duration;
+      for (let i = 0; i < songPart.midiMelody.length; i++) {
+        this.tonePart.add(songPart.midiMelody[i]);
+      }
     },
     activateMidi() {
+      if (this.isMidiTrackActive) return;
+      this.tonePart.mute = false;
       this.isMidiTrackActive = true;
     },
     stopMidi() {
-      this.midiSeq.stop();
-      this.midiSeq.clear();
-      this.midiSeq.dispose();
+      if (!this.isMidiTrackActive) return;
+      this.tonePart.mute = true;
       this.isMidiTrackActive = false;
     },
-    playPart(part) {
-      this.musicTrack.stop();
-      this.musicTrack.loop(true);
-      this.musicTrack.play(part.name);
-    },
     goToNextPart() {
-      this.musicTrack.once("end", () => {
-        this.musicTrack.loop(false);
-        this.musicTrack.stop();
-        this.selectedIndex = this.selectedIndex > this.songParts.length - 1 ? this.selectedIndex : this.selectedIndex + 1;
-        this.currentPart.midiTriggered = false;
-        this.playPart(this.currentPart);
+      this.selectedIndex = this.selectedIndex == this.songParts.length - 1 ? this.selectedIndex : this.selectedIndex + 1;
+      this.$nextTick(() => {
+        console.log("this.selectedIndex: ", this.selectedIndex);
+        setTimeout(() => {}, 100);
       });
     },
     goToPreviousPart() {
-      this.musicTrack.once("end", () => {
-        this.musicTrack.loop(false);
-        this.musicTrack.stop();
-        this.selectedIndex = this.selectedIndex == 1 ? this.selectedIndex : this.selectedIndex - 1;
-        this.currentPart.midiTriggered = false;
-        this.playPart(this.currentPart);
+      this.selectedIndex = this.selectedIndex <= 1 ? this.selectedIndex : this.selectedIndex - 1;
+      this.$nextTick(() => {
+        console.log("this.selectedIndex: ", this.selectedIndex);
       });
     },
     stopMusic() {
-      this.musicTrack.stop();
-      this.midiSeq.stop();
-      this.midiSeq.clear();
-      this.midiSeq.dispose();
+      if (this.tonePart) {
+        this.tonePart.stop();
+        this.tonePart.clear();
+        this.tonePart.dispose();
+      }
+      this.backingTrack.stop();
+      Tone.Transport.cancel();
+      Tone.Transport.clear();
       Tone.Transport.stop();
       this.currentPart.midiTriggered = false;
       this.isMusicPlaying = false;
     },
-    startMusic() {
+    async startMusic() {
       if (this.isMusicPlaying) return;
-      this.initHowl();
-      this.initTone();
-      this.checkInterval = setInterval(() => {
-        const seek = this.musicTrack.seek();
-        if (seek >= this.currentPart.MidiSeekPoint && !this.currentPart.midiTriggered) {
-          console.log("seek: ", seek);
-          this.currentPart.midiTriggered = true;
-          this.playMidiMelody(this.currentPart.midiMelody);
-        }
-      }, 10);
-      this.musicTrack.loop(false);
-      this.musicTrack.play(this.songParts[0].name);
-      this.musicTrack.once("end", () => {
-        this.playPart(this.songParts[1]);
-      });
-      this.musicTrack.on("end", () => {
-        this.midiSeq.stop();
-        this.midiSeq.clear();
-        this.midiSeq.dispose();
-        Tone.Transport.stop();
-        this.currentPart.midiTriggered = false;
-      });
       this.isMusicPlaying = true;
+      this.initTone();
+      await Tone.loaded();
+      this.backingTrack.loop = true;
+      this.backingTrack.loopStart = 0;
+      this.backingTrack.loopEnd = this.songParts[1].endTime;
+      this.backingTrack.setLoopPoints(0, this.songParts[1].endTime);
+
+      this.createTonePart(this.songParts[1].midiMelody);
+
+      // Go to next loop after intro
+      Tone.Transport.scheduleOnce(() => {
+        this.backingTrack.setLoopPoints(this.songParts[1].startTime, this.songParts[1].endTime);
+      }, this.songParts[0].endTime - 0.01);
+
+      // for (let i = 1; i < this.songParts.length; i++) {
+      //   Tone.Transport.schedule(() => {
+      //     this.$nextTick(() => {
+      //       console.log("this.selectedIndex: ", this.selectedIndex);
+      //       this.clearTonePart();
+      //       this.updateTonePart(this.songParts[this.selectedIndex]);
+      //       this.backingTrack.seek(this.songParts[this.selectedIndex].startTime);
+      //       this.backingTrack.setLoopPoints(this.songParts[this.selectedIndex].startTime, this.songParts[this.selectedIndex].endTime);
+      //     });
+      //   }, this.songParts[i].endTime - 0.01);
+      // }
+
+      Tone.Transport.scheduleOnce(() => {
+        this.tonePart.start(Tone.Transport.seconds);
+      }, this.songParts[1].startTime - 0.01);
+
+      // Start backingTrack at 0
+      Tone.Transport.schedule(() => {
+        this.backingTrack.start();
+      }, 0);
+      Tone.Transport.bpm.value = 120;
+      Tone.Transport.start();
     },
   },
   watch: {
@@ -237,6 +295,7 @@ export default {
   },
   created() {
     this.refactorSongParts();
+    console.log(this.songParts);
   },
   mounted() {},
 };
