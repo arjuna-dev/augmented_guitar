@@ -7,8 +7,6 @@
     <button @click="goToNextPart()">Next Part</button>
     <button @click="activateMidi()">Activate Solo</button>
     <button @click="stopMidi()">Deactivate Solo</button>
-    <button @click="addToTonePart(songParts[2])">addToTonePart</button>
-    <button @click="clearTonePart()">clearTonePart</button>
   </div>
 </template>
 
@@ -26,6 +24,7 @@ export default {
       backingTrack: {
         howl: null,
         filePath: "./tracks/C_Jazz_2-5-1_BPM_120.aac",
+        introEnd: 2701,
         sprite: {
           part0: [0, 2701],
           part1: [2702, 8000],
@@ -37,7 +36,8 @@ export default {
           part7: [2701 + 8000 * 7, 8000],
         },
         BPM: 120,
-        barLength: 2,
+        barLength: null,
+        timeSignature: 4,
       },
       isMidiTrackActive: true,
       isMusicPlaying: false,
@@ -45,21 +45,23 @@ export default {
       guitar: null,
       selectedIndex: 1,
       lastIndex: 1,
-      introEnd: 2.701,
+      introEnd: 2701,
       midi_message: null,
       songParts: [
         {
           name: "part0",
-          startTime: 0,
-          duration: "4m",
-          endTime: 2.701,
+          startTime: null,
+          bars: 4,
+          duration: null,
+          endTime: null,
           midiTriggered: false,
           midiMelody: [],
         },
         {
           name: "part1",
-          startTime: 2.701,
-          duration: "4m",
+          startTime: null,
+          bars: 4,
+          duration: null,
           endTime: null,
           midiTriggered: false,
           midiMelody: [
@@ -72,7 +74,8 @@ export default {
         {
           name: "part2",
           startTime: null,
-          duration: "4m",
+          bars: 4,
+          duration: null,
           endTime: null,
           midiTriggered: false,
           midiMelody: [
@@ -86,7 +89,8 @@ export default {
           name: "part3",
           startTime: null,
           endTime: null,
-          duration: "4m",
+          bars: 4,
+          duration: null,
           midiTriggered: false,
           midiMelody: [
             { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
@@ -99,7 +103,8 @@ export default {
           name: "part4",
           startTime: null,
           endTime: null,
-          duration: "4m",
+          bars: 4,
+          duration: null,
           midiTriggered: false,
           midiMelody: [
             { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
@@ -112,7 +117,8 @@ export default {
           name: "part5",
           startTime: null,
           endTime: null,
-          duration: "4m",
+          bars: 4,
+          duration: null,
           midiTriggered: false,
           midiMelody: [
             { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
@@ -125,7 +131,8 @@ export default {
           name: "part6",
           startTime: null,
           endTime: null,
-          duration: "4m",
+          bars: 4,
+          duration: null,
           midiTriggered: false,
           midiMelody: [
             { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
@@ -138,7 +145,8 @@ export default {
           name: "part7",
           startTime: null,
           endTime: null,
-          duration: "4m",
+          bars: 4,
+          duration: null,
           midiTriggered: false,
           midiMelody: [
             { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
@@ -159,18 +167,28 @@ export default {
     },
   },
   methods: {
+    refactorTrack() {
+      return new Promise((resolve, reject) => {
+        this.backingTrack.barLength = this.backingTrack.timeSignature / (this.backingTrack.BPM / 60);
+        if (this.backingTrack.barLength == 0) {
+          reject("Wrong BPM");
+        }
+        resolve();
+      });
+    },
+    refactorSongParts() {
+      for (let i = 0; i < this.songParts.length; i++) {
+        this.songParts[i].startTime = this.songParts[i - 1] ? this.songParts[i - 1].endTime + 1 : 0;
+        let duration = this.songParts[i].bars * this.backingTrack.barLength * 1000;
+        this.songParts[i].duration = duration;
+        this.songParts[i].endTime = this.songParts[i - 1] ? this.songParts[i].startTime + duration : this.introEnd;
+      }
+    },
     play() {
       this.guitar.play("A2");
     },
     handleSpriteEnd() {
       this.backingTrack.howl.play(this.partList[this.selectedIndex]);
-    },
-    refactorSongParts() {
-      // for (let i = 0; i < this.songParts.length; i++) {
-      //   this.songParts[i].startTime = this.songParts[i - 1] ? this.songParts[i - 1].endTime : 0;
-      //   const durationInSeconds = Tone.Time(this.songParts[i].duration).toSeconds();
-      //   this.songParts[i].endTime = this.songParts[i - 1] ? this.songParts[i].startTime + durationInSeconds : this.introEnd;
-      // }
     },
     loadGuitar() {
       this.guitar = new Howl({
@@ -253,7 +271,7 @@ export default {
     },
   },
   created() {
-    this.refactorSongParts();
+    this.refactorTrack().then(this.refactorSongParts());
     console.log(this.songParts);
   },
   mounted() {
