@@ -1,12 +1,15 @@
 <template>
   <div>
-    <!-- <a href="#" @click.prevent="play()">A2</a> -->
-    <button href="#" @click.prevent="startMusic()">Start Music</button>
-    <button href="#" @click.prevent="stopMusic()">Stop Music</button>
-    <button @click="goToPreviousPart()">Previous Part</button>
-    <button @click="goToNextPart()">Next Part</button>
-    <button @click="activateMidi()">Activate Solo</button>
-    <button @click="stopMidi()">Deactivate Solo</button>
+    <div class="menu">
+      <a href="#" @click.prevent="playMelody(songParts[1].midiMelody)">A2</a>
+      <button href="#" @click.prevent="startMusic()">Start Music</button>
+      <button href="#" @click.prevent="stopMusic()">Stop Music</button>
+      <button @click="goToPreviousPart()">Previous Part</button>
+      <p id="part-counter" @click="goToPreviousPart()">{{ selectedIndex }}</p>
+      <button @click="goToNextPart()">Next Part</button>
+      <button @click="activateMidi()">Activate Solo</button>
+      <button @click="stopMidi()">Deactivate Solo</button>
+    </div>
   </div>
 </template>
 
@@ -16,6 +19,7 @@ import MIDIMessage from "../utils/MIDIMessage.js";
 import MIDIccMessage from "../utils/MIDIccMessage.js";
 import { MIDIMessageTypesStrings } from "../utils/MIDIMessageTypes.js";
 import { midiNotesMapping as mapMidi } from "../utils/midiNotesMapping.js";
+import acoustic_guitar_sprite from "../utils/sprites_json/guitar_acoustic_sprite.js";
 
 export default {
   data() {
@@ -26,14 +30,15 @@ export default {
         filePath: "./tracks/C_Jazz_2-5-1_BPM_120.aac",
         introEnd: 2701,
         sprite: {
-          part0: [0, 2701],
-          part1: [2702, 8000],
-          part2: [2701 + 8000 * 2, 8000],
-          part3: [2701 + 8000 * 3, 8000],
-          part4: [2701 + 8000 * 4, 8000],
-          part5: [2701 + 8000 * 5, 8000],
-          part6: [2701 + 8000 * 6, 8000],
-          part7: [2701 + 8000 * 7, 8000],
+          // Loaded programmatically in created()
+          part0: null,
+          part1: null,
+          part2: null,
+          part3: null,
+          part4: null,
+          part5: null,
+          part6: null,
+          part7: null,
         },
         BPM: 120,
         barLength: null,
@@ -64,11 +69,14 @@ export default {
           duration: null,
           endTime: null,
           midiTriggered: false,
+          // prettier-ignore
           midiMelody: [
-            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
-            { time: "1m", note: "E4", duration: "8n", string: 1 },
-            { time: "2m", note: "E4", duration: "8n", string: 1 },
-            { time: "3m", note: "A#3", duration: "8n", string: 2 },
+            { time: 0, note: "E3", string: 1, duration: 1/4},
+            // { time: 0, note: "A#3", string: 2, duration: 1/4},
+            // { time: 0, note: "D4", string: 1, duration: 1/4},
+            { time: 1/4, note: "D4", string: 1, duration: 1/4},
+            { time: 2/4, note: "G4", string: 1, duration: 1/4},
+            { time: 3/4, note: "A4", string: 1, duration: 1/4},
           ],
         },
         {
@@ -180,6 +188,7 @@ export default {
       for (let i = 0; i < this.songParts.length; i++) {
         this.songParts[i].startTime = this.songParts[i - 1] ? this.songParts[i - 1].endTime + 1 : 0;
         let duration = this.songParts[i].bars * this.backingTrack.barLength * 1000;
+        duration = i == 0 ? this.introEnd : duration;
         this.songParts[i].duration = duration;
         this.songParts[i].endTime = this.songParts[i - 1] ? this.songParts[i].startTime + duration : this.introEnd;
       }
@@ -187,11 +196,30 @@ export default {
     play() {
       this.guitar.play("A2");
     },
+    barsToMilliseconds(bars) {
+      return bars * this.backingTrack.barLength * 1000;
+    },
+    playMelody(midiMelody) {
+      for (let i = 0; i < midiMelody.length; i++) {
+        let startTime = this.barsToMilliseconds(midiMelody[i].time);
+        let duration = this.barsToMilliseconds(midiMelody[i].duration);
+        setTimeout(() => {
+          console.log("play: ", i);
+          console.log("startTime: ", startTime);
+          this.guitar.play(midiMelody[i].note);
+        }, startTime);
+        setTimeout(() => {
+          console.log("duration: ", duration);
+          this.guitar.stop(midiMelody[i].note);
+        }, duration);
+      }
+    },
     handleSpriteEnd() {
       this.backingTrack.howl.play(this.partList[this.selectedIndex]);
     },
     loadGuitar() {
       this.guitar = new Howl({
+        src: ["./instruments/guitar_acoustic/guitar_acoustic.ogg"],
         sprite: acoustic_guitar_sprite,
       });
     },
@@ -202,9 +230,7 @@ export default {
         src: ["./tracks/C_Jazz_2-5-1_BPM_120.aac"],
         sprite: sprite,
         loop: false,
-        onend: function () {
-          handleSpriteEnd();
-        },
+        onend: handleSpriteEnd,
       });
     },
     createTonePart(midiMelody) {
@@ -254,6 +280,16 @@ export default {
   created() {
     this.refactorTrack().then(this.refactorSongParts());
     console.log(this.songParts);
+    this.backingTrack.sprite = {
+      part0: [this.songParts[0].startTime, this.songParts[0].duration],
+      part1: [this.songParts[1].startTime, this.songParts[1].duration],
+      part2: [this.songParts[2].startTime, this.songParts[2].duration],
+      part3: [this.songParts[3].startTime, this.songParts[3].duration],
+      part4: [this.songParts[4].startTime, this.songParts[4].duration],
+      part5: [this.songParts[5].startTime, this.songParts[5].duration],
+      part6: [this.songParts[6].startTime, this.songParts[6].duration],
+      part7: [this.songParts[7].startTime, this.songParts[7].duration],
+    };
   },
   mounted() {
     this.loadGuitar();
@@ -261,3 +297,19 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.menu {
+  display: flex;
+  flex-direction: row;
+  height: 20px;
+  width: 100%;
+}
+
+#part-counter {
+  height: 20px;
+  width: 20px;
+  margin: 0px;
+  text-align: center;
+}
+</style>
