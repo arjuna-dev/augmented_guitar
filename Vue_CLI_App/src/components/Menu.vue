@@ -38,18 +38,12 @@
       <div>{{ capo }}</div>
       <button @click="move_capo_down">-</button>
     </div>
-    <div>
-      <MidiPlayer />
-    </div>
+    <div></div>
   </div>
 </template>
 
 <script>
-import MidiPlayer from "./MidiPlayer.vue";
 export default {
-  components: {
-    MidiPlayer,
-  },
   data() {
     return {
       selected_style: "false",

@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="menu">
-      <a href="#" @click.prevent="playMelody(songParts[1].midiMelody)">A2</a>
       <button href="#" @click.prevent="startMusic()">Start Music</button>
       <button href="#" @click.prevent="stopMusic()">Stop Music</button>
       <button @click="goToPreviousPart()">Previous Part</button>
@@ -18,13 +17,14 @@ import { Howl } from "howler";
 import MIDIMessage from "../utils/MIDIMessage.js";
 import MIDIccMessage from "../utils/MIDIccMessage.js";
 import { MIDIMessageTypesStrings } from "../utils/MIDIMessageTypes.js";
-import { midiNotesMapping as mapMidi } from "../utils/midiNotesMapping.js";
+import { noteToMIDI, MIDItoNote } from "../utils/MIDINotesMapping.js";
 import acoustic_guitar_sprite from "../utils/sprites_json/guitar_acoustic_sprite.js";
 
 export default {
   data() {
     return {
       audioContext: null,
+      userPlayedNotesIDs: [],
       backingTrack: {
         howl: null,
         filePath: "./tracks/C_Jazz_2-5-1_BPM_120.aac",
@@ -71,9 +71,9 @@ export default {
           midiTriggered: false,
           // prettier-ignore
           midiMelody: [
-            { time: 0, note: "E3", string: 1, duration: 1/4},
-            // { time: 0, note: "A#3", string: 2, duration: 1/4},
-            // { time: 0, note: "D4", string: 1, duration: 1/4},
+            { time: 0, note: "E3", string: 3, duration: 1/4},
+            // { time: 0, note: "As3", string: 2, duration: 1/4},
+            // { time: 0, note: "E4", string: 1, duration: 1/4},
             { time: 1/4, note: "D4", string: 1, duration: 1/4},
             { time: 2/4, note: "G4", string: 1, duration: 1/4},
             { time: 3/4, note: "A4", string: 1, duration: 1/4},
@@ -203,19 +203,24 @@ export default {
       for (let i = 0; i < midiMelody.length; i++) {
         let startTime = this.barsToMilliseconds(midiMelody[i].time);
         let duration = this.barsToMilliseconds(midiMelody[i].duration);
+        let midiNote = noteToMIDI[midiMelody[i].note];
+        let spriteId;
         setTimeout(() => {
-          console.log("play: ", i);
-          console.log("startTime: ", startTime);
-          this.guitar.play(midiMelody[i].note);
+          this.midi_message = new MIDIccMessage(midiMelody[i].string, MIDIMessageTypesStrings.cc, 0, midiNote);
+          setTimeout(() => {
+            this.midi_message = new MIDIMessage(midiMelody[i].string, MIDIMessageTypesStrings.note_on, midiNote, 127);
+          }, 0.1);
+          spriteId = this.guitar.play(midiMelody[i].note);
         }, startTime);
         setTimeout(() => {
-          console.log("duration: ", duration);
-          this.guitar.stop(midiMelody[i].note);
-        }, duration);
+          this.guitar.stop(spriteId);
+          this.midi_message = new MIDIMessage(midiMelody[i].string, MIDIMessageTypesStrings.note_off, midiNote, 0);
+        }, startTime + duration);
       }
     },
     handleSpriteEnd() {
       this.backingTrack.howl.play(this.partList[this.selectedIndex]);
+      this.playMelody(this.songParts[this.selectedIndex].midiMelody);
     },
     loadGuitar() {
       this.guitar = new Howl({
@@ -234,11 +239,11 @@ export default {
       });
     },
     createTonePart(midiMelody) {
-      let noteName = mapMidi[midiMelody.note];
+      let noteName = noteToMIDI[midiMelody.note];
       if (Array.isArray(midiMelody.note)) {
         noteName = [];
         for (let i = 0; i < midiMelody.length; i++) {
-          noteName[i] = mapMidi[midiMelody.note[i]];
+          noteName[i] = noteToMIDI[midiMelody.note[i]];
         }
       }
       this.midi_message = new MIDIccMessage(midiMelody.string, MIDIMessageTypesStrings.cc, 0, noteName);
@@ -294,6 +299,27 @@ export default {
   mounted() {
     this.loadGuitar();
     this.loadBackingTrack();
+    // Play MIDI from user
+    this.$parent.$on("MIDI-message", (data) => {
+      if (data.message_type == "note_on") {
+        let note = MIDItoNote[data.note];
+        let noteID = this.guitar.play(note);
+        this.userPlayedNotesIDs.push({ note: note, id: noteID });
+        // //next tick vue
+        // this.$nextTick(() => {
+        //   console.log("this.userPlayedNotesIDs: ", this.userPlayedNotesIDs);
+        // });
+      } else if (data.message_type == "note_off") {
+        let note = MIDItoNote[data.note];
+        console.log("note: ", note);
+        let noteID = this.userPlayedNotesIDs.find((obj) => obj.note == note).id;
+        console.log("noteID: ", noteID);
+        this.guitar.stop(noteID);
+        // Delete note from this.userPlayedNotesIDs after note off
+        this.userPlayedNotesIDs = this.userPlayedNotesIDs.filter((obj) => obj.note != note);
+        console.log("note_off");
+      }
+    });
   },
 };
 </script>

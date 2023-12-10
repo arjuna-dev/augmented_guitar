@@ -100,12 +100,13 @@ export default {
         for (let j = 0; j < this.number_of_frets; j++) {
           let noteIndex = (this.all_notes.indexOf(firstNoteOfString) + j) % 12;
           let MIDI_note = this.openStringMidiNotes[i] + j;
+          let octave = Math.floor(MIDI_note / 12) - 1;
 
           let text;
           if (this.is_midi_note) {
             text = MIDI_note;
           } else {
-            text = this.all_notes[noteIndex];
+            text = this.all_notes[noteIndex] + octave;
           }
           let color = "";
           let border = "";
@@ -177,15 +178,16 @@ export default {
         }
       } else {
         let pressed_string = this.map_jamstik_strings[midi_message.channel];
-        if (
-          midi_message.message_type == "cc" &&
-          !this.pressed_notes.some((obj) => obj.note === midi_message.value && obj.string === pressed_string)
-        ) {
+
+        let noteIsNotInPressedNotes = !this.pressed_notes.some((obj) => obj.note === midi_message.value && obj.string === pressed_string);
+
+        if (midi_message.message_type == "cc" && noteIsNotInPressedNotes) {
           let note_object = {};
           note_object.note = midi_message.value;
           note_object.string = pressed_string;
-
-          if (midi_message.value == this.openStringMidiNotes[note_object.string]) {
+          let isOpenString = midi_message.value == this.openStringMidiNotes[note_object.string];
+          if (isOpenString) {
+            // Remove all pressed notes from string
             this.pressed_notes = this.pressed_notes.filter((obj) => obj.string !== note_object.string);
           } else {
             this.pressed_notes.push(note_object);
@@ -223,38 +225,21 @@ export default {
       }
     },
     remove_from_playing_notes(midi_message) {
-      let open_notes = [];
-      for (let i = 0; i < midi_message.channel.length; i++) {
-        open_notes.push(this.openStringMidiNotes[this.map_jamstik_strings[midi_message.channel[i]]]);
-      }
-      let midi_message_lift = new MIDIccMessage(midi_message.channel, MIDIMessageTypesStrings.cc, 0, open_notes);
+      // Use MIDI off message to create a lift finger message
+      let open_note = this.openStringMidiNotes[this.map_jamstik_strings[midi_message.channel]];
+      let midi_message_lift = new MIDIccMessage(midi_message.channel, MIDIMessageTypesStrings.cc, 0, open_note);
       this.update_pressed_notes(midi_message_lift);
-      if (Array.isArray(midi_message.channel) && Array.isArray(midi_message.note)) {
-        for (let i = 0; i < midi_message.channel.length; i++) {
-          let pressed_string = this.map_jamstik_strings[midi_message.channel[i]];
-          if (
-            midi_message.message_type == "note_off" &&
-            midi_message.velocity == 0 &&
-            this.playing_notes.some((obj) => obj.note === midi_message.note[i] && obj.string === pressed_string)
-          ) {
-            let note_object = {};
-            note_object.note = midi_message.note[i];
-            note_object.string = pressed_string;
-            this.playing_notes = this.playing_notes.filter((item) => item.note !== midi_message.note[i] || item.string !== pressed_string);
-          }
-        }
-      } else {
-        let pressed_string = this.map_jamstik_strings[midi_message.channel];
-        if (
-          midi_message.message_type == "note_off" &&
-          midi_message.velocity == 0 &&
-          this.playing_notes.some((obj) => obj.note === midi_message.note && obj.string === pressed_string)
-        ) {
-          let note_object = {};
-          note_object.note = midi_message.note;
-          note_object.string = pressed_string;
-          this.playing_notes = this.playing_notes.filter((item) => item.note !== midi_message.note || item.string !== pressed_string);
-        }
+      // Actual remove from playing notes
+      let pressed_string = this.map_jamstik_strings[midi_message.channel];
+      if (
+        midi_message.message_type == "note_off" &&
+        midi_message.velocity == 0 &&
+        this.playing_notes.some((obj) => obj.note === midi_message.note && obj.string === pressed_string)
+      ) {
+        let note_object = {};
+        note_object.note = midi_message.note;
+        note_object.string = pressed_string;
+        this.playing_notes = this.playing_notes.filter((item) => item.note !== midi_message.note || item.string !== pressed_string);
       }
     },
     fretStyle(fretSlot) {
