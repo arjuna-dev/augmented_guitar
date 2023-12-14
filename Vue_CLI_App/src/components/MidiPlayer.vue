@@ -326,10 +326,12 @@ export default {
 
 <style scoped>
 .menu {
+  position: relative;
   display: flex;
   flex-direction: row;
   height: 20px;
   width: 100%;
+  padding-left: 30px;
 }
 
 #part-counter {

@@ -46,5 +46,6 @@ body {
   flex-direction: column;
   width: 100vw;
   height: 100vh;
+  background-color: rgb(41, 41, 41);
 }
 </style>

@@ -377,9 +377,7 @@ export default {
 <style scoped>
 .menu {
   width: 100%;
-  height: 100%;
   color: azure;
-  background-color: rgb(41, 41, 41);
   padding: 30px;
   overflow-y: scroll;
   display: flex;
