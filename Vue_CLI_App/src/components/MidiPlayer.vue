@@ -1,17 +1,19 @@
 <template>
   <div>
     <div class="menu">
-      <div v-if="showingCounter" class="playerFeedback counter">
+      <div v-if="showingCounter" class="playerFeedback countdowner">
         <span class="circle-text">{{ countdown }}</span>
       </div>
       <div :style="{ color: gradeColor }" v-if="showingGrade" class="playerFeedback grade-container">
-        <span class="grade-text">{{ noteGrade }}</span>
+        <span v-html="noteGrade" class="grade-text"></span>
       </div>
       <button href="#" @click.prevent="startMusic()">Start Music</button>
       <button href="#" @click.prevent="stopMusic()">Stop Music</button>
-      <button @click="goToPreviousPart()">Previous Part</button>
-      <p id="part-counter" @click="goToPreviousPart()">{{ selectedIndex }}</p>
-      <button @click="goToNextPart()">Next Part</button>
+      <button @click="goToPreviousPart()">Previous</button>
+      <div id="part-counter-container">
+        <p id="part-counter" :class="{ grow: nextLevelClass, shrink: !nextLevelClass }" @click="goToPreviousPart()">Level {{ selectedIndex }}</p>
+      </div>
+      <button @click="goToNextPart()">Next</button>
       <button @click="activateMidi()">Activate Solo</button>
       <button @click="stopMidi()">Deactivate Solo</button>
     </div>
@@ -31,6 +33,8 @@ export default {
     return {
       showingCounter: false,
       gradeColor: "",
+      nextLevelClass: false,
+      accurateNotes: [],
       noteGrade: "",
       showingGrade: false,
       countdown: 1,
@@ -42,7 +46,7 @@ export default {
         filePath: "./tracks/C_Jazz_2-5-1_BPM_120.aac",
         introEnd: 2701,
         sprite: {
-          // Loaded programmatically in created()
+          // Loaded programmatically in created() after refactoring songParts
           part0: null,
           part1: null,
           part2: null,
@@ -83,9 +87,7 @@ export default {
           midiTriggered: false,
           // prettier-ignore
           midiMelody: [
-            { time: 0, note: "C4", string: 2, duration: 1},
-            { time: 0, note: "G3", string: 3, duration: 1},
-            { time: 0, note: "E4", string: 1, duration: 1},
+            { time: 0, note: "C4", string: 2, duration: 4},
           ],
         },
         {
@@ -96,11 +98,8 @@ export default {
           endTime: null,
           midiTriggered: false,
           midiMelody: [
-            { time: 0, note: "As3", string: 2, duration: 1 / 4 },
-            { time: 0, note: "E4", string: 1, duration: 1 / 4 },
-            { time: 1 / 4, note: "D4", string: 1, duration: 1 / 4 },
-            { time: 2 / 4, note: "G4", string: 1, duration: 1 / 4 },
-            { time: 3 / 4, note: "A4", string: 1, duration: 1 / 4 },
+            { time: 0, note: "G3", string: 3, duration: 1 },
+            { time: 1 / 4, note: "C4", string: 2, duration: 1 },
           ],
         },
         {
@@ -111,10 +110,9 @@ export default {
           duration: null,
           midiTriggered: false,
           midiMelody: [
-            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
-            { time: "1m", note: "B3", duration: "1m", string: 2 },
-            { time: "2m", note: "B3", duration: "8n", string: 2 },
-            { time: "3m", note: "B3", duration: "8n", string: 2 },
+            { time: 0, note: "G3", string: 3, duration: 1 },
+            { time: 1 / 4, note: "C4", string: 2, duration: 1 },
+            { time: 2 / 4, note: "E4", string: 1, duration: 1 },
           ],
         },
         {
@@ -125,10 +123,9 @@ export default {
           duration: null,
           midiTriggered: false,
           midiMelody: [
-            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
-            { time: "1m", note: "B3", duration: "1m", string: 2 },
-            { time: "2m", note: "B3", duration: "8n", string: 2 },
-            { time: "3m", note: "B3", duration: "8n", string: 2 },
+            { time: 0, note: "C4", string: 2, duration: 1 },
+            { time: 0, note: "G3", string: 3, duration: 1 },
+            { time: 0, note: "E4", string: 1, duration: 1 },
           ],
         },
         {
@@ -139,10 +136,9 @@ export default {
           duration: null,
           midiTriggered: false,
           midiMelody: [
-            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
-            { time: "1m", note: "B3", duration: "1m", string: 2 },
-            { time: "2m", note: "B3", duration: "8n", string: 2 },
-            { time: "3m", note: "B3", duration: "8n", string: 2 },
+            { time: 0, note: "C4", string: 2, duration: 1 },
+            { time: 0, note: "G3", string: 3, duration: 1 },
+            { time: 0, note: "E4", string: 1, duration: 1 },
           ],
         },
         {
@@ -153,10 +149,9 @@ export default {
           duration: null,
           midiTriggered: false,
           midiMelody: [
-            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
-            { time: "1m", note: "B3", duration: "1m", string: 2 },
-            { time: "2m", note: "B3", duration: "8n", string: 2 },
-            { time: "3m", note: "B3", duration: "8n", string: 2 },
+            { time: 0, note: "C4", string: 2, duration: 1 },
+            { time: 0, note: "G3", string: 3, duration: 1 },
+            { time: 0, note: "E4", string: 1, duration: 1 },
           ],
         },
         {
@@ -167,10 +162,9 @@ export default {
           duration: null,
           midiTriggered: false,
           midiMelody: [
-            { time: "0m", note: ["A#3", "D4"], duration: "1m", string: [2, 1] },
-            { time: "1m", note: "B3", duration: "1m", string: 2 },
-            { time: "2m", note: "B3", duration: "8n", string: 2 },
-            { time: "3m", note: "B3", duration: "8n", string: 2 },
+            { time: 0, note: "C4", string: 2, duration: 1 },
+            { time: 0, note: "G3", string: 3, duration: 1 },
+            { time: 0, note: "E4", string: 1, duration: 1 },
           ],
         },
       ],
@@ -280,23 +274,25 @@ export default {
       this.backingTrack.howl.play(this.partList[this.selectedIndex]);
       this.playMelody(this.songParts[this.selectedIndex].midiMelody);
     },
+    checkAccurateNotes() {
+      if (this.accurateNotes.length == this.songParts[this.selectedIndex].midiMelody.length) {
+        this.nextLevelClass = true;
+        setTimeout(() => {
+          this.nextLevelClass = false;
+        }, 300);
+        this.goToNextPart();
+      }
+      this.accurateNotes = [];
+    },
     handleSpriteStart() {
-      // // Fade in
-      // this.backingTrack.howl.fade(0, 1, 5);
-      // let trackDuration = this.songParts[this.selectedIndex].duration;
-      // // Fade out
-      // setTimeout(() => {
-      //   console.log("triggered");
-      //   this.backingTrack.howl.fade(1, 0, 5);
-      // }, trackDuration - 6);
+      setTimeout(() => {
+        this.checkAccurateNotes();
+      }, this.songParts[this.selectedIndex].duration - 5);
     },
     loadGuitar() {
       this.guitar = new Howl({
         src: ["./instruments/guitar_acoustic/guitar_acoustic.ogg"],
         sprite: acoustic_guitar_sprite,
-        onfade: () => {
-          this.guitar.stop();
-        },
       });
     },
     loadBackingTrack() {
@@ -377,24 +373,50 @@ export default {
     this.loadBackingTrack();
     // Play MIDI from user
     this.$parent.$on("MIDI-message", (data) => {
-      let timestampUserPlayedNote = new Date().getTime();
       if (data.message_type == "note_on") {
-        this.timestampedMelody.forEach((storedMelody) => {
-          if (storedMelody.note == MIDItoNote[data.note]) {
-            let timeDifference = Math.abs(timestampUserPlayedNote - storedMelody.time);
-            this.noteGrade = timeDifference < 100 ? "Perfect" : timeDifference < 300 ? "Good" : "Bad";
-            this.gradeColor = timeDifference < 100 ? "greenyellow" : timeDifference < 300 ? "orange" : "red";
-            this.showingGrade = true;
-            setTimeout(() => {
-              this.showingGrade = false;
-            }, 700);
-            console.log(timeDifference);
-          }
-        });
+        let timestampUserPlayedNote = new Date().getTime();
+        let playedNote = MIDItoNote[data.note];
+        let noteID = this.guitar.play(playedNote);
+        this.userPlayedNotesIDs.push({ note: playedNote, id: noteID });
 
-        let note = MIDItoNote[data.note];
-        let noteID = this.guitar.play(note);
-        this.userPlayedNotesIDs.push({ note: note, id: noteID });
+        let matchingNotes = this.timestampedMelody.filter((storedNote) => storedNote.note == MIDItoNote[data.note]);
+
+        if (matchingNotes.length > 0) {
+          let closestNote = matchingNotes.reduce((prev, curr) => {
+            return Math.abs(curr.time - timestampUserPlayedNote) < Math.abs(prev.time - timestampUserPlayedNote) ? curr : prev;
+          });
+
+          let timeDifference = Math.abs(timestampUserPlayedNote - closestNote.time);
+
+          // TODO: Eliminate magic numbers:
+          switch (true) {
+            case timeDifference < 40:
+              this.noteGrade = "Perfect <br> timing";
+              this.gradeColor = "greenyellow";
+              this.accurateNotes.push(playedNote);
+              break;
+            case timeDifference < 80:
+              this.noteGrade = "Good <br> timing";
+              this.gradeColor = "greenyellow";
+              this.accurateNotes.push(playedNote);
+              break;
+            case timeDifference < 300:
+              this.noteGrade = "OK<br> timing";
+              this.gradeColor = "orange";
+              break;
+            case timeDifference > 300 && timeDifference < 1000:
+              this.noteGrade = "Meh<br> timing";
+              this.gradeColor = "red";
+              break;
+            default:
+              this.noteGrade = "";
+          }
+
+          this.showingGrade = true;
+          setTimeout(() => {
+            this.showingGrade = false;
+          }, 700);
+        }
       } else if (data.message_type == "note_off") {
         let note = MIDItoNote[data.note];
         let foundNoteID = this.userPlayedNotesIDs.find((obj) => obj.note == note).id;
@@ -424,13 +446,41 @@ export default {
   padding-left: 30px;
 }
 
+#part-counter-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100px;
+  background-color: #ffffff;
+}
+
 #part-counter {
-  height: 18px;
-  width: 18px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   margin: 0px;
+  padding: 0px 20px 0px 20px;
+  font-style: italic;
+  font-weight: bold;
+  font-family: "Bungee", sans-serif;
   text-align: center;
-  background-color: white;
-  align-self: center;
+  font-size: 1em;
+  background-color: transparent;
+  white-space: nowrap;
+}
+
+#part-counter.grow {
+  font-size: 5em; /* The size the text should grow to */
+  color: rgb(255, 220, 0);
+  transition: font-size 0.25s ease-in-out, color 0.25s ease-in-out; /* The transition effect */
+}
+
+#part-counter.shrink {
+  font-size: 1em; /* The initial size of the text */
+  color: rgb(0, 0, 0);
+  transition: font-size 0.25s ease-in-out, color 0.25s ease-in-out; /* The transition effect */
 }
 
 .playerFeedback {
@@ -439,7 +489,7 @@ export default {
   bottom: 50px;
 }
 
-.counter {
+.countdowner {
   width: 100px;
   height: 100px;
   background-color: #ffffff;
