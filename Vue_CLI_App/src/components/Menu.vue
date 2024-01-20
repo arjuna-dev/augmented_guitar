@@ -1,44 +1,47 @@
 <template>
   <div class="menu column">
-    <div>
-      <div>Root Note</div>
-      <select v-model="selected_root_note" v-on:change="emit_steps(selected_scale, selected_root_note)">
-        <option v-for="(note, index) in notes" :value="note" :key="index">
-          {{ note }}
-        </option>
-      </select>
-    </div>
+    <h4 class="menu-title">Fretboard Menu:</h4>
 
-    <div>
-      <div>Scale</div>
-      <select v-model="selected_scale" v-on:change="emit_steps(selected_scale, selected_root_note)">
-        <option v-for="(scale, index) in scales" :value="scale.name" :key="index">
-          {{ scale.name }}
-        </option>
-      </select>
-    </div>
+    <div class="row menu-container">
+      <div class="menu-item">
+        <div>Root Note:</div>
+        <select v-model="selected_root_note" v-on:change="emit_steps(selected_scale, selected_root_note)">
+          <option v-for="(note, index) in notes" :value="note" :key="index">
+            {{ note }}
+          </option>
+        </select>
+      </div>
 
-    <div>
-      <div>Style</div>
-      <select v-model="selected_style" v-on:change="setFretSlotStyle(selected_style)">
-        <option value="false" selected>Full Color</option>
-        <option value="true">Circles</option>
-      </select>
+      <div class="menu-item">
+        <div>Scale:</div>
+        <select v-model="selected_scale" v-on:change="emit_steps(selected_scale, selected_root_note)">
+          <option v-for="(scale, index) in scales" :value="scale.name" :key="index">
+            {{ scale.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="menu-item">
+        <div>Style:</div>
+        <select v-model="selected_style" v-on:change="setFretSlotStyle(selected_style)">
+          <option value="false" selected>Full Color</option>
+          <option value="true">Circles</option>
+        </select>
+      </div>
+      <div class="menu-item">
+        <div>Text:</div>
+        <select v-model="selected_name" v-on:change="setIsMidiNote(selected_name)">
+          <option value="false" selected>Notes</option>
+          <option value="true">MIDI Note</option>
+        </select>
+      </div>
+      <div class="menu-item">
+        <div>Capo:</div>
+        <button @click="move_capo_up">+</button>
+        <div>{{ capo }}</div>
+        <button @click="move_capo_down">-</button>
+      </div>
     </div>
-    <div>
-      <div>Text</div>
-      <select v-model="selected_name" v-on:change="setIsMidiNote(selected_name)">
-        <option value="false" selected>Notes</option>
-        <option value="true">MIDI Note</option>
-      </select>
-    </div>
-    <div>
-      <div>Capo</div>
-      <button @click="move_capo_up">+</button>
-      <div>{{ capo }}</div>
-      <button @click="move_capo_down">-</button>
-    </div>
-    <div></div>
   </div>
 </template>
 
@@ -51,7 +54,7 @@ export default {
       selected_scale: "Chromatic",
       selected_root_note: "C",
       name: "Menu",
-      capo: 0,
+      capo: 3,
       note_mapping: {
         1: 0,
         "♯1": 1,
