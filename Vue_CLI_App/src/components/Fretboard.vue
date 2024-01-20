@@ -20,6 +20,7 @@ export default {
   data() {
     return {
       midi_message: "",
+      is_user_message: false,
       number_of_strings: 6,
       number_of_frets: 20,
       string_length: 647.7,
@@ -131,8 +132,8 @@ export default {
             text = "";
           }
           if (this.pressed_notes.length > 0 && is_pressed && is_in_scale) {
-            color = "black";
-            border = "";
+            color = this.is_user_message ? "purple" : "black";
+            border = "10px solid white";
             text_color = "white";
             z_index = "100";
           } else if (this.pressed_notes.length > 0 && is_pressed && !is_in_scale) {
@@ -142,8 +143,8 @@ export default {
             z_index = "100";
           }
           if (this.playing_notes.length > 0 && is_playing && is_in_scale) {
-            color = "black";
-            border = "10px solid white";
+            color = this.is_user_message ? "purple" : "black";
+            border = this.is_user_message ? "10px solid orange" : "10px solid white";
             text_color = "white";
             z_index = "100";
           } else if (this.playing_notes.length > 0 && is_playing && !is_in_scale) {
@@ -284,13 +285,24 @@ export default {
       this.capo = data;
     });
 
-    this.$parent.$on("MIDI-message", (data) => {
+    this.$parent.$on("MIDI-message-app", (data) => {
+      this.is_user_message = false;
       if (data.message_type == "cc") {
         this.update_pressed_notes(data);
       } else if (data.message_type == "note_on") {
         this.add_to_playing_notes(data);
       } else if (data.message_type == "note_off") {
         this.remove_from_playing_notes(data);
+      }
+    });
+    this.$parent.$on("MIDI-message-user", (data) => {
+      this.is_user_message = true;
+      if (data.message_type == "cc") {
+        this.update_pressed_notes(data, this.is_user_message);
+      } else if (data.message_type == "note_on") {
+        this.add_to_playing_notes(data, this.is_user_message);
+      } else if (data.message_type == "note_off") {
+        this.remove_from_playing_notes(data, this.is_user_message);
       }
     });
   },

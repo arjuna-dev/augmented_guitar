@@ -81,8 +81,8 @@ export default {
   },
   watch: {
     MIDI_message(newValue) {
-      this.$parent.$emit("MIDI-message", newValue);
-      this.$parent.$parent.$emit("MIDI-message", newValue);
+      this.$parent.$emit("MIDI-message-user", newValue);
+      this.$parent.$parent.$emit("MIDI-message-user", newValue);
     },
   },
   mounted() {
