@@ -48,4 +48,40 @@ body {
   height: 100vh;
   background-color: rgb(41, 41, 41);
 }
+
+.menu {
+  width: 100%;
+  color: azure;
+  padding: 15px 0px 0px 30px;
+  overflow-y: scroll;
+  display: flex;
+  row-gap: 15px;
+}
+
+.menu-title {
+  color: azure;
+  margin: 0px;
+}
+
+.menu-container {
+  margin-bottom: 15px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
 </style>

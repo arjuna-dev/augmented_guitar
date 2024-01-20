@@ -374,23 +374,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.menu {
-  width: 100%;
-  color: azure;
-  padding: 30px;
-  overflow-y: scroll;
-  display: flex;
-  row-gap: 15px;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-}
-</style>
+<style scoped></style>
