@@ -25,7 +25,7 @@ export default {
       number_of_frets: 20,
       string_length: 647.7,
       all_notes: ["C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B"],
-      capo: 0,
+      capo: 3,
       pressed_notes: [],
       playing_notes: [],
       map_jamstik_strings: [5, 4, 3, 2, 1, 0],
