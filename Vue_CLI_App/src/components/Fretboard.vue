@@ -143,9 +143,7 @@ export default {
             z_index = "100";
           }
           if (this.playing_notes.length > 0 && playing_note && is_in_scale) {
-            console.log("this.playing_notes.color: ", playing_note.color);
             color = this.is_user_message ? "purple" : "black";
-            // border = this.is_user_message ? "10px solid orange" : "10px solid white";
             border = "10px solid white";
             border = this.is_user_message && playing_note.color ? "10px solid " + playing_note.color : border;
             text_color = "white";
@@ -213,7 +211,6 @@ export default {
             note_object.string = pressed_string;
             if (midi_message.color) {
               note_object.color = midi_message.color;
-              console.log("yes: ", note_object.color);
             }
             this.playing_notes.push(note_object);
           }
@@ -230,7 +227,6 @@ export default {
           note_object.string = pressed_string;
           if (midi_message.color) {
             note_object.color = midi_message.color;
-            console.log("yes: ", note_object.color);
           }
           this.playing_notes.push(note_object);
         }
@@ -248,7 +244,6 @@ export default {
         midi_message.velocity == 0 &&
         this.playing_notes.some((obj) => obj.note === midi_message.note && obj.string === pressed_string)
       ) {
-        console.log("remove_from_playing_notes: ", midi_message);
         let note_object = {};
         note_object.note = midi_message.note;
         note_object.string = pressed_string;
@@ -308,7 +303,6 @@ export default {
       }
     });
     this.$parent.$on("MIDI-message-user", (data) => {
-      console.log("MIDI-message-user: ", data);
       this.is_user_message = true;
       if (data.message_type == "cc") {
         this.update_pressed_notes(data, this.is_user_message);
