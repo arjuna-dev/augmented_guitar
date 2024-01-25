@@ -119,11 +119,11 @@ export default {
 
           note_object.string = i;
 
-          const is_pressed = this.pressed_notes.some((obj) => obj.note === note_object.note && obj.string === note_object.string);
-          const is_playing = this.playing_notes.some((obj) => obj.note === note_object.note && obj.string === note_object.string);
+          const pressed_note = this.pressed_notes.find((obj) => obj.note === note_object.note && obj.string === note_object.string);
+          const playing_note = this.playing_notes.find((obj) => obj.note === note_object.note && obj.string === note_object.string);
           const is_in_scale = note_pattern.includes(noteIndex);
 
-          if (is_in_scale && !is_pressed && !is_playing) {
+          if (is_in_scale && !pressed_note && !playing_note) {
             color = this.colors.normal[noteIndex];
             z_index = "0";
           } else if (!is_in_scale) {
@@ -131,23 +131,26 @@ export default {
             border = "1px solid white";
             text = "";
           }
-          if (this.pressed_notes.length > 0 && is_pressed && is_in_scale) {
+          if (this.pressed_notes.length > 0 && pressed_note && is_in_scale) {
             color = this.is_user_message ? "purple" : "black";
             border = "10px solid white";
             text_color = "white";
             z_index = "100";
-          } else if (this.pressed_notes.length > 0 && is_pressed && !is_in_scale) {
+          } else if (this.pressed_notes.length > 0 && pressed_note && !is_in_scale) {
             color = "black";
             border = "10px solid red";
             text_color = "white";
             z_index = "100";
           }
-          if (this.playing_notes.length > 0 && is_playing && is_in_scale) {
+          if (this.playing_notes.length > 0 && playing_note && is_in_scale) {
+            console.log("this.playing_notes.color: ", playing_note.color);
             color = this.is_user_message ? "purple" : "black";
-            border = this.is_user_message ? "10px solid orange" : "10px solid white";
+            // border = this.is_user_message ? "10px solid orange" : "10px solid white";
+            border = "10px solid white";
+            border = this.is_user_message && playing_note.color ? "10px solid " + playing_note.color : border;
             text_color = "white";
             z_index = "100";
-          } else if (this.playing_notes.length > 0 && is_playing && !is_in_scale) {
+          } else if (this.playing_notes.length > 0 && playing_note && !is_in_scale) {
             color = "red";
             border = "10px solid black";
             z_index = "100";
@@ -208,6 +211,10 @@ export default {
             let note_object = {};
             note_object.note = midi_message.note[i];
             note_object.string = pressed_string;
+            if (midi_message.color) {
+              note_object.color = midi_message.color;
+              console.log("yes: ", note_object.color);
+            }
             this.playing_notes.push(note_object);
           }
         }
@@ -221,6 +228,10 @@ export default {
           let note_object = {};
           note_object.note = midi_message.note;
           note_object.string = pressed_string;
+          if (midi_message.color) {
+            note_object.color = midi_message.color;
+            console.log("yes: ", note_object.color);
+          }
           this.playing_notes.push(note_object);
         }
       }
@@ -237,6 +248,7 @@ export default {
         midi_message.velocity == 0 &&
         this.playing_notes.some((obj) => obj.note === midi_message.note && obj.string === pressed_string)
       ) {
+        console.log("remove_from_playing_notes: ", midi_message);
         let note_object = {};
         note_object.note = midi_message.note;
         note_object.string = pressed_string;
@@ -296,6 +308,7 @@ export default {
       }
     });
     this.$parent.$on("MIDI-message-user", (data) => {
+      console.log("MIDI-message-user: ", data);
       this.is_user_message = true;
       if (data.message_type == "cc") {
         this.update_pressed_notes(data, this.is_user_message);
