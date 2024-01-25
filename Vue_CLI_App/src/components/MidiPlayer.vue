@@ -9,8 +9,10 @@
         <p id="part-counter" :class="{ grow: nextLevelClass, shrink: !nextLevelClass }" @click="goToPreviousPart()">Part {{ selectedIndex }}</p>
       </div>
       <button @click="goToNextPart()">Next</button>
-      <button @click="activateMidi()">Activate Solo</button>
-      <button @click="stopMidi()">Deactivate Solo</button>
+      <button @click="activateMidi()">Activate MIDI</button>
+      <button @click="stopMidi()">Deactivate MIDI</button>
+
+      <input type="number" v-model="selectedIndex" @input="validateIndex" style="width: 40px" />
     </div>
 
     <div class="feedback-items">
@@ -31,18 +33,29 @@
                 {{ item > 0 ? "(late)" : "(early)" }}
               </span>
             </td>
-            <td>
-              <span v-if="item !== ''" :style="{ color: item > 0 ? 'red' : 'greenyellow' }" class="player-green-light">oh yeah</span>
+            <td class="grade-container">
+              <span v-if="item !== '' && enabledShowMessages" :style="{ color: getColorForNoteGrade(item) }" class="grade-message">{{
+                getTextForNoteGrade(item)
+              }}</span>
             </td>
           </tr>
         </tbody>
       </table>
-      <div v-if="enabledPlayerBeginGreenLight">
-        <span class="player-green-light"></span>
+
+      <table v-if="enabledShowMessages && !enabledNoteTimeDifferences" class="time-differences-table-no-border">
+        <tbody>
+          <tr v-for="(item, index) in timeDifferencesMelody" :key="index">
+            <td class="grade-container">
+              <span v-if="item !== ''" :style="{ color: getColorForNoteGrade(item) }" class="grade-message">{{ getTextForNoteGrade(item) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div v-if="enabledPlayerBeginGreenLight && showingGreenLight">
+        <div class="player-green-light"></div>
       </div>
-      <div :style="{ color: gradeColor }" v-if="showingResults && enabledShowGrades" class="grade-container">
-        <span v-html="noteGrade" class="grade-text"></span>
-      </div>
+
       <div v-if="enabledCorrectNoteRatio" class="correct-note-ratio">
         <span v-html="accurateNoteRatio" :class="{ grow: animateNoteRatio, shrink: !animateNoteRatio }" class="correct-note-ratio-text"></span>
       </div>
@@ -54,27 +67,40 @@
       <div v-if="showingCounter" class="player-feedback countdowner">
         <span class="circle-text">{{ countdown }}</span>
       </div> -->
+
+        <button :class="{ activeButton: enabledSendFretColor, inactiveButton: !enabledSendFretColor }" @click="toggleEnabledFretColorGrading()">
+          Fret Color Grading
+        </button>
+
         <button
           href="#"
           :class="{ activeButton: enabledPlayerBeginGreenLight, inactiveButton: !enabledPlayerBeginGreenLight }"
           @click.prevent="toggleEnabledGreenLight()"
         >
-          Show Green Light
+          Green Light
         </button>
 
-        <button :class="{ activeButton: enabledShowGrades, inactiveButton: !enabledShowGrades }" @click="toggleEnabledGrades()">
-          Show Note Messages
+        <button :class="{ activeButton: enabledPlayUserVisuals, inactiveButton: !enabledPlayUserVisuals }" @click="toggleEnabledPlayUserVisuals()">
+          User Part Visuals
         </button>
 
         <button :class="{ activeButton: enabledCorrectNoteRatio, inactiveButton: !enabledCorrectNoteRatio }" @click="toggleEnabledCorrectNoteRatio()">
-          Show Correct Note Ratio
+          Correct Note Ratio
+        </button>
+
+        <button :class="{ activeButton: enabledShowMessages, inactiveButton: !enabledShowMessages }" @click="toggleEnabledGrades()">
+          Note Messages
         </button>
 
         <button
           :class="{ activeButton: enabledNoteTimeDifferences, inactiveButton: !enabledNoteTimeDifferences }"
           @click="toggleEnabledNoteTimeDifferences()"
         >
-          Show Note Time Differences
+          Time Differences Table
+        </button>
+
+        <button :class="{ activeButton: enabledAutoNextPart, inactiveButton: !enabledAutoNextPart }" @click="toggleEnabledAutoNextPart()">
+          Auto Next Part
         </button>
       </div>
     </div>
@@ -88,6 +114,7 @@ import MIDIccMessage from "../utils/MIDIccMessage.js";
 import { MIDIMessageTypesStrings } from "../utils/MIDIMessageTypes.js";
 import { noteToMIDI, MIDItoNote } from "../utils/MIDINotesMapping.js";
 import acoustic_guitar_sprite from "../utils/sprites_json/guitar_acoustic_sprite.js";
+import songParts from "../utils/songParts.js";
 
 export default {
   data() {
@@ -106,27 +133,33 @@ export default {
 
       // UI testing variables
       showingCounter: false,
+      enabledPlayUserVisuals: false,
+      enabledAutoNextPart: false,
+      enabledSendFretColor: false,
       enabledPlayerBeginGreenLight: false,
-      enabledShowGrades: false,
+      enabledShowMessages: false,
       enabledCorrectNoteRatio: false,
       enabledNoteTimeDifferences: false,
       timeDifferencesTable: "",
       showingResults: false,
+      showingGreenLight: false,
+
+      // Grading colors
+      bestColor: "greenyellow",
+      goodColor: "greenyellow",
+      okColor: "orange",
+      badColor: "red",
+
+      perfectGrade: 40,
+      goodGrade: 80,
+      okGrade: 150,
 
       backingTrack: {
         howl: null,
         filePath: "./tracks/C_Jazz_2-5-1_BPM_120.aac",
         introEnd: 2701,
         sprite: {
-          // Loaded programmatically in created() after refactoring songParts
-          part0: null,
-          part1: null,
-          part2: null,
-          part3: null,
-          part4: null,
-          part5: null,
-          part6: null,
-          part7: null,
+          // Loaded programmatically in created() after songPartsAddStartEndTimes()
         },
         BPM: 120,
         barLength: null,
@@ -141,114 +174,7 @@ export default {
       introEnd: 2701,
       midi_message_app: null,
       midi_message_user: null,
-      songParts: [
-        {
-          startTime: null,
-          bars: null,
-          duration: null,
-          endTime: null,
-          midiTriggered: false,
-          midiMelody: [],
-        },
-        {
-          startTime: null,
-          bars: 4,
-          duration: null,
-          endTime: null,
-          midiTriggered: false,
-          midiMelody: [{ time: 0, note: "C4", string: 2, duration: 1 }],
-        },
-        {
-          startTime: null,
-          bars: 4,
-          duration: null,
-          endTime: null,
-          midiTriggered: false,
-          midiMelody: [
-            { time: 0, note: "G3", string: 3, duration: 1 },
-            { time: 1 / 4, note: "C4", string: 2, duration: 1 },
-          ],
-        },
-        {
-          startTime: null,
-          endTime: null,
-          bars: 4,
-          duration: null,
-          midiTriggered: false,
-          midiMelody: [
-            { time: 0, note: "G3", string: 3, duration: 1 },
-            { time: 1 / 4, note: "C4", string: 2, duration: 1 },
-            { time: 2 / 4, note: "E4", string: 1, duration: 1 },
-          ],
-        },
-        {
-          startTime: null,
-          endTime: null,
-          bars: 4,
-          duration: null,
-          midiTriggered: false,
-          midiMelody: [
-            { time: 0, note: "C4", string: 2, duration: 1 },
-            { time: 0, note: "G3", string: 3, duration: 1 },
-            { time: 0, note: "E4", string: 1, duration: 1 },
-          ],
-        },
-        {
-          startTime: null,
-          endTime: null,
-          bars: 4,
-          duration: null,
-          midiTriggered: false,
-          midiMelody: [
-            { time: 0, note: "B3", string: 2, duration: 1 / 4 },
-            { time: 1 / 4, note: "C4", string: 2, duration: 1 / 4 },
-          ],
-        },
-        {
-          startTime: null,
-          endTime: null,
-          bars: 4,
-          duration: null,
-          midiTriggered: false,
-          midiMelody: [
-            { time: 0, note: "B3", string: 2, duration: 1 / 4 },
-            { time: 1 / 4, note: "C4", string: 2, duration: 1 / 4 },
-            { time: 4 / 4, note: "B3", string: 2, duration: 1 / 4 },
-            { time: 4 / 4 + 1 / 8, note: "C4", string: 2, duration: 1 / 4 },
-            { time: 5 / 4 + 1 / 8, note: "C4", string: 2, duration: 1 / 4 },
-          ],
-        },
-        {
-          startTime: null,
-          endTime: null,
-          bars: 4,
-          duration: null,
-          midiTriggered: false,
-          midiMelody: [
-            { time: 0, note: "B3", string: 2, duration: 1 / 4 },
-            { time: 1 / 4, note: "C4", string: 2, duration: 1 / 4 },
-            { time: 4 / 4, note: "B3", string: 2, duration: 1 / 4 },
-            { time: 4 / 4 + 1 / 8, note: "C4", string: 2, duration: 1 / 4 },
-            { time: 5 / 4 + 1 / 8, note: "C4", string: 2, duration: 1 / 4 },
-          ],
-        },
-        {
-          startTime: null,
-          endTime: null,
-          bars: 4,
-          duration: null,
-          midiTriggered: false,
-          midiMelody: [
-            { time: 0 / 4, note: "C4", string: 2, duration: 1 / 4 },
-            { time: 1 / 4, note: "E4", string: 1, duration: 1 / 4 },
-            { time: 1 / 4 + 1 / 7, note: "C4", string: 2, duration: 1 / 4 },
-            { time: 2 / 4, note: "G3", string: 3, duration: 1 / 4 },
-            { time: 3 / 4, note: "E4", string: 1, duration: 1 / 4 },
-            { time: 4 / 4, note: "C4", string: 2, duration: 1 / 4 },
-            { time: 5 / 4, note: "E4", string: 1, duration: 1 / 4 },
-          ],
-        },
-      ],
+      songParts: songParts,
     };
   },
   computed: {
@@ -260,7 +186,7 @@ export default {
     },
   },
   methods: {
-    refactorTrack() {
+    trackAddBarLength() {
       return new Promise((resolve, reject) => {
         this.backingTrack.barLength = this.backingTrack.timeSignature / (this.backingTrack.BPM / 60);
         if (this.backingTrack.barLength == 0) {
@@ -269,7 +195,7 @@ export default {
         resolve();
       });
     },
-    refactorSongParts() {
+    songPartsAddStartEndTimes() {
       for (let i = 0; i < this.songParts.length; i++) {
         this.songParts[i].startTime = this.songParts[i - 1] ? this.songParts[i - 1].endTime + 1 : 0;
         let duration = this.songParts[i].bars * this.backingTrack.barLength * 1000;
@@ -282,7 +208,16 @@ export default {
       this.enabledPlayerBeginGreenLight = !this.enabledPlayerBeginGreenLight;
     },
     toggleEnabledGrades() {
-      this.enabledShowGrades = !this.enabledShowGrades;
+      this.enabledShowMessages = !this.enabledShowMessages;
+    },
+    toggleEnabledAutoNextPart() {
+      this.enabledAutoNextPart = !this.enabledAutoNextPart;
+    },
+    toggleEnabledPlayUserVisuals() {
+      this.enabledPlayUserVisuals = !this.enabledPlayUserVisuals;
+    },
+    toggleEnabledFretColorGrading() {
+      this.enabledSendFretColor = !this.enabledSendFretColor;
     },
     toggleEnabledCorrectNoteRatio() {
       this.enabledCorrectNoteRatio = !this.enabledCorrectNoteRatio;
@@ -293,6 +228,43 @@ export default {
     play() {
       this.guitar.play("A2");
     },
+    validateIndex() {
+      if (this.selectedIndex < 1) {
+        this.selectedIndex = 1;
+      } else if (this.selectedIndex > this.songParts.length - 1) {
+        this.selectedIndex = this.songParts.length - 1;
+      }
+    },
+    getColorForNoteGrade(timeDifference) {
+      timeDifference = Math.abs(timeDifference);
+      switch (true) {
+        case timeDifference < this.perfectGrade:
+          return this.bestColor;
+        case timeDifference < this.goodGrade:
+          return this.goodColor;
+        case timeDifference < this.okGrade:
+          return this.okColor;
+        case timeDifference > this.okGrade:
+          return this.badColor;
+        default:
+          return "white";
+      }
+    },
+    getTextForNoteGrade(timeDifference) {
+      timeDifference = Math.abs(timeDifference);
+      switch (true) {
+        case timeDifference < this.perfectGrade:
+          return "Perfect";
+        case timeDifference < this.goodGrade:
+          return "Good";
+        case timeDifference < this.okGrade:
+          return "OK";
+        case timeDifference > this.okGrade:
+          return "Meh";
+        default:
+          return "";
+      }
+    },
     barsToMilliseconds(bars) {
       return bars * this.backingTrack.barLength * 1000;
     },
@@ -300,9 +272,8 @@ export default {
       // Timestamp melody for user feedback
       let melodyStartTime = new Date().getTime();
       this.timestampedMelody = [];
-      this.timeDifferencesMelody = [];
+
       for (let i = 0; i < midiMelody.length; i++) {
-        this.timeDifferencesMelody[i] = "";
         this.timestampedMelody.push({
           note: midiMelody[i].note,
           time: melodyStartTime + this.barsToMilliseconds(midiMelody[i].time) + this.songParts[this.selectedIndex].duration / 2,
@@ -328,18 +299,20 @@ export default {
           this.midi_message_app = new MIDIMessage(midiMelody[i].string, MIDIMessageTypesStrings.note_off, midiNote, 0);
         }, startTime + noteDuration);
 
-        // Replay melody visuals for user
-        setTimeout(() => {
+        // Play melody visuals for user
+        if (this.enabledPlayUserVisuals) {
           setTimeout(() => {
-            this.midi_message_user = new MIDIccMessage(midiMelody[i].string, MIDIMessageTypesStrings.cc, 0, midiNote);
             setTimeout(() => {
-              this.midi_message_user = new MIDIMessage(midiMelody[i].string, MIDIMessageTypesStrings.note_on, midiNote, 127);
-            }, 0.1);
-          }, startTime);
-          setTimeout(() => {
-            this.midi_message_user = new MIDIMessage(midiMelody[i].string, MIDIMessageTypesStrings.note_off, midiNote, 0);
-          }, startTime + noteDuration);
-        }, this.songParts[this.selectedIndex].duration / 2);
+              this.midi_message_user = new MIDIccMessage(midiMelody[i].string, MIDIMessageTypesStrings.cc, 0, midiNote);
+              setTimeout(() => {
+                this.midi_message_user = new MIDIMessage(midiMelody[i].string, MIDIMessageTypesStrings.note_on, midiNote, 127);
+              }, 0.1);
+            }, startTime);
+            setTimeout(() => {
+              this.midi_message_user = new MIDIMessage(midiMelody[i].string, MIDIMessageTypesStrings.note_off, midiNote, 0);
+            }, startTime + noteDuration);
+          }, this.songParts[this.selectedIndex].duration / 2);
+        }
 
         // Countdown
         // let userPartBegin = this.songParts[this.selectedIndex].duration / 2;
@@ -367,7 +340,9 @@ export default {
     },
     handleSpriteEnd() {
       this.backingTrack.howl.play(this.partList[this.selectedIndex]);
-      this.playMelody(this.songParts[this.selectedIndex].midiMelody);
+      if (this.songParts[this.selectedIndex].midiMelody.length > 0) {
+        this.playMelody(this.songParts[this.selectedIndex].midiMelody);
+      }
     },
     checkAccurateNotes() {
       if (this.accurateNotes.length >= this.songParts[this.selectedIndex].midiMelody.length) {
@@ -375,26 +350,37 @@ export default {
         setTimeout(() => {
           this.nextLevelClass = false;
         }, 1000);
-        this.goToNextPart();
+        if (this.enabledAutoNextPart) {
+          this.goToNextPart();
+        }
       }
     },
     handleSpriteStart() {
+      this.showingGreenLight = false;
       let currentMelody = this.songParts[this.selectedIndex].midiMelody;
-      let lastNoteOfMelody = currentMelody.reduce((prev, curr) => {
-        return curr.time > prev.time ? curr : prev;
-      });
-      let lastNoteEndTime = this.barsToMilliseconds(lastNoteOfMelody.time) + this.barsToMilliseconds(lastNoteOfMelody.duration);
-      let userLastNoteEndTime = this.songParts[this.selectedIndex].duration / 2 + lastNoteEndTime;
-      setTimeout(() => {
-        let accurateNotesLength = this.accurateNotes.length > currentMelody.length ? currentMelody.length : this.accurateNotes.length;
-        this.accurateNoteRatio = `${accurateNotesLength}/${currentMelody.length}`;
-        this.checkAccurateNotes();
-        this.animateNoteRatio = true;
+      if (this.songParts[this.selectedIndex].midiMelody.length > 0) {
+        let lastNoteOfMelody = currentMelody.reduce((prev, curr) => {
+          return curr.time > prev.time ? curr : prev;
+        });
+        let lastNoteEndTime = this.barsToMilliseconds(lastNoteOfMelody.time) + this.barsToMilliseconds(lastNoteOfMelody.duration);
+        let userLastNoteEndTime = this.songParts[this.selectedIndex].duration / 2 + lastNoteEndTime;
         setTimeout(() => {
-          this.animateNoteRatio = false;
-          this.accurateNotes = [];
-        }, 2000);
-      }, userLastNoteEndTime + 100);
+          let accurateNotesLength = this.accurateNotes.length > currentMelody.length ? currentMelody.length : this.accurateNotes.length;
+          this.accurateNoteRatio = `${accurateNotesLength}/${currentMelody.length}`;
+          this.checkAccurateNotes();
+          this.animateNoteRatio = true;
+          setTimeout(() => {
+            this.animateNoteRatio = false;
+            this.accurateNotes = [];
+          }, 2000);
+        }, userLastNoteEndTime + 100);
+        setTimeout(() => {
+          this.timeDifferencesMelody = Array(this.songParts[this.selectedIndex].midiMelody.length).fill("");
+        }, this.songParts[this.selectedIndex].duration / 2 - 300);
+        setTimeout(() => {
+          this.showingGreenLight = true;
+        }, this.songParts[this.selectedIndex].duration / 2 + this.barsToMilliseconds(this.songParts[this.selectedIndex].midiMelody[0].time));
+      }
     },
     loadGuitar() {
       this.guitar = new Howl({
@@ -441,10 +427,10 @@ export default {
       this.guitar.fade(1, 0, 1);
     },
     goToNextPart() {
-      this.selectedIndex = this.selectedIndex == this.songParts.length - 1 ? this.selectedIndex : this.selectedIndex + 1;
+      this.selectedIndex = +this.selectedIndex == this.songParts.length - 1 ? +this.selectedIndex : +this.selectedIndex + 1;
     },
     goToPreviousPart() {
-      this.selectedIndex = this.selectedIndex <= 1 ? this.selectedIndex : this.selectedIndex - 1;
+      this.selectedIndex = +this.selectedIndex <= 1 ? +this.selectedIndex : +this.selectedIndex - 1;
     },
     stopMusic() {
       if (!this.isMusicPlaying) return;
@@ -466,18 +452,23 @@ export default {
     },
   },
   created() {
-    this.refactorTrack().then(this.refactorSongParts());
-    this.backingTrack.sprite = {
-      part0: [this.songParts[0].startTime, this.songParts[0].duration],
-      part1: [this.songParts[1].startTime, this.songParts[1].duration],
-      part2: [this.songParts[2].startTime, this.songParts[2].duration],
-      part3: [this.songParts[3].startTime, this.songParts[3].duration],
-      part4: [this.songParts[4].startTime, this.songParts[4].duration],
-      part5: [this.songParts[5].startTime, this.songParts[5].duration],
-      part6: [this.songParts[6].startTime, this.songParts[6].duration],
-      part7: [this.songParts[7].startTime, this.songParts[7].duration],
-      part8: [this.songParts[8].startTime, this.songParts[8].duration],
-    };
+    this.trackAddBarLength().then(this.songPartsAddStartEndTimes());
+    // this.backingTrack.sprite = {
+    //   part0: [this.songParts[0].startTime, this.songParts[0].duration],
+    //   part1: [this.songParts[1].startTime, this.songParts[1].duration],
+    //   part2: [this.songParts[2].startTime, this.songParts[2].duration],
+    //   part3: [this.songParts[3].startTime, this.songParts[3].duration],
+    //   part4: [this.songParts[4].startTime, this.songParts[4].duration],
+    //   part5: [this.songParts[5].startTime, this.songParts[5].duration],
+    //   part6: [this.songParts[6].startTime, this.songParts[6].duration],
+    //   part7: [this.songParts[7].startTime, this.songParts[7].duration],
+    //   part8: [this.songParts[8].startTime, this.songParts[8].duration],
+    //   part9: [this.songParts[9].startTime, this.songParts[9].duration],
+    // };
+    // crate for loop to populate this.backingTrack.sprite
+    for (let i = 0; i < this.songParts.length; i++) {
+      this.backingTrack.sprite[`part${i}`] = [this.songParts[i].startTime, this.songParts[i].duration];
+    }
   },
   mounted() {
     this.loadGuitar();
@@ -499,29 +490,32 @@ export default {
 
           let indexOfClosestNote = this.timestampedMelody.indexOf(closestNote);
 
-          let timeDifference = timestampUserPlayedNote - closestNote.time;
+          let timeDifference = parseInt(timestampUserPlayedNote - closestNote.time);
           let absTimeDifference = Math.abs(timeDifference);
 
-          // TODO: Eliminate magic numbers:
           switch (true) {
-            case absTimeDifference < 40:
-              this.noteGrade = "Perfect <br> timing";
-              this.gradeColor = "greenyellow";
+            case absTimeDifference < this.perfectGrade:
+              if (this.enabledSendFretColor) {
+                data.color = this.bestColor;
+              }
               this.accurateNotes.push(playedNote);
               break;
-            case absTimeDifference < 80:
-              this.noteGrade = "Good <br> timing";
-              this.gradeColor = "greenyellow";
+            case absTimeDifference < this.goodGrade:
+              if (this.enabledSendFretColor) {
+                data.color = this.goodColor;
+              }
               this.accurateNotes.push(playedNote);
               break;
-            case absTimeDifference < 150:
-              this.noteGrade = "OK<br> timing";
-              this.gradeColor = "orange";
+            case absTimeDifference < this.okGrade:
+              if (this.enabledSendFretColor) {
+                data.color = this.okColor;
+              }
               this.accurateNotes.push(playedNote);
               break;
-            case absTimeDifference > 150 && absTimeDifference < 1000:
-              this.noteGrade = "Meh<br> timing";
-              this.gradeColor = "red";
+            case absTimeDifference > this.okGrade && absTimeDifference < 1000:
+              if (this.enabledSendFretColor) {
+                data.color = this.badColor;
+              }
               break;
             default:
               this.noteGrade = "";
@@ -550,22 +544,13 @@ export default {
         // Delete note from this.userPlayedNotesIDs after note off
         this.userPlayedNotesIDs = this.userPlayedNotesIDs.filter((obj) => obj.note != note);
       }
+      this.$parent.$parent.$emit("MIDI-message-user", data);
     });
   },
 };
 </script>
 
 <style scoped>
-/* .menu {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  height: 20px;
-  width: 100%;
-  padding-left: 30px;
-  margin-bottom: 30px;
-} */
-
 .ui-menu-parent {
   display: flex;
   justify-content: center;
@@ -654,25 +639,30 @@ export default {
 .grade-container {
   width: auto;
   height: auto;
-  margin-left: 30px;
-  transform: rotate(-10deg);
+  transform: rotate(-3deg);
 }
 
-.grade-text {
+.grade-message {
   font-style: italic;
   font-weight: bold;
   font-family: "Bungee", sans-serif;
   transform: skewX(-20deg);
-  font-size: 3.5em;
+  font-size: 1em;
+}
+
+.player-green-light {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: yellowgreen; /* adjust color as needed */
 }
 
 .correct-note-ratio {
-  width: 150px;
-  height: 150px;
+  /* width: 15px;
+  height: 15px; */
+  position: relative;
+  top: -60px;
   margin-left: 30px;
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
   transform: rotate(-10deg);
 }
 
@@ -700,6 +690,10 @@ export default {
 .time-differences-table {
   border-collapse: collapse;
   color: white;
+}
+
+.time-differences-table-no-border {
+  border: none;
 }
 
 .time-differences-table td,
