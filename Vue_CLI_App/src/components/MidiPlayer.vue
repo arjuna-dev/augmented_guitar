@@ -384,6 +384,7 @@ export default {
     },
     loadGuitar() {
       this.guitar = new Howl({
+        // src: ["./instruments/guitar_acoustic/guitar_acoustic_distor.mp3"],
         src: ["./instruments/guitar_acoustic/guitar_acoustic.ogg"],
         sprite: acoustic_guitar_sprite,
       });
